@@ -1,0 +1,893 @@
+// Template Library cho ứng dụng vẽ toán
+// Mỗi template bao gồm mã Typst/CeTZ hoàn chỉnh
+
+export const TEMPLATE_LIBRARY = {
+  // ==================== HÌNH HỌC PHẲNG ====================
+  'plane-geometry': {
+    'triangles': [
+      {
+        id: 'tri-equilateral',
+        name: 'Tam giác đều',
+        category: 'triangles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let side = 4
+  let height = (side * calc.sqrt(3)) / 2
+
+  let A = (side/2, height)
+  let B = (0, 0)
+  let C = (side, 0)
+
+  // Vẽ tam giác đều
+  line(A, B, C, close: true, stroke: 1.5pt + black)
+
+  // Nhãn đỉnh
+  content(A, [A], anchor: "south")
+  content(B, [B], anchor: "north-east")
+  content(C, [C], anchor: "north-west")
+})`
+      },
+      {
+        id: 'tri-right',
+        name: 'Tam giác vuông',
+        category: 'triangles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let a = 3
+  let b = 4
+  let c = calc.sqrt(a*a + b*b)
+
+  let A = (0, 0)
+  let B = (a, 0)
+  let C = (0, b)
+
+  // Vẽ tam giác vuông
+  line(A, B, C, close: true, stroke: 1.5pt + black)
+
+  // Ký hiệu góc vuông
+  line((0.3, 0), (0.3, 0.3), (0, 0.3), stroke: 0.5pt + gray)
+
+  // Nhãn
+  content(A, [A], anchor: "south-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+
+  // Độ dài cạnh
+  content((a/2, -0.3), [a], anchor: "north")
+  content((-0.3, b/2), [b], anchor: "east")
+  content((a/2, b/2), [c], anchor: "south-east")
+})`
+      },
+      {
+        id: 'tri-with-medians',
+        name: 'Tam giác với đường trung tuyến',
+        category: 'triangles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let A = (1, 4)
+  let B = (-1, 0)
+  let C = (4, 0)
+  let Ma = ((B.x + C.x)/2, (B.y + C.y)/2)
+  let Mb = ((A.x + C.x)/2, (A.y + C.y)/2)
+  let Mc = ((A.x + B.x)/2, (A.y + B.y)/2)
+  let G = ((A.x + B.x + C.x)/3, (A.y + B.y + C.y)/3)
+
+  // Vẽ tam giác
+  line(A, B, C, close: true, stroke: 1.5pt + black)
+
+  // Đường trung tuyến
+  line(A, Ma, stroke: 1pt + blue, dash: "dashed")
+  line(B, Mb, stroke: 1pt + green, dash: "dashed")
+  line(C, Mc, stroke: 1pt + red, dash: "dashed")
+
+  // Trọng tâm
+  circle(G, radius: 0.08, fill: orange)
+  content(G, [G], anchor: "north-west")
+
+  // Nhãn
+  content(A, [A], anchor: "south")
+  content(B, [B], anchor: "north-east")
+  content(C, [C], anchor: "north-west")
+  content(Ma, [M_a], anchor: "south")
+  content(Mb, [M_b], anchor: "west")
+  content(Mc, [M_c], anchor: "south-east")
+})`
+      },
+      {
+        id: 'tri-with-altitudes',
+        name: 'Tam giác với đường cao',
+        category: 'triangles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let A = (0, 4)
+  let B = (-2, 0)
+  let C = (3, 0)
+
+  // Vẽ tam giác
+  line(A, B, C, close: true, stroke: 1.5pt + black)
+
+  // Đường cao từ A
+  let Ha = (0, 0)
+  line(A, Ha, stroke: 1pt + red, dash: "dashed")
+
+  // Ký hiệu vuông góc
+  line((0.2, 0), (0.2, 0.2), (0, 0.2), stroke: 0.5pt + red)
+
+  // Nhãn
+  content(A, [A], anchor: "south")
+  content(B, [B], anchor: "north-east")
+  content(C, [C], anchor: "north-west")
+  content(Ha, [H_a], anchor: "south-east")
+})`
+      }
+    ],
+
+    'quadrilaterals': [
+      {
+        id: 'square-diagonals',
+        name: 'Hình vuông với đường chéo',
+        category: 'quadrilaterals',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let side = 4
+
+  // Vẽ hình vuông
+  rect((0, 0), (side, side), stroke: 1.5pt + black)
+
+  // Đường chéo
+  line((0, 0), (side, side), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+  line((0, side), (side, 0), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Giao điểm đường chéo
+  let O = (side/2, side/2)
+  circle(O, radius: 0.05, fill: red)
+  content(O, [O], anchor: "south-east")
+
+  // Nhãn
+  content((0, 0), [A], anchor: "north-east")
+  content((side, 0), [B], anchor: "north-west")
+  content((side, side), [C], anchor: "south-west")
+  content((0, side), [D], anchor: "south-east")
+
+  // Ký hiệu góc vuông
+  line((0.3, 0), (0.3, 0.3), (0, 0.3), stroke: 0.5pt + gray)
+})`
+      },
+      {
+        id: 'parallelogram',
+        name: 'Hình bình hành',
+        category: 'quadrilaterals',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let A = (0, 0)
+  let B = (4, 0)
+  let C = (5, 3)
+  let D = (1, 3)
+
+  // Vẽ hình bình hành
+  line(A, B, C, D, close: true, stroke: 1.5pt + black)
+
+  // Đường chéo
+  line(A, C, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+  line(B, D, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Nhãn
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+})`
+      },
+      {
+        id: 'trapezoid',
+        name: 'Hình thang',
+        category: 'quadrilaterals',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let A = (0, 0)
+  let B = (5, 0)
+  let C = (4, 3)
+  let D = (1, 3)
+
+  // Vẽ hình thang (AB // DC)
+  line(A, B, C, D, close: true, stroke: 1.5pt + black)
+
+  // Nhãn
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+
+  // Ký hiệu song song
+  line((2, 0.2), (3, 0.2), stroke: 0.5pt + red)
+  line((2, 3.2), (3, 3.2), stroke: 0.5pt + red)
+})`
+      }
+    ],
+
+    'circles': [
+      {
+        id: 'circle-inscribed-triangle',
+        name: 'Tam giác nội tiếp đường tròn',
+        category: 'circles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let O = (0, 0)
+  let R = 3
+
+  // Vẽ đường tròn
+  circle(O, radius: R, stroke: 1.5pt + gray)
+
+  // Vẽ tam giác đều nội tiếp
+  let A = (0, R)
+  let B = (-R * calc.sqrt(3)/2, -R/2)
+  let C = (R * calc.sqrt(3)/2, -R/2)
+
+  line(A, B, C, close: true, stroke: 1.5pt + black)
+
+  // Tâm
+  circle(O, radius: 0.08, fill: black)
+  content(O, [O], anchor: "north-east")
+
+  // Nhãn
+  content(A, [A], anchor: "south")
+  content(B, [B], anchor: "east")
+  content(C, [C], anchor: "west")
+})`
+      },
+      {
+        id: 'circle-tangent-point',
+        name: 'Tiếp tuyến từ điểm ngoài',
+        category: 'circles',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let O = (0, 0)
+  let R = 2
+  let M = (5, 0)
+  let alpha = calc.acos(R/5)
+  let A = (R*calc.cos(alpha), R*calc.sin(alpha))
+  let B = (R*calc.cos(alpha), -R*calc.sin(alpha))
+
+  // Vẽ đường tròn
+  circle(O, radius: R, stroke: 1.5pt + black)
+
+  // Tiếp tuyến
+  line(M, A, stroke: 1pt + blue)
+  line(M, B, stroke: 1pt + blue)
+
+  // Bán kính
+  line(O, A, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+  line(O, B, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Đường nối tâm - điểm ngoài
+  line(O, M, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Ký hiệu góc vuông
+  content(O, [O], anchor: "north-east")
+  content(M, [M], anchor: "west")
+  content(A, [A], anchor: "south")
+  content(B, [B], anchor: "north")
+})`
+      }
+    ]
+  },
+
+  // ==================== HÌNH HỌC KHÔNG GIAN ====================
+  'solid-geometry': {
+    'pyramids': [
+      {
+        id: 'pyramid-triangular',
+        name: 'Hình chóp tam giác đều',
+        category: 'pyramids',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let S = (2, 5)
+  let A = (0, 0)
+  let B = (3, -1)
+  let C = (4, 1)
+  let H = (7/3, 0)
+
+  // Cạnh khuất
+  line(A, C, stroke: 1.5pt + black, dash: "dashed")
+
+  // Đáy
+  line(A, B, stroke: 1.5pt + black)
+  line(B, C, stroke: 1.5pt + black)
+
+  // Cạnh bên
+  line(S, A, stroke: 1.5pt + black)
+  line(S, B, stroke: 1.5pt + black)
+  line(S, C, stroke: 1.5pt + black)
+
+  // Đường cao
+  line(S, H, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Nhãn
+  content(S, [S], anchor: "south")
+  content(A, [A], anchor: "east")
+  content(B, [B], anchor: "north")
+  content(C, [C], anchor: "west")
+  content(H, [H], anchor: "north-east")
+})`
+      },
+      {
+        id: 'pyramid-square',
+        name: 'Hình chóp tứ giác đều',
+        category: 'pyramids',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let S = (2, 5)
+  let A = (0, 0)
+  let B = (3.5, 0)
+  let C = (4, 1)
+  let D = (0.5, 1)
+  let H = ((A.x + B.x + C.x + D.x)/4, (A.y + B.y + C.y + D.y)/4)
+
+  // Cạnh khuất
+  line(A, D, stroke: 1.5pt + black, dash: "dashed")
+  line(D, C, stroke: 1.5pt + black, dash: "dashed")
+
+  // Đáy
+  line(A, B, stroke: 1.5pt + black)
+  line(B, C, stroke: 1.5pt + black)
+
+  // Cạnh bên khuất
+  line(S, D, stroke: 1.5pt + black, dash: "dashed")
+
+  // Cạnh bên nhìn thấy
+  line(S, A, stroke: 1.5pt + black)
+  line(S, B, stroke: 1.5pt + black)
+  line(S, C, stroke: 1.5pt + black)
+
+  // Đường cao
+  line(S, H, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Nhãn
+  content(S, [S], anchor: "south")
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+  content(H, [H], anchor: "north")
+})`
+      }
+    ],
+
+    'prisms': [
+      {
+        id: 'cube',
+        name: 'Hình lập phương',
+        category: 'prisms',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let a = 3
+  let ox = 1
+  let oy = 0.5
+
+  // Mặt trước
+  let A = (0, 0)
+  let B = (a, 0)
+  let C = (a, a)
+  let D = (0, a)
+
+  // Mặt sau
+  let Ap = (ox, oy)
+  let Bp = (a + ox, oy)
+  let Cp = (a + ox, a + oy)
+  let Dp = (ox, a + oy)
+
+  // Mặt trước
+  rect(A, (a, a), stroke: 1.5pt + black)
+
+  // Cạnh nhìn thấy
+  line(B, Bp, stroke: 1.5pt + black)
+  line(C, Cp, stroke: 1.5pt + black)
+
+  // Cạnh khuất
+  line(A, Ap, stroke: 1.5pt + black, dash: "dashed")
+  line(D, Dp, stroke: 1.5pt + black, dash: "dashed")
+  line(Ap, Bp, stroke: 1.5pt + black, dash: "dashed")
+  line(Bp, Cp, stroke: 1.5pt + black, dash: "dashed")
+  line(Cp, Dp, stroke: 1.5pt + black, dash: "dashed")
+  line(Dp, Ap, stroke: 1.5pt + black, dash: "dashed")
+
+  // Nhãn
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+  content(Ap, [A'], anchor: "north-east")
+  content(Bp, [B'], anchor: "north-west")
+  content(Cp, [C'], anchor: "south-west")
+  content(Dp, [D'], anchor: "south-east")
+})`
+      },
+      {
+        id: 'box',
+        name: 'Hình hộp chữ nhật',
+        category: 'prisms',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let l = 4
+  let w = 3
+  let h = 2
+  let ox = 0.8
+  let oy = 0.4
+
+  // Mặt trước
+  let A = (0, 0)
+  let B = (l, 0)
+  let C = (l, h)
+  let D = (0, h)
+
+  // Mặt sau
+  let Ap = (ox, oy)
+  let Bp = (l + ox, oy)
+  let Cp = (l + ox, h + oy)
+  let Dp = (ox, h + oy)
+
+  // Mặt trước
+  rect(A, (l, h), stroke: 1.5pt + black)
+
+  // Cạnh nhìn thấy
+  line(B, Bp, stroke: 1.5pt + black)
+  line(C, Cp, stroke: 1.5pt + black)
+
+  // Cạnh khuất
+  line(A, Ap, stroke: 1.5pt + black, dash: "dashed")
+  line(D, Dp, stroke: 1.5pt + black, dash: "dashed")
+  line(Ap, Bp, stroke: 1.5pt + black, dash: "dashed")
+  line(Bp, Cp, stroke: 1.5pt + black, dash: "dashed")
+  line(Cp, Dp, stroke: 1.5pt + black, dash: "dashed")
+  line(Dp, Ap, stroke: 1.5pt + black, dash: "dashed")
+
+  // Nhãn
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+  content(Ap, [A'], anchor: "north-east")
+  content(Bp, [B'], anchor: "north-west")
+  content(Cp, [C'], anchor: "south-west")
+  content(Dp, [D'], anchor: "south-east")
+})`
+      }
+    ],
+
+    'revolution': [
+      {
+        id: 'cylinder',
+        name: 'Hình trụ',
+        category: 'revolution',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let r = 2
+  let h = 4
+  let ratio = 0.3
+
+  // Đáy dưới
+  arc((0, 0), start: 0, stop: 180, radius: (r, r * ratio), stroke: 1.5pt + black)
+  arc((0, 0), start: 180, stop: 360, radius: (r, r * ratio), stroke: 1.5pt + black, dash: "dashed")
+
+  // Đường sinh
+  line((-r, 0), (-r, h), stroke: 1.5pt + black)
+  line((r, 0), (r, h), stroke: 1.5pt + black)
+
+  // Đáy trên
+  arc((0, h), start: 0, stop: 360, radius: (r, r * ratio), stroke: 1.5pt + black)
+
+  // Trục
+  line((0, 0), (0, h), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Nhãn
+  content((0, 0), [O], anchor: "north-east")
+  content((0, h), [O'], anchor: "south-east")
+  content((r, h/2), [h], anchor: "west")
+  content((r/2, -r * ratio - 0.3), [r], anchor: "north")
+})`
+      },
+      {
+        id: 'cone',
+        name: 'Hình nón',
+        category: 'revolution',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let r = 2
+  let h = 4
+  let ratio = 0.3
+  let S = (0, h)
+  let O = (0, 0)
+
+  // Đáy
+  arc(O, start: 0, stop: 180, radius: (r, r * ratio), stroke: 1.5pt + black)
+  arc(O, start: 180, stop: 360, radius: (r, r * ratio), stroke: 1.5pt + black, dash: "dashed")
+
+  // Đường sinh
+  line(S, (-r, 0), stroke: 1.5pt + black)
+  line(S, (r, 0), stroke: 1.5pt + black)
+
+  // Trục
+  line(O, S, stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Bán kính đáy
+  line(O, (r, 0), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Nhãn
+  content(S, [S], anchor: "south")
+  content(O, [O], anchor: "north-east")
+  content((r/2, -r * ratio - 0.3), [r], anchor: "north")
+  content((r + 0.3, h/2), [h], anchor: "west")
+})`
+      },
+      {
+        id: 'sphere',
+        name: 'Hình cầu',
+        category: 'revolution',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let O = (0, 0)
+  let r = 3
+
+  // Hình cầu
+  circle(O, radius: r, stroke: 1.5pt + black)
+
+  // Đường tròn lớn (phối cảnh)
+  arc(O, start: 0, stop: 360, radius: (r, r * 0.3), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Bán kính
+  line(O, (r, 0), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  // Tâm
+  circle(O, radius: 0.08, fill: black)
+
+  // Nhãn
+  content(O, [O], anchor: "north-east")
+  content((r/2, -0.3), [R], anchor: "north")
+})`
+      }
+    ]
+  },
+
+  // ==================== ĐỒ THỊ HÀM SỐ ====================
+  'graphs': {
+    'polynomial': [
+      {
+        id: 'graph-linear',
+        name: 'Đồ thị hàm bậc nhất',
+        category: 'polynomial',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-5, -5), (5, 5), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-5, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+
+  line((0, -5), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = 2x + 1
+  plot.plot(
+    size: (10, 10),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-5, 5), x => 2 * x + 1, style: (stroke: blue + 1.5pt))
+    }
+  )
+
+  content((3, 4.5), [$y = 2x + 1$], anchor: "east")
+})`
+      },
+      {
+        id: 'graph-quadratic',
+        name: 'Đồ thị hàm bậc hai (Parabol)',
+        category: 'polynomial',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-5, -5), (5, 5), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-5, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+
+  line((0, -5), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = x² - 2x - 3
+  plot.plot(
+    size: (10, 10),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-3, 5), x => x * x - 2 * x - 3, style: (stroke: red + 1.5pt), samples: 200)
+    }
+  )
+
+  // Đỉnh parabol
+  let vx = 1
+  let vy = -4
+  circle((vx, vy), radius: 0.08, fill: blue)
+  content((vx, vy), [I(1, -4)], anchor: "north-east")
+
+  // Giao điểm với Ox
+  circle((-1, 0), radius: 0.05, fill: green)
+  circle((3, 0), radius: 0.05, fill: green)
+
+  content((1, 4.5), [$y = x^2 - 2x - 3$], anchor: "east")
+})`
+      }
+    ],
+
+    'trigonometric': [
+      {
+        id: 'graph-sine',
+        name: 'Đồ thị hàm sin',
+        category: 'trigonometric',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-7, -2), (7, 2), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-7, 0), (7, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((7.2, 0), [$x$], anchor: "west")
+
+  line((0, -2), (0, 2), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 2.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = sin(x)
+  plot.plot(
+    size: (14, 4),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-2 * calc.pi, 2 * calc.pi), x => calc.sin(x), style: (stroke: blue + 1.5pt), samples: 200)
+    }
+  )
+
+  // Các điểm đặc biệt
+  circle((0, 0), radius: 0.05, fill: red)
+  circle((calc.pi/2, 1), radius: 0.05, fill: red)
+  circle((-calc.pi/2, -1), radius: 0.05, fill: red)
+
+  content((3, 1.5), [$y = sin(x)$], anchor: "east")
+})`
+      },
+      {
+        id: 'graph-cosine',
+        name: 'Đồ thị hàm cos',
+        category: 'trigonometric',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-7, -2), (7, 2), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-7, 0), (7, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((7.2, 0), [$x$], anchor: "west")
+
+  line((0, -2), (0, 2), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 2.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = cos(x)
+  plot.plot(
+    size: (14, 4),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-2 * calc.pi, 2 * calc.pi), x => calc.cos(x), style: (stroke: red + 1.5pt), samples: 200)
+    }
+  )
+
+  content((3, 1.5), [$y = cos(x)$], anchor: "east")
+})`
+      }
+    ],
+
+    'exponential': [
+      {
+        id: 'graph-exponential',
+        name: 'Đồ thị hàm mũ e^x',
+        category: 'exponential',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-3, -1), (3, 5), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-3, 0), (3, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((3.2, 0), [$x$], anchor: "west")
+
+  line((0, -1), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = e^x
+  plot.plot(
+    size: (6, 6),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-2, 2), x => calc.exp(x), style: (stroke: blue + 1.5pt), samples: 200)
+    }
+  )
+
+  content((1, 4.5), [$y = e^x$], anchor: "east")
+})`
+      },
+      {
+        id: 'graph-logarithm',
+        name: 'Đồ thị hàm logarit ln(x)',
+        category: 'exponential',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-1, -3), (5, 3), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-1, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+
+  line((0, -3), (0, 3), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 3.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = ln(x)
+  plot.plot(
+    size: (6, 6),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (0.01, 5), x => calc.ln(x), style: (stroke: red + 1.5pt), samples: 200)
+    }
+  )
+
+  // Tiệm cận đứng
+  line((0, -3), (0, 3), stroke: (thickness: 0.5pt, paint: gray, dash: "dashed"))
+
+  content((2, 2.5), [$y = ln(x)$], anchor: "east")
+})`
+      }
+    ],
+
+    'absolute': [
+      {
+        id: 'graph-absolute-linear',
+        name: 'Đồ thị |x|',
+        category: 'absolute',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-5, -1), (5, 5), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-5, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+
+  line((0, -1), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = |x|
+  plot.plot(
+    size: (10, 6),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-5, 5), x => calc.abs(x), style: (stroke: blue + 1.5pt))
+    }
+  )
+
+  content((3, 4.5), [$y = |x|$], anchor: "east")
+})`
+      }
+    ]
+  }
+};
+
+// Helper function để lấy tất cả templates dưới dạng flat array
+export function getAllTemplates() {
+  const templates = [];
+  Object.values(TEMPLATE_LIBRARY).forEach(category => {
+    Object.values(category).forEach(subcategory => {
+      subcategory.forEach(template => {
+        templates.push(template);
+      });
+    });
+  });
+  return templates;
+}
+
+// Helper function để tìm template theo id
+export function getTemplateById(templateId) {
+  const allTemplates = getAllTemplates();
+  return allTemplates.find(template => template.id === templateId);
+}
+
+// Helper function để lấy templates theo category
+export function getTemplatesByCategory(categoryId) {
+  const category = TEMPLATE_LIBRARY[categoryId];
+  if (!category) return [];
+
+  const templates = [];
+  Object.values(category).forEach(subcategory => {
+    templates.push(...subcategory);
+  });
+  return templates;
+}
