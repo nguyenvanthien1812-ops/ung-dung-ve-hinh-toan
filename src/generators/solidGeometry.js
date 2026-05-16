@@ -440,3 +440,153 @@ export function generateSphere(params) {
   content((r + 0.3, 0), [R = ${radius.toFixed(1)}], anchor: "west")
 })`.trim();
 }
+
+// ==================== MẶT PHẲNG & ĐƯỜNG THẲNG TRONG KHÔNG GIAN ====================
+
+export function generatePlaneBasic(params) {
+  const {
+    planeName = 'α',
+    showLabels = false,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Mặt phẳng (parallelogram phối cảnh)
+  line((-3, -0.5), (3, -0.5), (2.2, 1.2), (-2.2, 1.2), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Nhãn mặt phẳng
+  content((2.4, 1.3), [$(${planeName})$], anchor: "south-west")
+
+  ${showLabels ? `
+  content((-3.2, -0.5), [${labelA}], anchor: "east")
+  content((3.2, -0.5), [${labelB}], anchor: "west")
+  content((2.4, 1.2), [${labelC}], anchor: "west")
+  content((-2.4, 1.2), [${labelD}], anchor: "east")
+  ` : ''}
+})`.trim();
+}
+
+export function generateLinePlaneIntersect(params) {
+  const {
+    planeName = 'α',
+    lineName = 'd',
+    intersectLabel = 'A',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Mặt phẳng
+  line((-3, -0.3), (3, -0.3), (2.2, 1.4), (-2.2, 1.4), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Phần đường thẳng phía dưới mặt phẳng
+  line((0.4, -1.8), (0.15, 0.55), stroke: ${strokeWidth} + ${stroke})
+
+  // Phần đường thẳng phía trên mặt phẳng
+  line((0.15, 0.55), (-0.4, 2.6), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+
+  // Điểm giao
+  circle((0.15, 0.55), radius: 0.08, fill: ${stroke})
+
+  // Nhãn
+  content((2.4, 1.5), [$(${planeName})$], anchor: "south-west")
+  content((-0.6, 2.6), [${lineName}], anchor: "south")
+  content((0.35, 0.55), [${intersectLabel}], anchor: "west")
+})`.trim();
+}
+
+export function generateTwoPlanesIntersect(params) {
+  const {
+    plane1Name = 'α',
+    plane2Name = 'β',
+    intersectLineName = 'd',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Mặt phẳng α (trái)
+  line((-4, -0.5), (0, -1), (0, 1.5), (-3, 1.8), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Mặt phẳng β (phải)
+  line((0, -1), (4, -0.5), (3, 1.8), (0, 1.5), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Giao tuyến
+  line((0, -1.5), (0, 2.2), stroke: 1.5pt + ${stroke})
+
+  // Nhãn
+  content((-3.2, 1.8), [$(${plane1Name})$], anchor: "east")
+  content((3.2, 1.8), [$(${plane2Name})$], anchor: "west")
+  content((0.3, 2.2), [${intersectLineName}], anchor: "west")
+})`.trim();
+}
+
+export function generateLinePerpendicularPlane(params) {
+  const {
+    planeName = 'α',
+    lineName = 'd',
+    footLabel = 'H',
+    showFoot = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Mặt phẳng α
+  line((-3, -0.5), (3, -0.5), (2.2, 0.8), (-2.2, 0.8), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Đường thẳng vuông góc
+  line((0, 0.15), (0, 3.5), stroke: ${strokeWidth} + ${stroke})
+
+  // Ký hiệu góc vuông tại chân
+  line((0.25, 0.15), (0.25, 0.4), (0, 0.4), stroke: 0.7pt + ${stroke})
+
+  ${showFoot ? `
+  circle((0, 0.15), radius: 0.07, fill: ${stroke})
+  content((0.3, 0.1), [${footLabel}], anchor: "west")
+  ` : ''}
+
+  // Nhãn
+  content((2.4, 0.9), [$(${planeName})$], anchor: "south-west")
+  content((0.25, 3.5), [${lineName}], anchor: "west")
+})`.trim();
+}

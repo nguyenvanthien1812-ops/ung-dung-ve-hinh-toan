@@ -104,13 +104,174 @@ export const FORM_SCHEMAS = {
     ]
   },
 
+  'parallelogram': {
+    fields: [
+      { name: 'width', label: 'Cạnh đáy', type: 'number', min: 0.1, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'height', label: 'Chiều cao', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'angle', label: 'Góc A', type: 'number', min: 10, max: 170, default: 60, unit: '°' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'showDiagonals', label: 'Hiển thị đường chéo', type: 'checkbox', default: false },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'trapezoid': {
+    fields: [
+      { name: 'bottomWidth', label: 'Cạnh đáy lớn', type: 'number', min: 0.1, max: 20, default: 6, unit: 'đơn vị' },
+      { name: 'topWidth', label: 'Cạnh đáy nhỏ', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'height', label: 'Chiều cao', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'showDiagonals', label: 'Hiển thị đường chéo', type: 'checkbox', default: false },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'isosceles-trapezoid': {
+    fields: [
+      { name: 'bottomWidth', label: 'Cạnh đáy lớn', type: 'number', min: 0.1, max: 20, default: 6, unit: 'đơn vị' },
+      { name: 'topWidth', label: 'Cạnh đáy nhỏ', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'height', label: 'Chiều cao', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'showDiagonals', label: 'Hiển thị đường chéo', type: 'checkbox', default: false },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'kite': {
+    fields: [
+      { name: 'diagH', label: 'Đường chéo dài', type: 'number', min: 0.1, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'diagW', label: 'Đường chéo ngang', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'topRatio', label: 'Tỉ lệ phần trên (0-1)', type: 'number', min: 0.1, max: 0.9, default: 0.35, step: 0.05 },
+      { name: 'labelA', label: 'Nhãn đỉnh trên', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh phải', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh dưới', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh trái', type: 'text', default: 'D' },
+      { name: 'showDiagonals', label: 'Hiển thị đường chéo', type: 'checkbox', default: false }
+    ]
+  },
+
+  'quadrilateral-general': {
+    fields: [
+      { name: 'ax', label: 'A: tọa độ x', type: 'number', min: -10, max: 20, default: 0, step: 0.5 },
+      { name: 'ay', label: 'A: tọa độ y', type: 'number', min: -10, max: 20, default: 0, step: 0.5 },
+      { name: 'bx', label: 'B: tọa độ x', type: 'number', min: -10, max: 20, default: 5, step: 0.5 },
+      { name: 'by', label: 'B: tọa độ y', type: 'number', min: -10, max: 20, default: 0, step: 0.5 },
+      { name: 'cx', label: 'C: tọa độ x', type: 'number', min: -10, max: 20, default: 6, step: 0.5 },
+      { name: 'cy', label: 'C: tọa độ y', type: 'number', min: -10, max: 20, default: 4, step: 0.5 },
+      { name: 'dx', label: 'D: tọa độ x', type: 'number', min: -10, max: 20, default: 1, step: 0.5 },
+      { name: 'dy', label: 'D: tọa độ y', type: 'number', min: -10, max: 20, default: 4, step: 0.5 },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' }
+    ]
+  },
+
   // Đường tròn
+  // Đa giác
+  'pentagon': {
+    fields: [
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'pentagon-regular': {
+    fields: [
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'hexagon': {
+    fields: [
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'hexagon-regular': {
+    fields: [
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'octagon-regular': {
+    fields: [
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  'polygon-regular': {
+    fields: [
+      { name: 'sides', label: 'Số cạnh', type: 'number', min: 3, max: 12, default: 6 },
+      { name: 'radius', label: 'Bán kính ngoại tiếp', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'showSides', label: 'Hiển thị độ dài cạnh', type: 'checkbox', default: true }
+    ]
+  },
+
+  // Tam giác đặc biệt
+  'triangle-with-medians': {
+    fields: [
+      { name: 'sideA', label: 'Cạnh a', type: 'number', min: 0.1, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'sideB', label: 'Cạnh b', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'sideC', label: 'Cạnh c', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' }
+    ]
+  },
+
+  'triangle-with-altitudes': {
+    fields: [
+      { name: 'sideA', label: 'Cạnh a', type: 'number', min: 0.1, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'sideB', label: 'Cạnh b', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'sideC', label: 'Cạnh c', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' }
+    ]
+  },
+
+  'triangle-with-bisectors': {
+    fields: [
+      { name: 'sideA', label: 'Cạnh a', type: 'number', min: 0.1, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'sideB', label: 'Cạnh b', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'sideC', label: 'Cạnh c', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' }
+    ]
+  },
+
   'circle-basic': {
     fields: [
       { name: 'radius', label: 'Bán kính', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
       { name: 'labelO', label: 'Nhãn tâm', type: 'text', default: 'O' },
       { name: 'showRadius', label: 'Hiển thị bán kính', type: 'checkbox', default: true },
       { name: 'showCenter', label: 'Hiển thị tâm', type: 'checkbox', default: true }
+    ]
+  },
+
+  'circle-chord': {
+    fields: [
+      { name: 'radius', label: 'Bán kính', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'chordAngle', label: 'Góc dây cung (°)', type: 'number', min: 10, max: 350, default: 60, unit: '°' },
+      { name: 'labelO', label: 'Nhãn tâm', type: 'text', default: 'O' },
+      { name: 'labelA', label: 'Nhãn điểm A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn điểm B', type: 'text', default: 'B' },
+      { name: 'showRadius', label: 'Hiển thị bán kính', type: 'checkbox', default: true }
     ]
   },
 
@@ -123,6 +284,66 @@ export const FORM_SCHEMAS = {
       { name: 'labelA', label: 'Nhãn tiếp điểm 1', type: 'text', default: 'A' },
       { name: 'labelB', label: 'Nhãn tiếp điểm 2', type: 'text', default: 'B' },
       { name: 'showBothTangents', label: 'Hiển thị cả 2 tiếp tuyến', type: 'checkbox', default: true }
+    ]
+  },
+
+  'circle-secant': {
+    fields: [
+      { name: 'radius', label: 'Bán kính', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'distance', label: 'Khoảng cách từ tâm đến cát tuyến', type: 'number', min: 0, max: 19, default: 1.5, step: 0.1, unit: 'đơn vị' },
+      { name: 'labelO', label: 'Nhãn tâm', type: 'text', default: 'O' },
+      { name: 'labelA', label: 'Nhãn giao điểm A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn giao điểm B', type: 'text', default: 'B' }
+    ]
+  },
+
+  'two-circles-intersect': {
+    fields: [
+      { name: 'radius1', label: 'Bán kính R₁', type: 'number', min: 0.5, max: 20, default: 2, unit: 'đơn vị' },
+      { name: 'radius2', label: 'Bán kính R₂', type: 'number', min: 0.5, max: 20, default: 2, unit: 'đơn vị' },
+      { name: 'distance', label: 'Khoảng cách tâm', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'labelO1', label: 'Nhãn tâm O₁', type: 'text', default: 'O' },
+      { name: 'labelO2', label: "Nhãn tâm O₂", type: 'text', default: "O'" }
+    ]
+  },
+
+  'two-circles-tangent-external': {
+    fields: [
+      { name: 'radius1', label: 'Bán kính R₁', type: 'number', min: 0.5, max: 20, default: 2, unit: 'đơn vị' },
+      { name: 'radius2', label: 'Bán kính R₂', type: 'number', min: 0.5, max: 20, default: 1.5, unit: 'đơn vị' },
+      { name: 'labelO1', label: 'Nhãn tâm O₁', type: 'text', default: 'O' },
+      { name: 'labelO2', label: "Nhãn tâm O₂", type: 'text', default: "O'" }
+    ]
+  },
+
+  'two-circles-tangent-internal': {
+    fields: [
+      { name: 'radius1', label: 'Bán kính lớn R₁', type: 'number', min: 1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'radius2', label: 'Bán kính nhỏ R₂', type: 'number', min: 0.5, max: 19, default: 1.5, unit: 'đơn vị' },
+      { name: 'labelO1', label: 'Nhãn tâm O₁', type: 'text', default: 'O' },
+      { name: 'labelO2', label: "Nhãn tâm O₂", type: 'text', default: "O'" }
+    ]
+  },
+
+  'circle-sector': {
+    fields: [
+      { name: 'radius', label: 'Bán kính', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'sectorAngle', label: 'Góc ở tâm (°)', type: 'number', min: 5, max: 355, default: 60, unit: '°' },
+      { name: 'startAngle', label: 'Góc bắt đầu (°)', type: 'number', min: 0, max: 360, default: 0, unit: '°' },
+      { name: 'labelO', label: 'Nhãn tâm', type: 'text', default: 'O' },
+      { name: 'labelA', label: 'Nhãn điểm A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn điểm B', type: 'text', default: 'B' },
+      { name: 'showRadius', label: 'Hiển thị bán kính', type: 'checkbox', default: true }
+    ]
+  },
+
+  'circle-segment': {
+    fields: [
+      { name: 'radius', label: 'Bán kính', type: 'number', min: 0.1, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'chordAngle', label: 'Góc dây cung (°)', type: 'number', min: 5, max: 175, default: 60, unit: '°' },
+      { name: 'labelO', label: 'Nhãn tâm', type: 'text', default: 'O' },
+      { name: 'labelA', label: 'Nhãn điểm A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn điểm B', type: 'text', default: 'B' }
     ]
   },
 
@@ -343,6 +564,125 @@ export const FORM_SCHEMAS = {
       { name: 'maxX', label: 'X max', type: 'number', default: 5 },
       { name: 'showGrid', label: 'Hiển thị lưới', type: 'checkbox', default: true },
       { name: 'showAxis', label: 'Hiển thị trục tọa độ', type: 'checkbox', default: true }
+    ]
+  },
+
+  // ==================== MẶT PHẲNG & ĐƯỜNG THẲNG KHÔNG GIAN ====================
+
+  'plane-basic': {
+    fields: [
+      { name: 'planeName', label: 'Tên mặt phẳng', type: 'text', default: 'α' },
+      { name: 'showLabels', label: 'Hiển thị nhãn góc', type: 'checkbox', default: false },
+      { name: 'labelA', label: 'Nhãn góc A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn góc B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn góc C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn góc D', type: 'text', default: 'D' }
+    ]
+  },
+
+  'line-plane-intersect': {
+    fields: [
+      { name: 'planeName', label: 'Tên mặt phẳng', type: 'text', default: 'α' },
+      { name: 'lineName', label: 'Tên đường thẳng', type: 'text', default: 'd' },
+      { name: 'intersectLabel', label: 'Nhãn điểm giao', type: 'text', default: 'A' }
+    ]
+  },
+
+  'two-planes-intersect': {
+    fields: [
+      { name: 'plane1Name', label: 'Tên mặt phẳng 1', type: 'text', default: 'α' },
+      { name: 'plane2Name', label: 'Tên mặt phẳng 2', type: 'text', default: 'β' },
+      { name: 'intersectLineName', label: 'Tên giao tuyến', type: 'text', default: 'd' }
+    ]
+  },
+
+  'line-perpendicular-plane': {
+    fields: [
+      { name: 'planeName', label: 'Tên mặt phẳng', type: 'text', default: 'α' },
+      { name: 'lineName', label: 'Tên đường thẳng', type: 'text', default: 'd' },
+      { name: 'footLabel', label: 'Nhãn chân đường vuông góc', type: 'text', default: 'H' },
+      { name: 'showFoot', label: 'Hiển thị chân', type: 'checkbox', default: true }
+    ]
+  },
+
+  // ==================== VECTƠ 3D ====================
+
+  'vector-3d': {
+    fields: [
+      { name: 'x', label: 'Tọa độ x', type: 'number', min: -10, max: 10, default: 2, step: 0.5 },
+      { name: 'y', label: 'Tọa độ y', type: 'number', min: -10, max: 10, default: 2, step: 0.5 },
+      { name: 'z', label: 'Tọa độ z', type: 'number', min: -10, max: 10, default: 3, step: 0.5 },
+      { name: 'label', label: 'Nhãn vectơ', type: 'text', default: 'a' },
+      { name: 'showComponents', label: 'Hiển thị thành phần', type: 'checkbox', default: true }
+    ]
+  },
+
+  'vector-3d-sum': {
+    fields: [
+      { name: 'x1', label: 'Vectơ a - x', type: 'number', min: -10, max: 10, default: 2, step: 0.5 },
+      { name: 'y1', label: 'Vectơ a - y', type: 'number', min: -10, max: 10, default: 1, step: 0.5 },
+      { name: 'z1', label: 'Vectơ a - z', type: 'number', min: -10, max: 10, default: 1, step: 0.5 },
+      { name: 'x2', label: 'Vectơ b - x', type: 'number', min: -10, max: 10, default: 1, step: 0.5 },
+      { name: 'y2', label: 'Vectơ b - y', type: 'number', min: -10, max: 10, default: 2, step: 0.5 },
+      { name: 'z2', label: 'Vectơ b - z', type: 'number', min: -10, max: 10, default: 1, step: 0.5 }
+    ]
+  },
+
+  'vector-cross-product': {
+    fields: [
+      { name: 'x1', label: 'Vectơ a - x', type: 'number', min: -10, max: 10, default: 3, step: 0.5 },
+      { name: 'y1', label: 'Vectơ a - y', type: 'number', min: -10, max: 10, default: 0, step: 0.5 },
+      { name: 'z1', label: 'Vectơ a - z', type: 'number', min: -10, max: 10, default: 0, step: 0.5 },
+      { name: 'x2', label: 'Vectơ b - x', type: 'number', min: -10, max: 10, default: 0, step: 0.5 },
+      { name: 'y2', label: 'Vectơ b - y', type: 'number', min: -10, max: 10, default: 3, step: 0.5 },
+      { name: 'z2', label: 'Vectơ b - z', type: 'number', min: -10, max: 10, default: 0, step: 0.5 }
+    ]
+  },
+
+  'coordinate-system-3d': {
+    fields: [
+      { name: 'axisLength', label: 'Độ dài trục', type: 'number', min: 2, max: 10, default: 4, step: 0.5 },
+      { name: 'labelX', label: 'Nhãn trục x', type: 'text', default: 'x' },
+      { name: 'labelY', label: 'Nhãn trục y', type: 'text', default: 'y' },
+      { name: 'labelZ', label: 'Nhãn trục z', type: 'text', default: 'z' }
+    ]
+  },
+
+  // ==================== BẢNG BIẾN THIÊN ====================
+
+  'bbt-quadratic': {
+    fields: [
+      { name: 'a', label: 'Hệ số a', type: 'number', min: -10, max: 10, step: 0.5, default: 1 },
+      { name: 'b', label: 'Hệ số b', type: 'number', min: -20, max: 20, step: 0.5, default: -2 },
+      { name: 'c', label: 'Hệ số c', type: 'number', min: -20, max: 20, step: 0.5, default: 1 }
+    ]
+  },
+
+  'bbt-cubic': {
+    fields: [
+      { name: 'a', label: 'Hệ số a', type: 'number', min: -5, max: 5, step: 0.5, default: 1 },
+      { name: 'b', label: 'Hệ số b', type: 'number', min: -10, max: 10, step: 0.5, default: -3 },
+      { name: 'c', label: 'Hệ số c', type: 'number', min: -10, max: 10, step: 0.5, default: 0 },
+      { name: 'd', label: 'Hệ số d', type: 'number', min: -10, max: 10, step: 0.5, default: 2 }
+    ]
+  },
+
+  'bbt-rational-11': {
+    fields: [
+      { name: 'numerA', label: 'Tử số: hệ số a', type: 'number', min: -10, max: 10, step: 1, default: 1 },
+      { name: 'numerB', label: 'Tử số: hệ số b', type: 'number', min: -10, max: 10, step: 1, default: 0 },
+      { name: 'denomC', label: 'Mẫu số: hệ số c', type: 'number', min: -10, max: 10, step: 1, default: 1 },
+      { name: 'denomD', label: 'Mẫu số: hệ số d', type: 'number', min: -10, max: 10, step: 1, default: -1 }
+    ]
+  },
+
+  'bbt-custom': {
+    fields: [
+      { name: 'critPoints', label: 'Điểm tới hạn x (cách nhau bởi dấu phẩy)', type: 'text', default: '-1, 2' },
+      { name: 'intervalSigns', label: 'Dấu f\'(x) trong từng khoảng (+/-)', type: 'text', default: '+, -, +' },
+      { name: 'fxAtCrits', label: 'Giá trị f(x) tại điểm tới hạn', type: 'text', default: '3, -1' },
+      { name: 'fxAtLeft', label: 'Giá trị f(x) khi x→-∞', type: 'text', default: '+∞' },
+      { name: 'fxAtRight', label: 'Giá trị f(x) khi x→+∞', type: 'text', default: '+∞' }
     ]
   }
 };

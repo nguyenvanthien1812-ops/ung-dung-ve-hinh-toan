@@ -204,6 +204,29 @@ export const SHAPE_CATEGORIES = {
         ]
       }
     }
+  },
+  'variation-table': {
+    id: 'variation-table',
+    name: 'Bảng biến thiên',
+    icon: '📊',
+    subcategories: {
+      'bbt-auto': {
+        id: 'bbt-auto',
+        name: 'Tự động theo hàm số',
+        shapes: [
+          { id: 'bbt-quadratic', name: 'BBT Hàm bậc hai', description: 'y = ax² + bx + c' },
+          { id: 'bbt-cubic', name: 'BBT Hàm bậc ba', description: 'y = ax³ + bx² + cx + d' },
+          { id: 'bbt-rational-11', name: 'BBT Phân thức bậc nhất/bậc nhất', description: 'y = (ax+b)/(cx+d)' }
+        ]
+      },
+      'bbt-manual': {
+        id: 'bbt-manual',
+        name: 'Tùy chỉnh',
+        shapes: [
+          { id: 'bbt-custom', name: 'BBT Tùy chỉnh', description: 'Nhập tự do các giá trị x, dấu f\', giá trị f(x)' }
+        ]
+      }
+    }
   }
 };
 

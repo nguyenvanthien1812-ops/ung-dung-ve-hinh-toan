@@ -9,8 +9,23 @@ import {
   generateSquare,
   generateRectangle,
   generateRhombus,
+  generateParallelogram,
+  generateTrapezoid,
+  generateKite,
+  generateQuadrilateralGeneral,
+  generateRegularPolygon,
   generateCircle,
-  generateTangentCircle
+  generateCircleChord,
+  generateTangentCircle,
+  generateCircleSecant,
+  generateTwoCirclesIntersect,
+  generateTwoCirclesTangentExternal,
+  generateTwoCirclesTangentInternal,
+  generateCircleSector,
+  generateCircleSegment,
+  generateTriangleWithMedians,
+  generateTriangleWithAltitudes,
+  generateTriangleWithBisectors
 } from './planeGeometry.js';
 
 import {
@@ -19,8 +34,19 @@ import {
   generateCube,
   generateCylinder,
   generateCone,
-  generateSphere
+  generateSphere,
+  generatePlaneBasic,
+  generateLinePlaneIntersect,
+  generateTwoPlanesIntersect,
+  generateLinePerpendicularPlane
 } from './solidGeometry.js';
+
+import {
+  generateBBTQuadratic,
+  generateBBTCubic,
+  generateBBTRational11,
+  generateBBTCustom
+} from './variationTable.js';
 
 import {
   generateLinearGraph,
@@ -34,7 +60,11 @@ import {
   generateLogarithmGraph,
   generateAbsoluteGraph,
   generateVector2D,
-  generateVectorSum
+  generateVectorSum,
+  generateVector3D,
+  generateVector3DSum,
+  generateVectorCrossProduct,
+  generateCoordinateSystem3D
 } from './graphs.js';
 
 import { getFormSchema } from '../data/formSchemas.js';
@@ -47,38 +77,38 @@ const GENERATOR_MAP = {
   'triangle-equilateral': generateEquilateralTriangle,
   'triangle-inscribed': generateInscribedTriangle,
   'triangle-circumscribed': (p) => generateInscribedTriangle({ ...p, triangleType: 'Thường' }),
-  'triangle-with-medians': generateTriangle,
-  'triangle-with-altitudes': generateTriangle,
-  'triangle-with-bisectors': generateTriangle,
+  'triangle-with-medians': generateTriangleWithMedians,
+  'triangle-with-altitudes': generateTriangleWithAltitudes,
+  'triangle-with-bisectors': generateTriangleWithBisectors,
 
   // Tứ giác
   'square': generateSquare,
   'rectangle': generateRectangle,
   'rhombus': generateRhombus,
-  'parallelogram': generateRhombus,
-  'trapezoid': generateRectangle,
-  'isosceles-trapezoid': generateRhombus,
-  'kite': generateRectangle,
-  'quadrilateral-general': generateRectangle,
+  'parallelogram': generateParallelogram,
+  'trapezoid': generateTrapezoid,
+  'isosceles-trapezoid': generateTrapezoid,
+  'kite': generateKite,
+  'quadrilateral-general': generateQuadrilateralGeneral,
 
   // Đường tròn
   'circle-basic': generateCircle,
-  'circle-chord': generateCircle,
+  'circle-chord': generateCircleChord,
   'circle-tangent': generateTangentCircle,
-  'circle-secant': generateTangentCircle,
-  'two-circles-intersect': generateCircle,
-  'two-circles-tangent-external': generateCircle,
-  'two-circles-tangent-internal': generateCircle,
-  'circle-sector': generateCircle,
-  'circle-segment': generateCircle,
+  'circle-secant': generateCircleSecant,
+  'two-circles-intersect': generateTwoCirclesIntersect,
+  'two-circles-tangent-external': generateTwoCirclesTangentExternal,
+  'two-circles-tangent-internal': generateTwoCirclesTangentInternal,
+  'circle-sector': generateCircleSector,
+  'circle-segment': generateCircleSegment,
 
   // Đa giác
-  'pentagon': generateRhombus,
-  'pentagon-regular': generateRhombus,
-  'hexagon': generateRhombus,
-  'hexagon-regular': generateRhombus,
-  'octagon-regular': generateRhombus,
-  'polygon-regular': generateRhombus,
+  'pentagon': (p) => generateRegularPolygon({ ...p, sides: 5 }),
+  'pentagon-regular': (p) => generateRegularPolygon({ ...p, sides: 5 }),
+  'hexagon': (p) => generateRegularPolygon({ ...p, sides: 6 }),
+  'hexagon-regular': (p) => generateRegularPolygon({ ...p, sides: 6 }),
+  'octagon-regular': (p) => generateRegularPolygon({ ...p, sides: 8 }),
+  'polygon-regular': generateRegularPolygon,
 
   // Hình không gian
   'pyramid-triangular': (params) => generatePyramid({ ...params, baseType: 'triangular' }),
@@ -97,10 +127,10 @@ const GENERATOR_MAP = {
   'sphere-section': generateSphere,
 
   // Mặt phẳng & Đường thẳng
-  'plane-basic': generateRhombus,
-  'line-plane-intersect': generateRhombus,
-  'two-planes-intersect': generateRhombus,
-  'line-perpendicular-plane': generateRhombus,
+  'plane-basic': generatePlaneBasic,
+  'line-plane-intersect': generateLinePlaneIntersect,
+  'two-planes-intersect': generateTwoPlanesIntersect,
+  'line-perpendicular-plane': generateLinePerpendicularPlane,
 
   // Đồ thị
   'linear': generateLinearGraph,
@@ -126,16 +156,22 @@ const GENERATOR_MAP = {
   'parametric-ellipse': generateRhombus,
   'parametric-general': generateHyperbolaGraph,
 
+  // Bảng biến thiên
+  'bbt-quadratic': generateBBTQuadratic,
+  'bbt-cubic': generateBBTCubic,
+  'bbt-rational-11': generateBBTRational11,
+  'bbt-custom': generateBBTCustom,
+
   // Vectơ
   'vector-2d': generateVector2D,
   'vector-sum': generateVectorSum,
   'vector-difference': generateVectorSum,
   'vector-dot-product': generateVector2D,
   'vector-projection': generateVector2D,
-  'vector-3d': generateVector2D,
-  'vector-3d-sum': generateVectorSum,
-  'vector-cross-product': generateVector2D,
-  'coordinate-system-3d': generateVector2D
+  'vector-3d': generateVector3D,
+  'vector-3d-sum': generateVector3DSum,
+  'vector-cross-product': generateVectorCrossProduct,
+  'coordinate-system-3d': generateCoordinateSystem3D
 };
 
 export function getGenerator(shapeId) {

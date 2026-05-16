@@ -665,3 +665,234 @@ export function generateVectorSum(params) {
 })`.trim();
   }
 }
+
+// ==================== VECTƠ 3D & HỆ TỌA ĐỘ OXYZ ====================
+
+// Oblique projection (phối cảnh nghiêng) — chuẩn sách giáo khoa VN:
+// Oz lên trên, Ox sang phải, Oy chếch xuống trái
+function p3(x, y, z) {
+  return [parseFloat((x - 0.5 * y).toFixed(4)), parseFloat((z - 0.35 * y).toFixed(4))];
+}
+
+export function generateCoordinateSystem3D(params) {
+  const {
+    axisLength = 4,
+    labelX = 'x', labelY = 'y', labelZ = 'z',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const L = Number(axisLength) || 4;
+  const O  = p3(0, 0, 0);
+  const Ex = p3(L, 0, 0);
+  const Ey = p3(0, L, 0);
+  const Ez = p3(0, 0, L);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Hệ tọa độ Oxyz
+  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+
+  content((${O[0] - 0.2}, ${O[1] - 0.2}), [$O$], anchor: "north-east")
+  content((${Ex[0] + 0.2}, ${Ex[1]}), [$${labelX}$], anchor: "west")
+  content((${Ey[0] - 0.2}, ${(Ey[1] - 0.15).toFixed(3)}), [$${labelY}$], anchor: "north-east")
+  content((${Ez[0]}, ${Ez[1] + 0.2}), [$${labelZ}$], anchor: "south")
+
+  // Nhãn đơn vị trên các trục
+  circle((${p3(1,0,0)[0]}, ${p3(1,0,0)[1]}), radius: 0.05, fill: ${stroke})
+  circle((${p3(0,1,0)[0]}, ${p3(0,1,0)[1]}), radius: 0.05, fill: ${stroke})
+  circle((${p3(0,0,1)[0]}, ${p3(0,0,1)[1]}), radius: 0.05, fill: ${stroke})
+})`.trim();
+}
+
+export function generateVector3D(params) {
+  const {
+    x = 2, y = 2, z = 3,
+    label = 'a',
+    showComponents = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx = Number(x), ny = Number(y), nz = Number(z);
+  const L = Math.max(nx, ny, nz) + 1.5;
+
+  const O    = p3(0, 0, 0);
+  const Ex   = p3(L, 0, 0);
+  const Ey   = p3(0, L, 0);
+  const Ez   = p3(0, 0, L);
+  const V    = p3(nx, ny, nz);
+  const Vx   = p3(nx, 0, 0);
+  const Vy   = p3(0, ny, 0);
+  const Vz   = p3(0, 0, nz);
+  const Vxy  = p3(nx, ny, 0);
+  const Vxz  = p3(nx, 0, nz);
+  const Vyz  = p3(0, ny, nz);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục Oxyz
+  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: 0.8pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: 0.8pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: 0.8pt + gray)
+  content((${O[0] - 0.2}, ${O[1] - 0.2}), [$O$], anchor: "north-east")
+  content((${Ex[0] + 0.2}, ${Ex[1]}), [$x$], anchor: "west")
+  content((${Ey[0] - 0.2}, ${(Ey[1] - 0.15).toFixed(3)}), [$y$], anchor: "north-east")
+  content((${Ez[0]}, ${Ez[1] + 0.2}), [$z$], anchor: "south")
+
+  ${showComponents ? `
+  // Hình hộp chiều (dashed)
+  line((${O[0]}, ${O[1]}), (${Vx[0]}, ${Vx[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${O[0]}, ${O[1]}), (${Vy[0]}, ${Vy[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${O[0]}, ${O[1]}), (${Vz[0]}, ${Vz[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vx[0]}, ${Vx[1]}), (${Vxy[0]}, ${Vxy[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vy[0]}, ${Vy[1]}), (${Vxy[0]}, ${Vxy[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vx[0]}, ${Vx[1]}), (${Vxz[0]}, ${Vxz[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vz[0]}, ${Vz[1]}), (${Vxz[0]}, ${Vxz[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vy[0]}, ${Vy[1]}), (${Vyz[0]}, ${Vyz[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vz[0]}, ${Vz[1]}), (${Vyz[0]}, ${Vyz[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vxy[0]}, ${Vxy[1]}), (${V[0]}, ${V[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vxz[0]}, ${Vxz[1]}), (${V[0]}, ${V[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  line((${Vyz[0]}, ${Vyz[1]}), (${V[0]}, ${V[1]}), stroke: 0.5pt + gray, dash: "dashed")
+  ` : ''}
+
+  // Vectơ
+  line((${O[0]}, ${O[1]}), (${V[0]}, ${V[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  content((${V[0] + 0.2}, ${V[1] + 0.1}), [$arrow(${label}) = (${nx}; ${ny}; ${nz})$], anchor: "south-west")
+})`.trim();
+}
+
+export function generateVector3DSum(params) {
+  const {
+    x1 = 2, y1 = 1, z1 = 1,
+    x2 = 1, y2 = 2, z2 = 1,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx1 = Number(x1), ny1 = Number(y1), nz1 = Number(z1);
+  const nx2 = Number(x2), ny2 = Number(y2), nz2 = Number(z2);
+  const L = Math.max(nx1 + nx2, ny1 + ny2, nz1 + nz2) + 1.5;
+
+  const O  = p3(0, 0, 0);
+  const Ex = p3(L, 0, 0);
+  const Ey = p3(0, L, 0);
+  const Ez = p3(0, 0, L);
+  const Va = p3(nx1, ny1, nz1);
+  const Vb = p3(nx2, ny2, nz2);
+  const Vs = p3(nx1 + nx2, ny1 + ny2, nz1 + nz2);
+  const VbFromA = p3(nx1 + nx2, ny1 + ny2, nz1 + nz2);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục Oxyz
+  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  content((${O[0] - 0.2}, ${O[1] - 0.2}), [$O$], anchor: "north-east")
+  content((${Ex[0] + 0.2}, ${Ex[1]}), [$x$], anchor: "west")
+  content((${Ey[0] - 0.2}, ${(Ey[1] - 0.1).toFixed(3)}), [$y$], anchor: "east")
+  content((${Ez[0]}, ${Ez[1] + 0.2}), [$z$], anchor: "south")
+
+  // Vectơ a
+  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  content((${(Va[0] / 2 + 0.15).toFixed(3)}, ${(Va[1] / 2).toFixed(3)}), [$arrow(a)$], anchor: "south-east")
+
+  // Vectơ b (từ O)
+  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  content((${(Vb[0] / 2 - 0.15).toFixed(3)}, ${(Vb[1] / 2).toFixed(3)}), [$arrow(b)$], anchor: "south-west")
+
+  // Các cạnh hình hộp (dashed)
+  line((${Va[0]}, ${Va[1]}), (${Vs[0]}, ${Vs[1]}), stroke: 0.5pt + green, dash: "dashed")
+  line((${Vb[0]}, ${Vb[1]}), (${Vs[0]}, ${Vs[1]}), stroke: 0.5pt + blue, dash: "dashed")
+
+  // Vectơ tổng
+  line((${O[0]}, ${O[1]}), (${Vs[0]}, ${Vs[1]}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  content((${Vs[0] + 0.2}, ${Vs[1] + 0.1}), [$arrow(a) + arrow(b)$], anchor: "south-west")
+})`.trim();
+}
+
+export function generateVectorCrossProduct(params) {
+  const {
+    x1 = 3, y1 = 0, z1 = 0,
+    x2 = 0, y2 = 3, z2 = 0,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx1 = Number(x1), ny1 = Number(y1), nz1 = Number(z1);
+  const nx2 = Number(x2), ny2 = Number(y2), nz2 = Number(z2);
+
+  // Tính tích có hướng a × b
+  const cx = ny1 * nz2 - nz1 * ny2;
+  const cy = nz1 * nx2 - nx1 * nz2;
+  const cz = nx1 * ny2 - ny1 * nx2;
+  const cLen = Math.sqrt(cx * cx + cy * cy + cz * cz);
+  const dispScale = cLen > 0 ? 3 / cLen : 1;
+  const dcx = parseFloat((cx * dispScale).toFixed(3));
+  const dcy = parseFloat((cy * dispScale).toFixed(3));
+  const dcz = parseFloat((cz * dispScale).toFixed(3));
+
+  const axLen = Math.max(nx1, ny1, nz1, nx2, ny2, nz2) + 2;
+  const O  = p3(0, 0, 0);
+  const Ex = p3(axLen, 0, 0);
+  const Ey = p3(0, axLen, 0);
+  const Ez = p3(0, 0, axLen);
+  const Va = p3(nx1, ny1, nz1);
+  const Vb = p3(nx2, ny2, nz2);
+  const Vc = p3(dcx, dcy, dcz);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục Oxyz
+  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: 0.5pt + gray)
+  content((${O[0] - 0.2}, ${O[1] - 0.2}), [$O$], anchor: "north-east")
+  content((${Ex[0] + 0.2}, ${Ex[1]}), [$x$], anchor: "west")
+  content((${Ey[0] - 0.2}, ${(Ey[1] - 0.1).toFixed(3)}), [$y$], anchor: "east")
+  content((${Ez[0]}, ${Ez[1] + 0.2}), [$z$], anchor: "south")
+
+  // Vectơ a
+  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  content((${Va[0] + 0.2}, ${Va[1]}), [$arrow(a)$], anchor: "west")
+
+  // Vectơ b
+  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  content((${Vb[0] + 0.2}, ${Vb[1]}), [$arrow(b)$], anchor: "west")
+
+  // Tích có hướng a × b
+  line((${O[0]}, ${O[1]}), (${Vc[0]}, ${Vc[1]}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  content((${Vc[0] + 0.2}, ${Vc[1] + 0.1}), [$arrow(a) times arrow(b)$], anchor: "south-west")
+})`.trim();
+}

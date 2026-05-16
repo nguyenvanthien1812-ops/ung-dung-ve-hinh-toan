@@ -563,6 +563,508 @@ export function generateCircleSecant(params) {
 })`.trim();
 }
 
+// ==================== ĐA GIÁC ====================
+
+export function generateRegularPolygon(params) {
+  const {
+    sides = 5, radius = 3,
+    showSides = true,
+    styleOptions = {}
+  } = params;
+
+  const n = Math.max(3, Math.round(sides));
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const vertices = [];
+  for (let k = 0; k < n; k++) {
+    const angle = (Math.PI / 2) + (2 * Math.PI * k) / n;
+    vertices.push([
+      parseFloat((radius * Math.cos(angle)).toFixed(4)),
+      parseFloat((radius * Math.sin(angle)).toFixed(4))
+    ]);
+  }
+
+  const sideLength = parseFloat((2 * radius * Math.sin(Math.PI / n)).toFixed(3));
+
+  const lineArgs = vertices.map(v => `(${v[0]}, ${v[1]})`).join(', ');
+
+  const labelLines = vertices.map((v, k) => {
+    const angle = (Math.PI / 2) + (2 * Math.PI * k) / n;
+    const ax = Math.cos(angle);
+    const ay = Math.sin(angle);
+    let anchor = 'south';
+    if (ax > 0.4) anchor = ay > 0.4 ? 'south-west' : ay < -0.4 ? 'north-west' : 'west';
+    else if (ax < -0.4) anchor = ay > 0.4 ? 'south-east' : ay < -0.4 ? 'north-east' : 'east';
+    else anchor = ay >= 0 ? 'south' : 'north';
+    const lx = parseFloat((v[0] + ax * 0.4).toFixed(3));
+    const ly = parseFloat((v[1] + ay * 0.4).toFixed(3));
+    return `  content((${lx}, ${ly}), [${labels[k] || String.fromCharCode(65 + k)}], anchor: "${anchor}")`;
+  }).join('\n');
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line(${lineArgs}, close: true, stroke: ${strokeWidth} + ${stroke})
+
+${labelLines}
+${showSides ? `  content((0, -${(radius + 0.4).toFixed(2)}), [a = ${sideLength}], anchor: "north")` : ''}
+})`.trim();
+}
+
+// ==================== TỨ GIÁC MỞ RỘNG ====================
+
+export function generateParallelogram(params) {
+  const {
+    width = 5, height = 3, angle = 60,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    showSides = true, showDiagonals = false,
+    styleOptions = {}
+  } = params;
+
+  const angleRad = (angle * Math.PI) / 180;
+  const shift = parseFloat((height / Math.tan(angleRad)).toFixed(4));
+
+  const A = [0, 0];
+  const B = [width, 0];
+  const C = [parseFloat((width + shift).toFixed(4)), height];
+  const D = [shift, height];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  ${showDiagonals ? `
+  line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${D[0]}, ${D[1]}), stroke: gray, dash: "dashed")
+  ` : ''}
+
+  content((${A[0] - 0.3}, ${A[1]}), [${labelA}], anchor: "east")
+  content((${B[0] + 0.3}, ${B[1]}), [${labelB}], anchor: "west")
+  content((${C[0] + 0.3}, ${C[1]}), [${labelC}], anchor: "west")
+  content((${D[0] - 0.3}, ${D[1]}), [${labelD}], anchor: "east")
+
+  ${showSides ? `
+  content((${width / 2}, -0.3), [${width.toFixed(1)}], anchor: "north")
+  content((${D[0] + shift / 2 + 0.3}, ${height / 2}), [${parseFloat((height / Math.sin(angleRad)).toFixed(2))} ], anchor: "west")
+  ` : ''}
+})`.trim();
+}
+
+export function generateTrapezoid(params) {
+  const {
+    bottomWidth = 6, topWidth = 3, height = 3,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    showSides = true, showDiagonals = false,
+    styleOptions = {}
+  } = params;
+
+  const offset = (bottomWidth - topWidth) / 2;
+  const A = [0, 0];
+  const B = [bottomWidth, 0];
+  const C = [parseFloat((bottomWidth - offset).toFixed(4)), height];
+  const D = [parseFloat(offset.toFixed(4)), height];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  ${showDiagonals ? `
+  line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${D[0]}, ${D[1]}), stroke: gray, dash: "dashed")
+  ` : ''}
+
+  content((${A[0] - 0.3}, ${A[1]}), [${labelA}], anchor: "east")
+  content((${B[0] + 0.3}, ${B[1]}), [${labelB}], anchor: "west")
+  content((${C[0] + 0.3}, ${C[1]}), [${labelC}], anchor: "west")
+  content((${D[0] - 0.3}, ${D[1]}), [${labelD}], anchor: "east")
+
+  ${showSides ? `
+  content((${bottomWidth / 2}, -0.3), [${bottomWidth.toFixed(1)}], anchor: "north")
+  content((${(D[0] + C[0]) / 2}, ${height + 0.3}), [${topWidth.toFixed(1)}], anchor: "south")
+  ` : ''}
+})`.trim();
+}
+
+export function generateKite(params) {
+  const {
+    diagH = 5, diagW = 3, topRatio = 0.35,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    showDiagonals = false, showSides = true,
+    styleOptions = {}
+  } = params;
+
+  const topY = parseFloat((diagH * topRatio).toFixed(4));
+  const A = [0, diagH];
+  const B = [diagW / 2, topY];
+  const C = [0, 0];
+  const D = [-diagW / 2, topY];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  ${showDiagonals ? `
+  line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${D[0]}, ${D[1]}), stroke: gray, dash: "dashed")
+  ` : ''}
+
+  content((${A[0]}, ${A[1] + 0.3}), [${labelA}], anchor: "south")
+  content((${B[0] + 0.3}, ${B[1]}), [${labelB}], anchor: "west")
+  content((${C[0]}, ${C[1] - 0.3}), [${labelC}], anchor: "north")
+  content((${D[0] - 0.3}, ${D[1]}), [${labelD}], anchor: "east")
+})`.trim();
+}
+
+export function generateQuadrilateralGeneral(params) {
+  const {
+    ax = 0, ay = 0,
+    bx = 5, by = 0,
+    cx = 6, cy = 4,
+    dx = 1, dy = 4,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${ax}, ${ay}), (${bx}, ${by}), (${cx}, ${cy}), (${dx}, ${dy}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  content((${ax - 0.3}, ${ay}), [${labelA}], anchor: "east")
+  content((${bx + 0.3}, ${by}), [${labelB}], anchor: "west")
+  content((${cx + 0.3}, ${cy}), [${labelC}], anchor: "west")
+  content((${dx - 0.3}, ${dy}), [${labelD}], anchor: "east")
+})`.trim();
+}
+
+// ==================== TAM GIÁC VỚI ĐƯỜNG ĐẶC BIỆT ====================
+
+function triangleVertices(sideA, sideB, sideC) {
+  const B = [0, 0];
+  const C = [sideA, 0];
+  const cosB = (sideA * sideA + sideC * sideC - sideB * sideB) / (2 * sideA * sideC);
+  const sinB = Math.sqrt(Math.max(0, 1 - cosB * cosB));
+  const A = [sideC * cosB, sideC * sinB];
+  return { A, B, C };
+}
+
+export function generateTriangleWithMedians(params) {
+  const {
+    sideA = 5, sideB = 4, sideC = 3,
+    labelA = 'A', labelB = 'B', labelC = 'C',
+    styleOptions = {}
+  } = params;
+
+  const { A, B, C } = triangleVertices(sideA, sideB, sideC);
+  const mA = [(B[0] + C[0]) / 2, (B[1] + C[1]) / 2];
+  const mB = [(A[0] + C[0]) / 2, (A[1] + C[1]) / 2];
+  const mC = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Đường trung tuyến
+  line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${mA[0].toFixed(3)}, ${mA[1].toFixed(3)}), stroke: 1pt + blue, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${mB[0].toFixed(3)}, ${mB[1].toFixed(3)}), stroke: 1pt + blue, dash: "dashed")
+  line((${C[0]}, ${C[1]}), (${mC[0].toFixed(3)}, ${mC[1].toFixed(3)}), stroke: 1pt + blue, dash: "dashed")
+
+  content((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), [${labelA}], anchor: "south")
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+  content((${mA[0].toFixed(3)}, ${(mA[1] - 0.3).toFixed(3)}), [M#sub[a]], anchor: "north")
+  content((${(mB[0] + 0.3).toFixed(3)}, ${mB[1].toFixed(3)}), [M#sub[b]], anchor: "west")
+  content((${(mC[0] - 0.3).toFixed(3)}, ${mC[1].toFixed(3)}), [M#sub[c]], anchor: "east")
+})`.trim();
+}
+
+export function generateTriangleWithAltitudes(params) {
+  const {
+    sideA = 5, sideB = 4, sideC = 3,
+    labelA = 'A', labelB = 'B', labelC = 'C',
+    styleOptions = {}
+  } = params;
+
+  const { A, B, C } = triangleVertices(sideA, sideB, sideC);
+
+  // Foot of altitude from A to BC (BC is along x-axis)
+  const hA = [A[0], 0];
+  // Foot of altitude from B to AC
+  const acDx = C[0] - A[0], acDy = C[1] - A[1];
+  const tB = ((B[0] - A[0]) * acDx + (B[1] - A[1]) * acDy) / (acDx * acDx + acDy * acDy);
+  const hB = [A[0] + tB * acDx, A[1] + tB * acDy];
+  // Foot of altitude from C to AB
+  const abDx = B[0] - A[0], abDy = B[1] - A[1];
+  const tC = ((C[0] - A[0]) * abDx + (C[1] - A[1]) * abDy) / (abDx * abDx + abDy * abDy);
+  const hC = [A[0] + tC * abDx, A[1] + tC * abDy];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Đường cao
+  line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${hA[0].toFixed(3)}, ${hA[1].toFixed(3)}), stroke: 1pt + red, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${hB[0].toFixed(3)}, ${hB[1].toFixed(3)}), stroke: 1pt + red, dash: "dashed")
+  line((${C[0]}, ${C[1]}), (${hC[0].toFixed(3)}, ${hC[1].toFixed(3)}), stroke: 1pt + red, dash: "dashed")
+
+  content((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), [${labelA}], anchor: "south")
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+  content((${hA[0].toFixed(3)}, ${(hA[1] - 0.3).toFixed(3)}), [H#sub[a]], anchor: "north")
+})`.trim();
+}
+
+export function generateTriangleWithBisectors(params) {
+  const {
+    sideA = 5, sideB = 4, sideC = 3,
+    labelA = 'A', labelB = 'B', labelC = 'C',
+    styleOptions = {}
+  } = params;
+
+  const { A, B, C } = triangleVertices(sideA, sideB, sideC);
+
+  // Angle bisector foot from A: divides BC in ratio AB:AC = sideC:sideB
+  const dA = [(sideC * C[0] + sideB * B[0]) / (sideB + sideC), (sideC * C[1] + sideB * B[1]) / (sideB + sideC)];
+  // Angle bisector foot from B: divides AC in ratio BA:BC = sideC:sideA
+  const dB = [(sideC * C[0] + sideA * A[0]) / (sideA + sideC), (sideC * C[1] + sideA * A[1]) / (sideA + sideC)];
+  // Angle bisector foot from C: divides AB in ratio CA:CB = sideB:sideA
+  const dC = [(sideB * B[0] + sideA * A[0]) / (sideA + sideB), (sideB * B[1] + sideA * A[1]) / (sideA + sideB)];
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Đường phân giác
+  line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${dA[0].toFixed(3)}, ${dA[1].toFixed(3)}), stroke: 1pt + green, dash: "dashed")
+  line((${B[0]}, ${B[1]}), (${dB[0].toFixed(3)}, ${dB[1].toFixed(3)}), stroke: 1pt + green, dash: "dashed")
+  line((${C[0]}, ${C[1]}), (${dC[0].toFixed(3)}, ${dC[1].toFixed(3)}), stroke: 1pt + green, dash: "dashed")
+
+  content((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), [${labelA}], anchor: "south")
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+})`.trim();
+}
+
+// ==================== ĐƯỜNG TRÒN MỞ RỘNG ====================
+
+export function generateCircleSector(params) {
+  const {
+    radius = 3, sectorAngle = 60, startAngle = 0,
+    labelO = 'O', labelA = 'A', labelB = 'B',
+    showRadius = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const startRad = (startAngle * Math.PI) / 180;
+  const endRad = ((startAngle + sectorAngle) * Math.PI) / 180;
+  const Ax = parseFloat((radius * Math.cos(startRad)).toFixed(4));
+  const Ay = parseFloat((radius * Math.sin(startRad)).toFixed(4));
+  const Bx = parseFloat((radius * Math.cos(endRad)).toFixed(4));
+  const By = parseFloat((radius * Math.sin(endRad)).toFixed(4));
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let O = (0, 0)
+
+  // Hình quạt tròn
+  arc(O, radius: ${radius}, start: ${startAngle}deg, stop: ${startAngle + sectorAngle}deg,
+      mode: "PIE", stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(85%))
+
+  content(O, [${labelO}], anchor: "north-east")
+  content((${(Ax * 1.15).toFixed(3)}, ${(Ay * 1.15).toFixed(3)}), [${labelA}], anchor: "west")
+  content((${(Bx * 1.15).toFixed(3)}, ${(By * 1.15).toFixed(3)}), [${labelB}], anchor: "south")
+
+  ${showRadius ? `
+  content((${(Ax / 2).toFixed(3)}, ${(Ay / 2 - 0.2).toFixed(3)}), [R = ${radius}], anchor: "north")
+  ` : ''}
+})`.trim();
+}
+
+export function generateCircleSegment(params) {
+  const {
+    radius = 3, chordAngle = 60,
+    labelO = 'O', labelA = 'A', labelB = 'B',
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const halfAngle = chordAngle / 2;
+  const halfRad = halfAngle * Math.PI / 180;
+  const Ax = parseFloat((radius * Math.cos(-halfRad) * 1.15).toFixed(4));
+  const Ay = parseFloat((radius * Math.sin(-halfRad) * 1.15).toFixed(4));
+  const Bx = parseFloat((radius * Math.cos(halfRad) * 1.15).toFixed(4));
+  const By = parseFloat((radius * Math.sin(halfRad) * 1.15).toFixed(4));
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Vẽ đường tròn (nét mờ)
+  circle((0, 0), radius: ${radius}, stroke: 0.5pt + gray)
+
+  // Hình viên phân (cung + dây cung)
+  arc((0, 0), radius: ${radius}, start: ${-halfAngle}deg, stop: ${halfAngle}deg,
+      mode: "CHORD", stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(85%))
+
+  content((0, 0), [${labelO}], anchor: "north-east")
+  content((${Ax}, ${Ay}), [${labelA}], anchor: "north-west")
+  content((${Bx}, ${By}), [${labelB}], anchor: "south-west")
+})`.trim();
+}
+
+export function generateTwoCirclesTangentExternal(params) {
+  const {
+    radius1 = 2, radius2 = 1.5,
+    labelO1 = 'O', labelO2 = "O'",
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const dist = radius1 + radius2;
+  const O1 = [0, 0];
+  const O2 = [dist, 0];
+  const T = [radius1, 0];
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  circle((${O1[0]}, ${O1[1]}), radius: ${radius1}, stroke: ${strokeWidth} + ${stroke})
+  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeWidth} + ${stroke})
+
+  // Đường nối tâm
+  line((${O1[0]}, ${O1[1]}), (${O2[0]}, ${O2[1]}), stroke: gray, dash: "dashed")
+
+  // Tiếp điểm
+  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: ${stroke})
+
+  content((${O1[0]}, ${O1[1]}), [${labelO1}], anchor: "north-east")
+  content((${O2[0]}, ${O2[1]}), [${labelO2}], anchor: "north-west")
+  content((${T[0]}, ${(T[1] - 0.3).toFixed(2)}), [T], anchor: "north")
+})`.trim();
+}
+
+export function generateTwoCirclesTangentInternal(params) {
+  const {
+    radius1 = 3, radius2 = 1.5,
+    labelO1 = 'O', labelO2 = "O'",
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const dist = radius1 - radius2;
+  const O2 = [dist, 0];
+  const T = [radius1, 0];
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  circle((0, 0), radius: ${radius1}, stroke: ${strokeWidth} + ${stroke})
+  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeWidth} + ${stroke})
+
+  // Đường nối tâm
+  line((0, 0), (${O2[0]}, ${O2[1]}), stroke: gray, dash: "dashed")
+
+  // Tiếp điểm
+  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: ${stroke})
+
+  content((0, 0), [${labelO1}], anchor: "north-east")
+  content((${O2[0]}, ${O2[1]}), [${labelO2}], anchor: "north-west")
+  content((${T[0]}, ${(T[1] - 0.3).toFixed(2)}), [T], anchor: "north")
+})`.trim();
+}
+
 export function generateTwoCirclesIntersect(params) {
   const {
     radius1 = 2, radius2 = 2,
