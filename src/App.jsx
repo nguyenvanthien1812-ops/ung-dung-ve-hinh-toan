@@ -130,15 +130,15 @@ function App() {
     }
   }, [selectedShape, formValues, styleOptions])
 
-  // Auto-generate when form values change
+  // Auto-generate khi chọn shape hoặc thay đổi form values
   useEffect(() => {
-    if (appMode === 'builder' && selectedShape && generatedCode) {
+    if (appMode === 'builder' && selectedShape && getGenerator(selectedShape.id)) {
       const timer = setTimeout(() => {
         handleGenerateFromForm()
-      }, 600)
+      }, 500)
       return () => clearTimeout(timer)
     }
-  }, [formValues, styleOptions, appMode, selectedShape, generatedCode, handleGenerateFromForm])
+  }, [formValues, styleOptions, appMode, selectedShape, handleGenerateFromForm])
 
   // Save to history
   const saveToHistory = useCallback((code, currentMode, params) => {
