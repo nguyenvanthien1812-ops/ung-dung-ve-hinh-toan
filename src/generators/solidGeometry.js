@@ -224,6 +224,61 @@ export function generatePrism(params) {
 })`.trim();
   }
 
+  // Lăng trụ lục giác
+  if (baseType === 'hexagonal') {
+    const hexR = baseSize / 1.732; // inradius -> circumradius
+    const hexVerts = [];
+    for (let k = 0; k < 6; k++) {
+      const ang = (Math.PI / 6) + (Math.PI / 3) * k;
+      hexVerts.push([
+        parseFloat((hexR * Math.cos(ang)).toFixed(4)),
+        parseFloat((hexR * Math.sin(ang)).toFixed(4))
+      ]);
+    }
+
+    const topVerts = hexVerts.map(v => [
+      parseFloat((v[0] + offsetX * perspectiveRatio).toFixed(4)),
+      parseFloat((v[1] + height + offsetY * perspectiveRatio).toFixed(4))
+    ]);
+
+    const botLines = hexVerts.map(v => `(${v[0]}, ${v[1]})`).join(', ');
+    const topLines = topVerts.map(v => `(${v[0]}, ${v[1]})`).join(', ');
+    const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+    const verticalEdges = hexVerts.map((v, i) => {
+      const visible = i < 4;
+      const dash = visible ? '' : ', dash: "dashed"';
+      return `  line((${v[0]}, ${v[1]}), (${topVerts[i][0]}, ${topVerts[i][1]}), stroke: ${strokeWidth} + ${stroke}${dash})`;
+    }).join('\n');
+
+    const botLabelLines = hexVerts.map((v, i) => {
+      const ang = (Math.PI / 6) + (Math.PI / 3) * i;
+      const lx = parseFloat((v[0] + Math.cos(ang) * 0.35).toFixed(3));
+      const ly = parseFloat((v[1] + Math.sin(ang) * 0.35).toFixed(3));
+      const dash = i < 3 ? '' : ', dash: "dashed"';
+      return `  content((${lx}, ${ly}), [${labels[i]}], anchor: "center")`;
+    }).join('\n');
+
+    return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Đáy dưới
+  line(${botLines}, close: true, stroke: ${strokeWidth} + ${stroke})
+
+  // Đáy trên
+  line(${topLines}, close: true, stroke: ${strokeWidth} + ${stroke})
+
+  // Cạnh bên
+${verticalEdges}
+
+  // Nhãn
+${botLabelLines}
+})`.trim();
+  }
+
   return '';
 }
 
@@ -424,7 +479,7 @@ export function generateSphere(params) {
 
   ${showGreatCircle ? `
   // Đường tròn lớn (ellipse phối cảnh)
-  arc(O, start: 0, stop: 360, radius: (r, r * 0.3), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  arc(O, start: 0deg, stop: 360deg, radius: (r, r * 0.3), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
   ` : ''}
 
   ${showAxis ? `
@@ -548,6 +603,198 @@ export function generateTwoPlanesIntersect(params) {
   content((-3.2, 1.8), [$(${plane1Name})$], anchor: "east")
   content((3.2, 1.8), [$(${plane2Name})$], anchor: "west")
   content((0.3, 2.2), [${intersectLineName}], anchor: "west")
+})`.trim();
+}
+
+// ==================== HÌNH CHÓP CỤT ====================
+
+export function generateTruncatedPyramid(params) {
+  const {
+    baseSize = 5, topSize = 2.5, height = 4,
+    perspective = 'Trước',
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    labelA1 = "A'", labelB1 = "B'", labelC1 = "C'", labelD1 = "D'",
+    showHiddenEdges = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const pRatio = 0.5;
+  const offX = perspective === 'Trái' ? -1 : perspective === 'Phải' ? 1 : 0;
+  const offY = 0.5;
+
+  // Đáy lớn (phía dưới)
+  const A = [0, 0];
+  const B = [baseSize, 0];
+  const C = [baseSize + offX * pRatio, offY * pRatio];
+  const D = [offX * pRatio, offY * pRatio];
+
+  // Tâm đáy lớn
+  const cx = (A[0] + C[0]) / 2;
+  const cy = (A[1] + C[1]) / 2;
+
+  // Đáy nhỏ (phía trên), căn giữa so với đáy lớn
+  const shift = (baseSize - topSize) / 2;
+  const A1 = [shift + offX * pRatio * 0.5, height + offY * pRatio * 0.5];
+  const B1 = [shift + topSize + offX * pRatio * 0.5, height + offY * pRatio * 0.5];
+  const C1 = [shift + topSize + offX * pRatio, height + offY * pRatio];
+  const D1 = [shift + offX * pRatio, height + offY * pRatio];
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Cạnh khuất đáy lớn
+  ${showHiddenEdges ? `
+  line((${A[0]}, ${A[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  line((${D[0]}, ${D[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  ` : ''}
+
+  // Đáy lớn (cạnh nhìn thấy)
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+
+  // Đáy nhỏ
+  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${C1[0]}, ${C1[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeWidth} + ${stroke})
+  ${showHiddenEdges ? `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke})`}
+
+  // Cạnh bên nhìn thấy
+  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+
+  // Cạnh bên khuất
+  ${showHiddenEdges ? `line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+
+  // Nhãn đáy lớn
+  content((${A[0] - 0.3}, ${A[1]}), [${labelA}], anchor: "east")
+  content((${B[0] + 0.3}, ${B[1]}), [${labelB}], anchor: "west")
+  content((${C[0] + 0.3}, ${C[1]}), [${labelC}], anchor: "west")
+  content((${D[0] - 0.3}, ${D[1]}), [${labelD}], anchor: "east")
+
+  // Nhãn đáy nhỏ
+  content((${A1[0] - 0.3}, ${A1[1]}), [${labelA1}], anchor: "east")
+  content((${B1[0] + 0.3}, ${B1[1]}), [${labelB1}], anchor: "west")
+  content((${C1[0] + 0.3}, ${C1[1]}), [${labelC1}], anchor: "west")
+  content((${D1[0] - 0.3}, ${D1[1]}), [${labelD1}], anchor: "east")
+})`.trim();
+}
+
+// ==================== HÌNH NÓN CỤT ====================
+
+export function generateTruncatedCone(params) {
+  const {
+    radiusBottom = 3, radiusTop = 1.5, height = 5,
+    perspective = 'Nghiêng',
+    labelO = 'O', labelO1 = "O'",
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const ratio = perspective === 'Nghiêng' ? 0.3 : 0.1;
+  const r1 = Number(radiusBottom);
+  const r2 = Number(radiusTop);
+  const h = Number(height);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  let r1 = ${r1}
+  let r2 = ${r2}
+  let h = ${h}
+  let ratio = ${ratio}
+
+  // Đáy dưới (ellipse)
+  arc((0, 0), start: 0deg, stop: 180deg, radius: (r1, r1 * ratio), stroke: ${strokeWidth} + ${stroke})
+  arc((0, 0), start: 180deg, stop: 360deg, radius: (r1, r1 * ratio), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+
+  // Đáy trên (ellipse nhỏ hơn)
+  arc((0, h), start: 0deg, stop: 360deg, radius: (r2, r2 * ratio), stroke: ${strokeWidth} + ${stroke})
+
+  // Đường sinh
+  line((-r1, 0), (-r2, h), stroke: ${strokeWidth} + ${stroke})
+  line((r1, 0), (r2, h), stroke: ${strokeWidth} + ${stroke})
+
+  ${showAxis ? `
+  // Trục
+  line((0, 0), (0, h), stroke: gray, dash: "dashed")
+  content((0.3, h / 2), [h = ${h.toFixed(1)}], anchor: "west")
+  content((r1 / 2 + 0.2, -r1 * ratio - 0.3), [R = ${r1.toFixed(1)}], anchor: "north")
+  content((r2 / 2 + 0.2, h + r2 * ratio + 0.2), [r = ${r2.toFixed(1)}], anchor: "south")
+  ` : ''}
+
+  // Nhãn tâm
+  content((0, -r1 * ratio - 0.4), [${labelO}], anchor: "north")
+  content((0, h + r2 * ratio + 0.4), [${labelO1}], anchor: "south")
+})`.trim();
+}
+
+// ==================== MẶT CẮT HÌNH CẦU ====================
+
+export function generateSphereSection(params) {
+  const {
+    radius = 3, sectionHeight = 1,
+    labelO = 'O',
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const r = Number(radius);
+  const h = Number(sectionHeight);
+  // Bán kính mặt cắt: r_cut = sqrt(r² - h²)
+  const rCut = parseFloat(Math.sqrt(Math.max(0, r * r - h * h)).toFixed(4));
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  let O = (0, 0)
+  let r = ${r}
+
+  // Hình cầu
+  circle(O, radius: r, stroke: ${strokeWidth} + ${stroke})
+
+  // Đường tròn lớn (mặt phẳng xích đạo, nét đứt)
+  arc(O, start: 0deg, stop: 360deg, radius: (r, r * 0.3), stroke: 0.8pt + gray, dash: "dashed")
+
+  // Mặt cắt tại chiều cao h = ${h.toFixed(2)}
+  arc((0, ${h}), start: 0deg, stop: 180deg, radius: (${rCut}, ${rCut} * 0.3), stroke: ${strokeWidth} + blue)
+  arc((0, ${h}), start: 180deg, stop: 360deg, radius: (${rCut}, ${rCut} * 0.3), stroke: ${strokeWidth} + blue, dash: "dashed")
+
+  // Bán kính mặt cắt
+  line((0, ${h}), (${rCut}, ${h}), stroke: gray, dash: "dashed")
+  content((${rCut / 2}, ${h + 0.25}), [r' = ${rCut.toFixed(2)}], anchor: "south")
+
+  // Đường từ tâm đến mặt cắt
+  line((0, 0), (0, ${h}), stroke: gray, dash: "dashed")
+  content((0.25, ${h / 2}), [h = ${h.toFixed(1)}], anchor: "west")
+
+  // Tâm
+  circle(O, radius: 0.06, fill: ${stroke})
+
+  // Nhãn
+  content((0, 0), [${labelO}], anchor: "north-east")
+  content((r + 0.3, 0), [R = ${r.toFixed(1)}], anchor: "west")
 })`.trim();
 }
 

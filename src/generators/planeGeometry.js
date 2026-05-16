@@ -259,6 +259,64 @@ export function generateInscribedTriangle(params) {
 })`.trim();
 }
 
+export function generateCircumscribedTriangle(params) {
+  const {
+    sideA = 5, sideB = 4, sideC = 3,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelI = 'I',
+    showRadius = true,
+    styleOptions = {}
+  } = params;
+
+  const B = [0, 0];
+  const C = [sideA, 0];
+  const cosB = (sideA * sideA + sideC * sideC - sideB * sideB) / (2 * sideA * sideC);
+  const sinB = Math.sqrt(Math.max(0, 1 - cosB * cosB));
+  const A = [sideC * cosB, sideC * sinB];
+
+  // Tâm đường tròn nội tiếp (incenter): I = (a·A + b·B + c·C) / (a+b+c)
+  const s = sideA + sideB + sideC;
+  const Ix = parseFloat(((sideA * A[0] + sideB * B[0] + sideC * C[0]) / s).toFixed(4));
+  const Iy = parseFloat(((sideA * A[1] + sideB * B[1] + sideC * C[1]) / s).toFixed(4));
+
+  // Bán kính nội tiếp: r = Area / semiperimeter
+  const sp = s / 2;
+  const area = Math.sqrt(Math.max(0, sp * (sp - sideA) * (sp - sideB) * (sp - sideC)));
+  const r = parseFloat((area / sp).toFixed(4));
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Vẽ tam giác ngoại tiếp đường tròn
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
+       stroke: ${strokeWidth} + ${stroke})
+
+  // Đường tròn nội tiếp
+  circle((${Ix}, ${Iy}), radius: ${r}, stroke: ${strokeWidth} + ${stroke})
+
+  // Tâm nội tiếp
+  circle((${Ix}, ${Iy}), radius: 0.06, fill: ${stroke})
+
+  ${showRadius ? `
+  // Bán kính nội tiếp (vuông góc từ I đến BC = cạnh x-axis)
+  line((${Ix}, ${Iy}), (${Ix}, 0), stroke: gray, dash: "dashed")
+  content((${Ix + 0.2}, ${Iy / 2}), [r = ${r.toFixed(2)}], anchor: "west")
+  ` : ''}
+
+  // Nhãn
+  content((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), [${labelA}], anchor: "south")
+  content((${B[0] - 0.3}, ${B[1]}), [${labelB}], anchor: "east")
+  content((${C[0] + 0.3}, ${C[1]}), [${labelC}], anchor: "west")
+  content((${Ix + 0.15}, ${Iy + 0.15}), [${labelI}], anchor: "south-west")
+})`.trim();
+}
+
 // ==================== TỨ GIÁC ====================
 
 export function generateSquare(params) {

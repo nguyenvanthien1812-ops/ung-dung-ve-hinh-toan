@@ -491,9 +491,56 @@ export function generateLogarithmGraph(params) {
 })`.trim();
 }
 
+export function generateAbsoluteLinearGraph(params) {
+  const {
+    a = 1, b = 0,
+    minX = -5, maxX = 5,
+    showGrid = true,
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const axisMinX = minX - 1;
+  const axisMaxX = maxX + 1;
+  const axisMinY = -1;
+  const axisMaxY = 5;
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((${axisMinX}, ${axisMinY}), (${axisMaxX}, ${axisMaxY}), step: 1, stroke: luma(240))` : ''}
+
+  ${showAxis ? `
+  line((${axisMinX}, 0), (${axisMaxX}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${axisMaxX + 0.2}, 0), [$x$], anchor: "west")
+  line((0, ${axisMinY}), (0, ${axisMaxY}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${axisMaxY + 0.2}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+  ` : ''}
+
+  plot.plot(
+    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x + ${b}), style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+    }
+  )
+
+  content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = |${a}x ${b >= 0 ? '+' : ''} ${b}|$], anchor: "east")
+})`.trim();
+}
+
 export function generateAbsoluteGraph(params) {
   const {
-    a, b, c,
+    a = 1, b = 0, c = 0,
     minX = -5, maxX = 5,
     showGrid = true,
     showAxis = true,
@@ -894,5 +941,320 @@ export function generateVectorCrossProduct(params) {
   // Tích có hướng a × b
   line((${O[0]}, ${O[1]}), (${Vc[0]}, ${Vc[1]}), mark: (end: ">"), stroke: ${strokeWidth} + red)
   content((${Vc[0] + 0.2}, ${Vc[1] + 0.1}), [$arrow(a) times arrow(b)$], anchor: "south-west")
+})`.trim();
+}
+
+// ==================== HIỆU VECTƠ ====================
+
+export function generateVectorDifference(params) {
+  const {
+    x1 = 3, y1 = 2, x2 = 1, y2 = 3,
+    showGrid = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
+  const dx = nx1 - nx2;
+  const dy = ny1 - ny2;
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((-5, -5), (5, 5), step: 1, stroke: luma(240))` : ''}
+
+  // Trục tọa độ
+  line((-5, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+  line((0, -5), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Vectơ a
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  content((${nx1 / 2 + 0.2}, ${ny1 / 2}), [$arrow(a)$], anchor: "south-east")
+
+  // Vectơ b (từ đầu mút a về gốc — để tính a - b = a + (-b))
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  content((${nx2 / 2}, ${ny2 / 2 + 0.2}), [$arrow(b)$], anchor: "south-west")
+
+  // Vectơ −b (đảo chiều b, vẽ nét đứt từ gốc)
+  line((0, 0), (${-nx2}, ${-ny2}), mark: (end: ">"), stroke: 0.8pt + green, dash: "dashed")
+  content((${-nx2 / 2 - 0.2}, ${-ny2 / 2}), [$-arrow(b)$], anchor: "east")
+
+  // Hình bình hành: a và -b
+  line((${nx1}, ${ny1}), (${dx}, ${dy}), stroke: gray, dash: "dashed")
+  line((${-nx2}, ${-ny2}), (${dx}, ${dy}), stroke: gray, dash: "dashed")
+
+  // Vectơ hiệu a - b
+  line((0, 0), (${dx}, ${dy}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  content((${dx / 2 + 0.2}, ${dy / 2}), [$arrow(a) - arrow(b)$], anchor: "west")
+})`.trim();
+}
+
+// ==================== TÍCH VÔ HƯỚNG ====================
+
+export function generateVectorDotProduct(params) {
+  const {
+    x1 = 3, y1 = 0, x2 = 2, y2 = 2,
+    showGrid = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
+  const lenA = Math.sqrt(nx1 * nx1 + ny1 * ny1);
+  const lenB = Math.sqrt(nx2 * nx2 + ny2 * ny2);
+  const dot = nx1 * nx2 + ny1 * ny2;
+  const cosTheta = lenA > 0 && lenB > 0 ? dot / (lenA * lenB) : 0;
+  const thetaDeg = parseFloat((Math.acos(Math.max(-1, Math.min(1, cosTheta))) * 180 / Math.PI).toFixed(1));
+
+  // Góc bắt đầu và kết thúc cho arc
+  const angle1 = parseFloat((Math.atan2(ny1, nx1) * 180 / Math.PI).toFixed(1));
+  const angle2 = parseFloat((Math.atan2(ny2, nx2) * 180 / Math.PI).toFixed(1));
+  const arcStart = Math.min(angle1, angle2);
+  const arcStop = Math.max(angle1, angle2);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((-5, -5), (5, 5), step: 1, stroke: luma(240))` : ''}
+
+  // Trục tọa độ
+  line((-5, 0), (5, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((5.2, 0), [$x$], anchor: "west")
+  line((0, -5), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Vectơ a
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  content((${(nx1 * 1.1).toFixed(2)}, ${(ny1 * 1.1).toFixed(2)}), [$arrow(a)$], anchor: "south-west")
+
+  // Vectơ b
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  content((${(nx2 * 1.1).toFixed(2)}, ${(ny2 * 1.1).toFixed(2)}), [$arrow(b)$], anchor: "south-east")
+
+  // Góc giữa hai vectơ
+  arc((0, 0), start: ${arcStart}deg, stop: ${arcStop}deg, radius: 0.8, stroke: 0.8pt + red)
+  content((0.9, 0.5), [$theta$], anchor: "west")
+
+  // Hình chiếu của b lên a (projection)
+  let projLen = ${parseFloat((dot / lenA).toFixed(3))}
+  line((projLen, 0), (${nx2}, ${ny2}), stroke: 0.5pt + gray, dash: "dashed")
+
+  // Thông tin
+  content((4, 4), [$arrow(a) dot arrow(b) = ${dot.toFixed(2)}$], anchor: "east")
+  content((4, 3.3), [$theta = ${thetaDeg}°$], anchor: "east")
+})`.trim();
+}
+
+// ==================== HÌNH CHIẾU VECTƠ ====================
+
+export function generateVectorProjection(params) {
+  const {
+    x1 = 3, y1 = 2, x2 = 4, y2 = 0,
+    showGrid = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
+  const lenBSq = nx2 * nx2 + ny2 * ny2;
+  const dot = nx1 * nx2 + ny1 * ny2;
+  const t = lenBSq > 0 ? dot / lenBSq : 0;
+  const projX = parseFloat((t * nx2).toFixed(4));
+  const projY = parseFloat((t * ny2).toFixed(4));
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((-2, -2), (6, 6), step: 1, stroke: luma(240))` : ''}
+
+  // Trục tọa độ
+  line((-2, 0), (6, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((6.2, 0), [$x$], anchor: "west")
+  line((0, -2), (0, 6), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 6.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Vectơ b (hướng chiếu)
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  content((${nx2 + 0.3}, ${ny2}), [$arrow(b)$], anchor: "west")
+
+  // Vectơ a
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  content((${nx1 + 0.2}, ${ny1}), [$arrow(a)$], anchor: "west")
+
+  // Đường vuông góc từ đầu mút a xuống đường b
+  line((${nx1}, ${ny1}), (${projX}, ${projY}), stroke: 0.7pt + gray, dash: "dashed")
+
+  // Vectơ hình chiếu (projection)
+  line((0, 0), (${projX}, ${projY}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  content((${projX / 2}, ${projY / 2 - 0.3}), [$"proj"_arrow(b) arrow(a)$], anchor: "north")
+
+  // Điểm chân đường vuông góc
+  circle((${projX}, ${projY}), radius: 0.07, fill: red)
+})`.trim();
+}
+
+// ==================== ĐƯỜNG CONG THAM SỐ ====================
+
+export function generateParametricCircle(params) {
+  const {
+    radius = 3,
+    labelO = 'O',
+    showArrow = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const r = Number(radius);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục tọa độ
+  line((${-r - 1}, 0), (${r + 1.5}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${r + 1.7}, 0), [$x$], anchor: "west")
+  line((0, ${-r - 1}), (0, ${r + 1.5}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${r + 1.7}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đường tròn tham số x = r·cos(t), y = r·sin(t)
+  circle((0, 0), radius: ${r}, stroke: ${strokeWidth} + ${stroke})
+
+  // Bán kính mẫu
+  line((0, 0), (${r}, 0), stroke: gray, dash: "dashed")
+  content((${r / 2}, -0.3), [r = ${r}], anchor: "north")
+
+  ${showArrow ? `
+  // Mũi tên chỉ hướng tham số t tăng
+  arc((0, 0), start: 25deg, stop: 65deg, radius: ${r * 1.15}, mark: (end: ">"), stroke: 0.8pt + blue)
+  content((0, ${r * 1.3}), [$t$], anchor: "south")
+  ` : ''}
+
+  // Nhãn tâm
+  circle((0, 0), radius: 0.06, fill: ${stroke})
+  content((0.15, 0.15), [${labelO}], anchor: "south-west")
+
+  // Phương trình
+  content((${-r - 0.5}, ${-r - 0.7}), [$x = ${r}cos(t), space y = ${r}sin(t)$], anchor: "west")
+})`.trim();
+}
+
+export function generateParametricEllipse(params) {
+  const {
+    semiA = 4, semiB = 2.5,
+    showAxes = true,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const a = Number(semiA), b = Number(semiB);
+  const maxR = Math.max(a, b);
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục tọa độ
+  line((${-a - 1}, 0), (${a + 1.5}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${a + 1.7}, 0), [$x$], anchor: "west")
+  line((0, ${-b - 1}), (0, ${b + 1.5}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${b + 1.7}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Elip tham số x = a·cos(t), y = b·sin(t)
+  arc((0, 0), start: 0deg, stop: 360deg, radius: (${a}, ${b}), stroke: ${strokeWidth} + ${stroke})
+
+  ${showAxes ? `
+  // Bán trục a và b
+  line((0, 0), (${a}, 0), stroke: gray, dash: "dashed")
+  line((0, 0), (0, ${b}), stroke: gray, dash: "dashed")
+  content((${a / 2}, -0.3), [a = ${a}], anchor: "north")
+  content((-0.5, ${b / 2}), [b = ${b}], anchor: "east")
+  ` : ''}
+
+  // Tâm
+  circle((0, 0), radius: 0.06, fill: ${stroke})
+
+  // Phương trình
+  content((${-a - 0.5}, ${-b - 0.7}), [$x = ${a}cos(t), space y = ${b}sin(t)$], anchor: "west")
+})`.trim();
+}
+
+export function generateParametricGeneral(params) {
+  const {
+    freqX = 3, freqY = 2, phaseX = 0, phaseY = 0,
+    ampX = 3, ampY = 3,
+    styleOptions = {}
+  } = params;
+
+  const stroke = styleOptions.strokeColor || 'black';
+  const sw = styleOptions.strokeWidth;
+  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+
+  const nX = Number(freqX), nY = Number(freqY);
+  const aX = Number(ampX), aY = Number(ampY);
+  const pX = Number(phaseX), pY = Number(phaseY);
+
+  // Tính điểm Lissajous và output dưới dạng array Typst
+  const N = 300;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = (2 * Math.PI * i) / N;
+    const x = parseFloat((aX * Math.sin(nX * t + pX)).toFixed(3));
+    const y = parseFloat((aY * Math.sin(nY * t + pY)).toFixed(3));
+    pts.push(`(${x}, ${y})`);
+  }
+  const ptsStr = pts.join(', ');
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Trục tọa độ
+  line((${-aX - 1}, 0), (${aX + 1.5}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${aX + 1.7}, 0), [$x$], anchor: "west")
+  line((0, ${-aY - 1}), (0, ${aY + 1.5}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${aY + 1.7}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đường cong Lissajous tham số
+  line(${ptsStr}, stroke: ${strokeWidth} + ${stroke})
+
+  // Phương trình
+  content((${-aX - 0.5}, ${-aY - 0.7}),
+    [$x = ${aX}sin(${nX}t + ${pX}), space y = ${aY}sin(${nY}t + ${pY})$], anchor: "west")
 })`.trim();
 }

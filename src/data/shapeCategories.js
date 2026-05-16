@@ -205,6 +205,51 @@ export const SHAPE_CATEGORIES = {
       }
     }
   },
+  'physics': {
+    id: 'physics',
+    name: 'Vật lý',
+    icon: '⚡',
+    subcategories: {
+      'mechanics': {
+        id: 'mechanics',
+        name: 'Lực học',
+        shapes: [
+          { id: 'physics-inclined-plane', name: 'Mặt phẳng nghiêng', description: 'Vật trên mặt phẳng nghiêng với các lực tác dụng' },
+          { id: 'physics-fbd', name: 'Sơ đồ lực (FBD)', description: 'Sơ đồ các lực tác dụng lên vật' },
+          { id: 'physics-pulley', name: 'Ròng rọc', description: 'Hệ thống ròng rọc với hai vật' },
+          { id: 'physics-spring', name: 'Lò xo', description: 'Lò xo treo vật với các lực đàn hồi' }
+        ]
+      },
+      'optics': {
+        id: 'optics',
+        name: 'Quang học',
+        shapes: [
+          { id: 'physics-convex-lens', name: 'Thấu kính hội tụ', description: 'Thấu kính lồi với tia sáng và ảnh' },
+          { id: 'physics-concave-lens', name: 'Thấu kính phân kỳ', description: 'Thấu kính lõm với tia sáng và ảnh ảo' },
+          { id: 'physics-mirror-concave', name: 'Gương cầu lõm', description: 'Gương cầu lõm với tia phản xạ và ảnh' },
+          { id: 'physics-mirror-convex', name: 'Gương cầu lồi', description: 'Gương cầu lồi với tia phản xạ và ảnh ảo' }
+        ]
+      },
+      'kinematics': {
+        id: 'kinematics',
+        name: 'Đồ thị động học',
+        shapes: [
+          { id: 'physics-velocity-time', name: 'Đồ thị v-t', description: 'Đồ thị vận tốc theo thời gian' },
+          { id: 'physics-position-time', name: 'Đồ thị x-t', description: 'Đồ thị vị trí theo thời gian' }
+        ]
+      },
+      'electricity': {
+        id: 'electricity',
+        name: 'Điện học',
+        shapes: [
+          { id: 'physics-electric-field-positive', name: 'Điện trường điện tích dương', description: 'Đường sức điện trường từ điện tích dương' },
+          { id: 'physics-electric-field-negative', name: 'Điện trường điện tích âm', description: 'Đường sức điện trường vào điện tích âm' },
+          { id: 'physics-circuit-series', name: 'Mạch điện nối tiếp', description: 'Mạch điện gồm các điện trở nối tiếp' },
+          { id: 'physics-circuit-parallel', name: 'Mạch điện song song', description: 'Mạch điện gồm các điện trở song song' }
+        ]
+      }
+    }
+  },
   'variation-table': {
     id: 'variation-table',
     name: 'Bảng biến thiên',

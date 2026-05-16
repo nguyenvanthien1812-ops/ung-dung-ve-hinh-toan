@@ -6,6 +6,7 @@ import {
   generateIsoscelesTriangle,
   generateEquilateralTriangle,
   generateInscribedTriangle,
+  generateCircumscribedTriangle,
   generateSquare,
   generateRectangle,
   generateRhombus,
@@ -30,11 +31,14 @@ import {
 
 import {
   generatePyramid,
+  generateTruncatedPyramid,
   generatePrism,
   generateCube,
   generateCylinder,
   generateCone,
+  generateTruncatedCone,
   generateSphere,
+  generateSphereSection,
   generatePlaneBasic,
   generateLinePlaneIntersect,
   generateTwoPlanesIntersect,
@@ -58,14 +62,38 @@ import {
   generateTangentGraph,
   generateExponentialGraph,
   generateLogarithmGraph,
+  generateAbsoluteLinearGraph,
   generateAbsoluteGraph,
   generateVector2D,
   generateVectorSum,
+  generateVectorDifference,
+  generateVectorDotProduct,
+  generateVectorProjection,
   generateVector3D,
   generateVector3DSum,
   generateVectorCrossProduct,
-  generateCoordinateSystem3D
+  generateCoordinateSystem3D,
+  generateParametricCircle,
+  generateParametricEllipse,
+  generateParametricGeneral
 } from './graphs.js';
+
+import {
+  generateInclinedPlane,
+  generateFreeBodyDiagram,
+  generatePulley,
+  generateSpringSystem,
+  generateConvexLens,
+  generateConcaveLens,
+  generateConcaveMirror,
+  generateConvexMirror,
+  generateVelocityTimeGraph,
+  generatePositionTimeGraph,
+  generateElectricFieldPositive,
+  generateElectricFieldNegative,
+  generateCircuitSeries,
+  generateCircuitParallel
+} from './physics.js';
 
 import { getFormSchema } from '../data/formSchemas.js';
 
@@ -76,7 +104,7 @@ const GENERATOR_MAP = {
   'triangle-isosceles': generateIsoscelesTriangle,
   'triangle-equilateral': generateEquilateralTriangle,
   'triangle-inscribed': generateInscribedTriangle,
-  'triangle-circumscribed': (p) => generateInscribedTriangle({ ...p, triangleType: 'Thường' }),
+  'triangle-circumscribed': generateCircumscribedTriangle,
   'triangle-with-medians': generateTriangleWithMedians,
   'triangle-with-altitudes': generateTriangleWithAltitudes,
   'triangle-with-bisectors': generateTriangleWithBisectors,
@@ -110,21 +138,25 @@ const GENERATOR_MAP = {
   'octagon-regular': (p) => generateRegularPolygon({ ...p, sides: 8 }),
   'polygon-regular': generateRegularPolygon,
 
-  // Hình không gian
+  // Hình không gian - Chóp
   'pyramid-triangular': (params) => generatePyramid({ ...params, baseType: 'triangular' }),
   'pyramid-square': (params) => generatePyramid({ ...params, baseType: 'square' }),
   'pyramid-regular': (params) => generatePyramid({ ...params, baseType: 'square' }),
-  'pyramid-truncated': (params) => generatePyramid({ ...params, baseType: 'triangular' }),
+  'pyramid-truncated': generateTruncatedPyramid,
+
+  // Lăng trụ
   'prism-triangular': (params) => generatePrism({ ...params, baseType: 'triangular' }),
   'prism-quadrilateral': generateCube,
-  'prism-hexagonal': generatePrism,
+  'prism-hexagonal': (params) => generatePrism({ ...params, baseType: 'hexagonal' }),
   'box': generateCube,
   'cube': generateCube,
+
+  // Hình tròn xoay
   'cylinder': generateCylinder,
   'cone': generateCone,
-  'cone-truncated': generateCone,
+  'cone-truncated': generateTruncatedCone,
   'sphere': generateSphere,
-  'sphere-section': generateSphere,
+  'sphere-section': generateSphereSection,
 
   // Mặt phẳng & Đường thẳng
   'plane-basic': generatePlaneBasic,
@@ -132,7 +164,7 @@ const GENERATOR_MAP = {
   'two-planes-intersect': generateTwoPlanesIntersect,
   'line-perpendicular-plane': generateLinePerpendicularPlane,
 
-  // Đồ thị
+  // Đồ thị hàm số
   'linear': generateLinearGraph,
   'quadratic': generateQuadraticGraph,
   'cubic': generateCubicGraph,
@@ -149,12 +181,12 @@ const GENERATOR_MAP = {
   'exponential-e': generateExponentialGraph,
   'logarithm': generateLogarithmGraph,
   'natural-log': generateLogarithmGraph,
-  'absolute-linear': generateAbsoluteGraph,
+  'absolute-linear': generateAbsoluteLinearGraph,
   'absolute-quadratic': generateAbsoluteGraph,
   'absolute-composite': generateAbsoluteGraph,
-  'parametric-circle': generateCircle,
-  'parametric-ellipse': generateRhombus,
-  'parametric-general': generateHyperbolaGraph,
+  'parametric-circle': generateParametricCircle,
+  'parametric-ellipse': generateParametricEllipse,
+  'parametric-general': generateParametricGeneral,
 
   // Bảng biến thiên
   'bbt-quadratic': generateBBTQuadratic,
@@ -165,13 +197,35 @@ const GENERATOR_MAP = {
   // Vectơ
   'vector-2d': generateVector2D,
   'vector-sum': generateVectorSum,
-  'vector-difference': generateVectorSum,
-  'vector-dot-product': generateVector2D,
-  'vector-projection': generateVector2D,
+  'vector-difference': generateVectorDifference,
+  'vector-dot-product': generateVectorDotProduct,
+  'vector-projection': generateVectorProjection,
   'vector-3d': generateVector3D,
   'vector-3d-sum': generateVector3DSum,
   'vector-cross-product': generateVectorCrossProduct,
-  'coordinate-system-3d': generateCoordinateSystem3D
+  'coordinate-system-3d': generateCoordinateSystem3D,
+
+  // Vật lý - Lực học
+  'physics-inclined-plane': generateInclinedPlane,
+  'physics-fbd': generateFreeBodyDiagram,
+  'physics-pulley': generatePulley,
+  'physics-spring': generateSpringSystem,
+
+  // Vật lý - Quang học
+  'physics-convex-lens': generateConvexLens,
+  'physics-concave-lens': generateConcaveLens,
+  'physics-mirror-concave': generateConcaveMirror,
+  'physics-mirror-convex': generateConvexMirror,
+
+  // Vật lý - Đồ thị động học
+  'physics-velocity-time': generateVelocityTimeGraph,
+  'physics-position-time': generatePositionTimeGraph,
+
+  // Vật lý - Điện học
+  'physics-electric-field-positive': generateElectricFieldPositive,
+  'physics-electric-field-negative': generateElectricFieldNegative,
+  'physics-circuit-series': generateCircuitSeries,
+  'physics-circuit-parallel': generateCircuitParallel
 };
 
 export function getGenerator(shapeId) {
