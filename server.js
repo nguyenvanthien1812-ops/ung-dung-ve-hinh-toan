@@ -93,7 +93,7 @@ app.get('/api/health', (req, res) => {
 
 // ── Fallback: trả về index.html cho mọi route (SPA) ─────────────
 if (IS_PRODUCTION) {
-  app.get('*', (req, res) => {
+  app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
