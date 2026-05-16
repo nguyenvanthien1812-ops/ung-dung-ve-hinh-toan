@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ung-dung-ve-toan
+    env: node
+    plan: free
+    buildCommand: |
+      npm install &&
+      npm run build &&
+      curl -L https://github.com/typst/typst/releases/download/v0.12.0/typst-x86_64-unknown-linux-musl.tar.xz -o typst.tar.xz &&
+      tar -xJf typst.tar.xz &&
+      mv typst-x86_64-unknown-linux-musl/typst typst-linux &&
+      chmod +x typst-linux &&
+      rm -rf typst.tar.xz typst-x86_64-unknown-linux-musl
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: ung-dung-ve-toan
+          property: host

@@ -164,7 +164,11 @@ function App() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://localhost:3001/api/compile', {
+      // Production: cùng origin (relative URL). Dev: localhost:3001
+      const apiUrl = import.meta.env.PROD
+        ? '/api/compile'
+        : 'http://localhost:3001/api/compile'
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: code })
