@@ -99,12 +99,13 @@ function ColorSelect({ value, onChange }) {
 let _idSeq = 0;
 const newId = () => ++_idSeq;
 
-function PromptColorBuilder() {
+function PromptColorBuilder({ geminiUrl }) {
   const [description, setDescription] = useState('');
   const [points,  setPoints]  = useState([]);
   const [edges,   setEdges]   = useState([]);
   const [regions, setRegions] = useState([]);
   const [copied,  setCopied]  = useState(false);
+  const [sent,    setSent]    = useState(false);
 
   // --- Points ---
   const addPoint    = () => setPoints(p => [...p, { id: newId(), name: '', color: COLORS[0] }]);
@@ -131,6 +132,23 @@ function PromptColorBuilder() {
     navigator.clipboard.writeText(prompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSendToGemini = () => {
+    if (!prompt) return;
+    // Sao chép prompt vào clipboard trước
+    navigator.clipboard.writeText(prompt).catch(() => {});
+    // Mở Gemini trong cửa sổ mới căn phải màn hình
+    const winW  = 840;
+    const winH  = window.screen.availHeight;
+    const winL  = Math.max(0, window.screen.availWidth - winW);
+    window.open(
+      geminiUrl || 'https://gemini.google.com',
+      'gemini_typst_window',
+      `width=${winW},height=${winH},left=${winL},top=0,resizable=yes,scrollbars=yes`
+    );
+    setSent(true);
+    setTimeout(() => setSent(false), 6000);
   };
 
   return (
@@ -258,19 +276,45 @@ function PromptColorBuilder() {
         ))}
       </div>
 
-      {/* Prompt đã tạo + nút copy */}
+      {/* Prompt đã tạo + nút gửi / copy */}
       {description.trim() ? (
         <div className="pb-output">
           <div className="pb-output-header">
-            <span className="pb-output-label">Prompt tự động tạo — copy dán vào Gemini AI:</span>
-            <button
-              className={`pb-copy-btn ${copied ? 'pb-copied' : ''}`}
-              onClick={handleCopy}
-            >
-              {copied ? '✓ Đã sao chép!' : '📋 Sao chép prompt'}
-            </button>
+            <span className="pb-output-label">Prompt tự động tạo:</span>
+            <div className="pb-output-actions">
+              <button
+                className={`pb-copy-btn ${copied ? 'pb-copied' : ''}`}
+                onClick={handleCopy}
+                title="Chỉ sao chép, không mở Gemini"
+              >
+                {copied ? '✓ Đã sao chép!' : '📋 Sao chép'}
+              </button>
+              <button
+                className="pb-send-btn"
+                onClick={handleSendToGemini}
+                title="Sao chép prompt và mở Gemini trong cửa sổ mới"
+              >
+                🚀 Gửi lên Gemini
+              </button>
+            </div>
           </div>
-          <textarea className="pb-prompt-preview" value={prompt} readOnly rows={12} />
+
+          {/* Thông báo hướng dẫn sau khi bấm Gửi lên Gemini */}
+          {sent && (
+            <div className="pb-sent-notice">
+              <div className="pb-sent-icon">✅</div>
+              <div className="pb-sent-text">
+                <strong>Gemini đã mở! Prompt đã sao chép vào clipboard.</strong>
+                <ol className="pb-sent-steps">
+                  <li>Trong cửa sổ Gemini vừa mở → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để dán prompt</li>
+                  <li>Nhấn <kbd>Enter</kbd> để gửi cho Gemini</li>
+                  <li>Copy mã Typst từ Gemini → Dán vào <strong>Code Editor (Manual)</strong></li>
+                </ol>
+              </div>
+            </div>
+          )}
+
+          <textarea className="pb-prompt-preview" value={prompt} readOnly rows={10} />
         </div>
       ) : (
         <p className="pb-output-hint">Điền mô tả hình vẽ ở trên để xem prompt được tạo tự động.</p>

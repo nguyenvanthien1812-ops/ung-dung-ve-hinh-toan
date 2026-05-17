@@ -492,7 +492,7 @@ function App() {
               {/* Prompt Color Builder */}
               <details className="section-card">
                 <summary><strong>🎨 Tạo Prompt Màu Sắc Cho AI</strong></summary>
-                <PromptColorBuilder />
+                <PromptColorBuilder geminiUrl={GEMINI_GEM_URL} />
               </details>
 
               {/* AI Prompts */}
