@@ -53,6 +53,17 @@ const PROMPT_SUGGESTIONS = [
 const HISTORY_KEY = 'typst_draw_history'
 const GEMINI_GEM_URL = 'https://gemini.google.com/gem/1kO2UILx2K833tdJSqC0DWiTTtsOVEz_5?usp=sharing'
 
+function parseTypstError(raw) {
+  if (!raw) return ''
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean)
+  const errLine = lines.find(l => l.startsWith('error:'))
+  const locLine = lines.find(l => /\.typ:\d+:\d+/.test(l))
+  const locMatch = locLine?.match(/\.typ:(\d+):(\d+)/)
+  const location = locMatch ? ` (dòng ${locMatch[1]}, cột ${locMatch[2]})` : ''
+  if (errLine) return errLine.replace('error:', '⚠ Lỗi Typst:') + location
+  return lines[0] || raw
+}
+
 function App() {
   // App Mode: 'builder' | 'code' | 'templates'
   const [appMode, setAppMode] = useState('builder')
@@ -91,6 +102,8 @@ function App() {
   const [error, setError] = useState('')
   const [showDonate, setShowDonate] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [toast, setToast] = useState('')
+  const [svgZoom, setSvgZoom] = useState(1)
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem(HISTORY_KEY)
     return saved ? JSON.parse(saved) : []
@@ -186,12 +199,13 @@ function App() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.details || 'Không thể tạo hình vẽ.')
+        throw new Error(parseTypstError(errorData.details) || 'Không thể tạo hình vẽ.')
       }
 
       const data = await response.json()
       if (data.svg) {
         setSvgImage(data.svg)
+        setSvgZoom(1)
         saveToHistory(code, appMode, { shapeId: selectedShape?.id })
       }
     } catch (err) {
@@ -202,9 +216,14 @@ function App() {
     }
   }, [appMode, selectedShape, saveToHistory])
 
+  const showToast = (msg) => {
+    setToast(msg)
+    setTimeout(() => setToast(''), 2000)
+  }
+
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text)
-    alert('Đã sao chép!')
+    showToast('✓ Đã sao chép!')
   }
 
   const downloadSVG = () => {
@@ -266,6 +285,10 @@ function App() {
       setManualCode(item.code)
     }
   }
+
+  const zoomIn  = () => setSvgZoom(z => Math.min(z + 0.25, 4))
+  const zoomOut = () => setSvgZoom(z => Math.max(z - 0.25, 0.25))
+  const zoomReset = () => setSvgZoom(1)
 
   const examQuestionText = mode === 'auto'
     ? `Câu 1. Đường cong trong hình bên là đồ thị của hàm số nào dưới đây?\nA. y = ${equation}.\nB. y = -(${equation}).\nC. y = ${equation.replace('+', '-')}.\nD. y = 2*(${equation}).`
@@ -405,15 +428,32 @@ function App() {
 
             <div className="col-right">
               {svgImage ? (
-                <div className="result-panel">
-                  <div className="svg-container" dangerouslySetInnerHTML={{ __html: svgImage }} />
+                <div className="result-panel" style={{ position: 'relative' }}>
+                  {isLoading && <div className="result-loading-overlay"><div className="spinner" /></div>}
+                  <div className="zoom-bar">
+                    <button className="zoom-btn" onClick={zoomOut} title="Thu nhỏ">🔍−</button>
+                    <span className="zoom-label">{Math.round(svgZoom * 100)}%</span>
+                    <button className="zoom-btn" onClick={zoomIn} title="Phóng to">🔍+</button>
+                    <button className="zoom-btn" onClick={zoomReset} title="Về kích thước gốc">⊡</button>
+                  </div>
+                  <div className="svg-container">
+                    <div style={{ transform: `scale(${svgZoom})`, transformOrigin: 'top center', transition: 'transform 0.15s' }}
+                      dangerouslySetInnerHTML={{ __html: svgImage }} />
+                  </div>
                 </div>
               ) : (
                 <div className="result-panel result-empty">
-                  <div className="empty-svg-placeholder">
-                    <span className="placeholder-icon">📐</span>
-                    <p>Chọn hình và điền thông số, sau đó nhấn <strong>Tạo Hình Vẽ</strong></p>
-                  </div>
+                  {isLoading ? (
+                    <div className="result-loading">
+                      <div className="spinner" />
+                      <p>Đang tạo hình vẽ...</p>
+                    </div>
+                  ) : (
+                    <div className="empty-svg-placeholder">
+                      <span className="placeholder-icon">📐</span>
+                      <p>Chọn hình và điền thông số, sau đó nhấn <strong>Tạo Hình Vẽ</strong></p>
+                    </div>
+                  )}
                 </div>
               )}
               {error && <div className="error-msg">{error}</div>}
@@ -470,19 +510,37 @@ function App() {
                       className="code-input"
                       value={manualCode}
                       onChange={(e) => setManualCode(e.target.value)}
-                      rows={16}
+                      rows={12}
                       placeholder="Nhập mã Typst tại đây..."
                     />
                   </div>
                 )}
               </div>
 
+              {/* Generate button */}
+              <div className="generate-actions">
+                <button
+                  className="primary generate-btn"
+                  onClick={() => {
+                    setError('')
+                    const code = mode === 'auto' ? generateTypstCode(equation, minX, maxX, showGrid) : manualCode
+                    if (mode === 'auto') setTypstCode(code)
+                    handleCompile(code)
+                  }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? '⏳ Đang xử lý...' : '🚀 Tạo Hình Vẽ'}
+                </button>
+              </div>
+
+              {error && <div className="error-msg">{error}</div>}
+
               {/* Templates for Code mode */}
-              <details className="section-card" open={mode === 'manual'}>
+              <details className="section-card">
                 <summary><strong>📋 Mẫu Có Sẵn</strong></summary>
                 <div className="template-chips-list">
                   {TEMPLATES.map((t, i) => (
-                    <div key={i} className="template-chip" onClick={() => { setMode('manual'); setManualCode(t.code) }}>
+                    <div key={i} className="template-chip" onClick={() => { setMode('manual'); setManualCode(t.code); handleCompile(t.code) }}>
                       {t.name}
                     </div>
                   ))}
@@ -510,29 +568,22 @@ function App() {
                 </div>
               </details>
 
-              {/* Generate button */}
-              <div className="generate-actions">
-                <button
-                  className="primary generate-btn"
-                  onClick={() => {
-                    setError('')
-                    const code = mode === 'auto' ? generateTypstCode(equation, minX, maxX, showGrid) : manualCode
-                    if (mode === 'auto') setTypstCode(code)
-                    handleCompile(code)
-                  }}
-                  disabled={isLoading}
-                >
-                  {isLoading ? '⏳ Đang xử lý...' : '🚀 Tạo Hình Vẽ'}
-                </button>
-              </div>
-
-              {error && <div className="error-msg">{error}</div>}
             </div>
 
             <div className="col-right">
               {svgImage ? (
-                <div className="result-panel">
-                  <div className="svg-container" dangerouslySetInnerHTML={{ __html: svgImage }} />
+                <div className="result-panel" style={{ position: 'relative' }}>
+                  {isLoading && <div className="result-loading-overlay"><div className="spinner" /></div>}
+                  <div className="zoom-bar">
+                    <button className="zoom-btn" onClick={zoomOut} title="Thu nhỏ">🔍−</button>
+                    <span className="zoom-label">{Math.round(svgZoom * 100)}%</span>
+                    <button className="zoom-btn" onClick={zoomIn} title="Phóng to">🔍+</button>
+                    <button className="zoom-btn" onClick={zoomReset} title="Về kích thước gốc">⊡</button>
+                  </div>
+                  <div className="svg-container">
+                    <div style={{ transform: `scale(${svgZoom})`, transformOrigin: 'top center', transition: 'transform 0.15s' }}
+                      dangerouslySetInnerHTML={{ __html: svgImage }} />
+                  </div>
                   {mode === 'auto' && typstCode && (
                     <details className="section-card" style={{ marginTop: '1rem' }}>
                       <summary><strong>📄 Mã Typst</strong></summary>
@@ -552,10 +603,17 @@ function App() {
                 </div>
               ) : (
                 <div className="result-panel result-empty">
-                  <div className="empty-svg-placeholder">
-                    <span className="placeholder-icon">💻</span>
-                    <p>Viết mã Typst và nhấn <strong>Tạo Hình Vẽ</strong></p>
-                  </div>
+                  {isLoading ? (
+                    <div className="result-loading">
+                      <div className="spinner" />
+                      <p>Đang tạo hình vẽ...</p>
+                    </div>
+                  ) : (
+                    <div className="empty-svg-placeholder">
+                      <span className="placeholder-icon">💻</span>
+                      <p>Viết mã Typst và nhấn <strong>Tạo Hình Vẽ</strong></p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -592,6 +650,7 @@ function App() {
                               setAppMode('code')
                               setMode('manual')
                               setManualCode(template.code)
+                              handleCompile(template.code)
                             }}
                             title="Nhấp để dùng trong Code Editor"
                           >
@@ -655,6 +714,9 @@ function App() {
         )}
       </div>
 
+      {/* ==================== TOAST NOTIFICATION ==================== */}
+      {toast && <div className="toast-notification">{toast}</div>}
+
       {/* ==================== HELP MODAL ==================== */}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
@@ -677,7 +739,7 @@ function App() {
               </div>
               <div className="donate-row">
                 <span className="donate-label">Số tài khoản</span>
-                <span className="donate-value copyable" onClick={() => { navigator.clipboard.writeText('9988250112'); alert('Đã sao chép số tài khoản!'); }}>
+                <span className="donate-value copyable" onClick={() => { navigator.clipboard.writeText('9988250112'); showToast('✓ Đã sao chép số tài khoản!') }}>
                   9988250112
                   <span className="copy-badge">Sao chép</span>
                 </span>
