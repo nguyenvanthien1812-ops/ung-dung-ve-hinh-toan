@@ -102,6 +102,7 @@ function App() {
   const [error, setError] = useState('')
   const [showDonate, setShowDonate] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
   const [toast, setToast] = useState('')
   const [svgZoom, setSvgZoom] = useState(1)
   const [history, setHistory] = useState(() => {
@@ -323,6 +324,9 @@ function App() {
           </button>
         </nav>
         <div className="top-bar-right">
+          <button className="video-btn" onClick={() => setShowVideo(true)} title="Xem video hướng dẫn">
+            ▶ Video
+          </button>
           <button className="help-btn" onClick={() => setShowHelp(true)} title="Hướng dẫn sử dụng">
             📖 Hướng dẫn
           </button>
@@ -716,6 +720,30 @@ function App() {
 
       {/* ==================== TOAST NOTIFICATION ==================== */}
       {toast && <div className="toast-notification">{toast}</div>}
+
+      {/* ==================== VIDEO MODAL ==================== */}
+      {showVideo && (
+        <div className="video-overlay" onClick={() => setShowVideo(false)}>
+          <div className="video-modal" onClick={e => e.stopPropagation()}>
+            <div className="video-modal-header">
+              <span className="video-modal-title">▶ Video Hướng Dẫn Sử Dụng</span>
+              <button className="video-modal-close" onClick={() => setShowVideo(false)} title="Đóng">×</button>
+            </div>
+            <div className="video-wrapper">
+              <iframe
+                src="https://www.youtube.com/embed/hC_A0VuaovM"
+                title="Hướng dẫn sử dụng ứng dụng vẽ toán"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <p className="video-modal-hint">
+              Bấm vào ngoài hoặc <strong>×</strong> để đóng.
+              <a href="https://youtu.be/hC_A0VuaovM" target="_blank" rel="noopener noreferrer">Mở trên YouTube ↗</a>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ==================== HELP MODAL ==================== */}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
