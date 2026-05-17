@@ -12,6 +12,7 @@ import DynamicShapeForm from './components/DynamicShapeForm.jsx'
 import StyleCustomizer from './components/StyleCustomizer.jsx'
 import AnnotationPanel from './components/AnnotationPanel.jsx'
 import PromptColorBuilder from './components/PromptColorBuilder.jsx'
+import HelpModal from './components/HelpModal.jsx'
 
 // Danh sách các mẫu hình vẽ phổ biến
 const TEMPLATES = [
@@ -89,6 +90,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showDonate, setShowDonate] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem(HISTORY_KEY)
     return saved ? JSON.parse(saved) : []
@@ -298,6 +300,9 @@ function App() {
           </button>
         </nav>
         <div className="top-bar-right">
+          <button className="help-btn" onClick={() => setShowHelp(true)} title="Hướng dẫn sử dụng">
+            📖 Hướng dẫn
+          </button>
           <button className="coffee-btn" onClick={() => setShowDonate(true)} title="Mời cà phê">
             ☕ Mời cà phê
           </button>
@@ -649,6 +654,9 @@ function App() {
           </details>
         )}
       </div>
+
+      {/* ==================== HELP MODAL ==================== */}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
 
       {/* ==================== DONATE MODAL ==================== */}
       {showDonate && (

@@ -1,0 +1,168 @@
+import { useState } from 'react';
+
+const SECTIONS = [
+  {
+    id: 'builder',
+    icon: '🎨',
+    title: 'Form Builder — Tạo hình từ form',
+    steps: [
+      { step: '1', text: 'Chọn chế độ <strong>🎨 Form Builder</strong> trên thanh điều hướng.' },
+      { step: '2', text: 'Bên trái: chọn <strong>loại hình vẽ</strong> (tam giác, đường tròn, đồ thị, vật lý...).' },
+      { step: '3', text: '<strong>Điền thông số</strong> vào form (cạnh, bán kính, hàm số...). Hình vẽ tự cập nhật sau 0.5 giây.' },
+      { step: '4', text: 'Bấm <strong>Tạo Hình Vẽ</strong> nếu muốn vẽ lại thủ công.' },
+      { step: '5', text: 'Hình vẽ SVG xuất hiện ở cột <strong>bên phải</strong>. Dùng nút ⬇ SVG / ⬇ PNG để tải về.' },
+    ],
+    tip: 'Mã Typst được tạo tự động hiển thị phía dưới form — có thể sao chép để dùng lại.',
+  },
+  {
+    id: 'style',
+    icon: '🖌️',
+    title: 'Tùy chỉnh Style — Màu nét, màu điểm, vùng tô',
+    steps: [
+      { step: '1', text: 'Sau khi chọn hình, mở mục <strong>🎨 Tùy chỉnh Style</strong> bên trái.' },
+      { step: '2', text: 'Chọn <strong>màu nét vẽ</strong> và <strong>độ dày</strong> cho các cạnh của hình.' },
+      { step: '3', text: 'Chọn <strong>kiểu nét</strong>: liền / đứt / chấm.' },
+      { step: '4', text: 'Chọn <strong>màu điểm</strong> và kích thước nếu muốn hiển thị điểm có màu.' },
+      { step: '5', text: 'Chọn <strong>màu nền (fill)</strong> và độ trong suốt để tô màu bên trong hình.' },
+    ],
+    tip: 'Hình vẽ tự cập nhật ngay khi thay đổi bất kỳ tùy chọn style nào.',
+  },
+  {
+    id: 'annotation',
+    icon: '✏️',
+    title: 'Chú Thích Màu — Tô màu từng phần (ý a, ý b)',
+    steps: [
+      { step: '1', text: 'Mở mục <strong>✏️ Chú Thích Màu</strong> sau khi đã tạo hình.' },
+      { step: '2', text: 'Bấm <strong>⦿ Điểm màu</strong>: nhập tọa độ x, y, nhãn (A/B/M), chọn màu → Thêm.' },
+      { step: '3', text: 'Bấm <strong>— Cạnh màu</strong>: nhập tọa độ điểm đầu, điểm cuối, chọn màu và độ dày → Thêm.' },
+      { step: '4', text: 'Bấm <strong>▲ Vùng tô</strong>: nhập các đỉnh theo dạng <code>x,y ; x,y ; x,y</code>, chọn màu và độ mờ → Thêm.' },
+      { step: '5', text: 'Hình vẽ tự cập nhật với các màu mới. Bấm <strong>×</strong> để xóa chú thích.' },
+    ],
+    tip: 'Ví dụ ý a tô xanh △ABC: nhập "0,0 ; 5,0 ; 1.8,2.4" → màu xanh → độ mờ 30%. Ý b tô hồng tương tự.',
+    example: '0,0 ; 5,0 ; 1.8,2.4',
+  },
+  {
+    id: 'codeeditor',
+    icon: '💻',
+    title: 'Code Editor — Tự viết hoặc dán mã Typst',
+    steps: [
+      { step: '1', text: 'Chọn chế độ <strong>💻 Code Editor</strong> trên thanh điều hướng.' },
+      { step: '2', text: '<strong>Auto (Đồ thị)</strong>: nhập hàm số y = f(x), khoảng x, bấm Tạo Hình Vẽ.' },
+      { step: '3', text: '<strong>Manual (Tự do)</strong>: dán mã Typst/CeTZ từ AI vào ô soạn thảo, bấm Tạo Hình Vẽ.' },
+      { step: '4', text: 'Dùng <strong>📋 Mẫu Có Sẵn</strong> để chọn nhanh các hình mẫu phổ biến.' },
+      { step: '5', text: 'Dùng <strong>🤖 Gợi Ý Prompt AI</strong> để sao chép câu lệnh mẫu gửi lên Gemini.' },
+    ],
+    tip: 'Sau khi vẽ thành công ở chế độ Manual, phần "Mẫu câu hỏi trắc nghiệm" tự tạo sẵn văn bản đề bài để copy.',
+  },
+  {
+    id: 'promptbuilder',
+    icon: '🤖',
+    title: 'Tạo Prompt Màu Cho AI — Sinh mã Typst có màu từ Gemini',
+    steps: [
+      { step: '1', text: 'Vào <strong>💻 Code Editor</strong>, mở mục <strong>🎨 Tạo Prompt Màu Sắc Cho AI</strong>.' },
+      { step: '2', text: 'Điền <strong>mô tả hình vẽ</strong>: "Tam giác ABC nội tiếp đường tròn tâm O bán kính 2".' },
+      { step: '3', text: 'Thêm <strong>màu điểm</strong>: A → Đỏ, B → Xanh dương, O → Đen.' },
+      { step: '4', text: 'Thêm <strong>màu cạnh</strong>: AB → Xanh lá 2pt, BC → Cam nét đứt.' },
+      { step: '5', text: 'Thêm <strong>vùng tô</strong>: "Ý a — △ABC" → Xanh nhạt 30%, "Ý b — △ADE" → Hồng 25%.' },
+      { step: '6', text: 'Bấm <strong>📋 Sao chép prompt</strong> → Dán vào <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini AI</a>.' },
+      { step: '7', text: 'Copy mã Typst Gemini trả về → Dán vào Code Editor (Manual) → Bấm Tạo Hình Vẽ.' },
+    ],
+    tip: 'Prompt tự chứa quy tắc kỹ thuật Typst bắt buộc, giúp Gemini sinh code đúng ngay lần đầu.',
+  },
+  {
+    id: 'templates',
+    icon: '📚',
+    title: 'Thư Viện Mẫu — Dùng lại các hình có sẵn',
+    steps: [
+      { step: '1', text: 'Chọn chế độ <strong>📚 Templates</strong> trên thanh điều hướng.' },
+      { step: '2', text: 'Duyệt các <strong>mẫu hình vẽ</strong> theo danh mục (hình học, đồ thị, vật lý...).' },
+      { step: '3', text: 'Bấm vào một mẫu → tự chuyển sang Code Editor với mã đã điền sẵn.' },
+      { step: '4', text: 'Dùng <strong>⚡ Truy cập nhanh Form Builder</strong> để mở thẳng form của một loại hình.' },
+    ],
+    tip: 'Kết hợp mẫu + chỉnh sửa thủ công trong Code Editor để tạo hình phức tạp nhanh hơn.',
+  },
+  {
+    id: 'export',
+    icon: '⬇️',
+    title: 'Tải về — SVG và PNG',
+    steps: [
+      { step: '1', text: 'Sau khi hình vẽ xuất hiện, hai nút <strong>⬇ SVG</strong> và <strong>⬇ PNG</strong> hiện trên thanh tiêu đề.' },
+      { step: '2', text: '<strong>SVG</strong>: file vector, phóng to không vỡ, dùng cho Word/PowerPoint/LaTeX.' },
+      { step: '3', text: '<strong>PNG</strong>: ảnh raster 2×, nền trắng, dùng cho đề thi, Google Docs.' },
+    ],
+    tip: 'Nên dùng SVG nếu cần chèn vào LaTeX hoặc chỉnh sửa thêm bằng Inkscape.',
+  },
+];
+
+function HelpModal({ onClose }) {
+  const [openId, setOpenId] = useState('builder');
+
+  const toggle = (id) => setOpenId(prev => prev === id ? null : id);
+
+  return (
+    <div className="help-overlay" onClick={onClose}>
+      <div className="help-modal" onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="help-header">
+          <div className="help-title">
+            <span className="help-title-icon">📖</span>
+            <h2>Hướng Dẫn Sử Dụng</h2>
+          </div>
+          <button className="help-close" onClick={onClose} title="Đóng">×</button>
+        </div>
+
+        <p className="help-subtitle">
+          Ứng dụng vẽ hình toán học dùng Typst + CeTZ — dành cho giáo viên và học sinh.
+        </p>
+
+        {/* Accordion sections */}
+        <div className="help-body">
+          {SECTIONS.map(sec => (
+            <div key={sec.id} className={`help-section ${openId === sec.id ? 'open' : ''}`}>
+              <button
+                className="help-section-header"
+                onClick={() => toggle(sec.id)}
+              >
+                <span className="help-sec-icon">{sec.icon}</span>
+                <span className="help-sec-title">{sec.title}</span>
+                <span className="help-chevron">{openId === sec.id ? '▾' : '▸'}</span>
+              </button>
+
+              {openId === sec.id && (
+                <div className="help-section-body">
+                  <ol className="help-steps">
+                    {sec.steps.map(s => (
+                      <li key={s.step} className="help-step">
+                        <span className="help-step-num">{s.step}</span>
+                        <span
+                          className="help-step-text"
+                          dangerouslySetInnerHTML={{ __html: s.text }}
+                        />
+                      </li>
+                    ))}
+                  </ol>
+                  {sec.tip && (
+                    <div className="help-tip">
+                      <span className="help-tip-icon">💡</span>
+                      <span>{sec.tip}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="help-footer">
+          <span>Gặp vấn đề? Dùng <strong>🤖 Gemini AI</strong> để hỏi thêm về Typst/CeTZ.</span>
+          <button className="primary btn-sm" onClick={onClose}>Đã hiểu, đóng lại</button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export default HelpModal;
