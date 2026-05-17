@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 const COLORS = [
   '#000000', '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
   '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
@@ -13,8 +11,6 @@ const STROKE_STYLES = [
 ];
 
 function StyleCustomizer({ styleOptions, onChange }) {
-  const [expanded, setExpanded] = useState(false);
-
   const handleColorChange = (field, color) => {
     onChange({ ...styleOptions, [field]: color });
   };
@@ -28,17 +24,8 @@ function StyleCustomizer({ styleOptions, onChange }) {
   };
 
   return (
-    <div className="style-customizer glass-card">
-      <div
-        className="style-header"
-        onClick={() => setExpanded(!expanded)}
-      >
-        <h4>🎨 Tùy Chỉnh Giao Diện</h4>
-        <span className="toggle-icon">{expanded ? '▼' : '▶'}</span>
-      </div>
-
-      {expanded && (
-        <div className="style-options">
+    <div className="style-customizer">
+      <div className="style-options">
           {/* Màu nét vẽ */}
           <div className="option-group">
             <label>Màu nét vẽ</label>
@@ -156,7 +143,6 @@ function StyleCustomizer({ styleOptions, onChange }) {
             </label>
           </div>
         </div>
-      )}
     </div>
   );
 }

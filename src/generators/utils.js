@@ -40,3 +40,49 @@ export function buildPoint(x, y, styleOptions, size = 0.1) {
 // Standard Typst file header with CeTZ import
 export const TYPST_HEADER = `#import "@preview/cetz:0.3.2": canvas, draw
 #set page(width: auto, height: auto, margin: 10pt)`;
+
+// Parse vertex string "x1,y1 ; x2,y2 ; x3,y3" into array of [x, y] pairs
+function parseVertices(str) {
+  if (!str) return [];
+  return str.split(';')
+    .map(s => s.trim().split(',').map(n => parseFloat(n.trim())))
+    .filter(([x, y]) => !isNaN(x) && !isNaN(y));
+}
+
+// Append color annotation overlays into the #canvas({...}) block
+// Inserts before the last '})' which closes the canvas
+export function appendAnnotations(baseCode, annotations) {
+  if (!annotations || annotations.length === 0) return baseCode;
+
+  const lines = [];
+  for (const a of annotations) {
+    const color = colorToTypst(a.color || 'black');
+
+    if (a.type === 'point') {
+      const size = parseFloat(a.size) || 0.08;
+      lines.push(`  circle((${a.x}, ${a.y}), radius: ${size}, fill: ${color}, stroke: none)`);
+      if (a.label && a.label.trim()) {
+        lines.push(`  content((${a.x}, ${a.y}), [${a.label.trim()}], anchor: "south", padding: 6pt)`);
+      }
+    } else if (a.type === 'segment') {
+      const w = parseFloat(a.width) || 1.5;
+      lines.push(`  line((${a.x1}, ${a.y1}), (${a.x2}, ${a.y2}), stroke: ${w}pt + ${color})`);
+    } else if (a.type === 'region') {
+      const vertices = parseVertices(a.verticesStr);
+      if (vertices.length >= 3) {
+        const opacity = parseFloat(a.opacity) || 0.3;
+        const t = Math.round((1 - opacity) * 100);
+        const ptsStr = vertices.map(([x, y]) => `(${x}, ${y})`).join(', ');
+        lines.push(`  line(${ptsStr}, close: true, fill: ${color}.transparentize(${t}%), stroke: none)`);
+      }
+    }
+  }
+
+  if (lines.length === 0) return baseCode;
+
+  const annotBlock = '\n  // Chú thích màu\n' + lines.join('\n') + '\n';
+  const lastClose = baseCode.lastIndexOf('})');
+  if (lastClose === -1) return baseCode;
+
+  return baseCode.slice(0, lastClose) + annotBlock + baseCode.slice(lastClose);
+}

@@ -1087,3 +1087,467 @@ body {
   flex-direction: column;
   gap: 0.3rem;
 }
+
+/* ==================== ANNOTATION PANEL ==================== */
+
+.annotation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.annotation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.annotation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--bg-main);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.annot-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.annot-type-tag {
+  font-size: 0.72rem;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.annot-desc {
+  flex: 1;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+
+.annot-delete {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.annot-delete:hover {
+  color: #e74c3c;
+}
+
+.annotation-add-btns {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.annot-add-btn {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.annot-add-btn:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.annotation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background: var(--bg-main);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.annot-form-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.1rem;
+}
+
+.annot-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.annot-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.annot-col label,
+.annot-row label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.annot-row input[type="number"] {
+  width: 62px;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+}
+
+.annot-label-input {
+  width: 70px;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+}
+
+.annot-size-input {
+  width: 55px !important;
+}
+
+.annot-vertices-input {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-family: monospace;
+}
+
+.annot-range-val {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+}
+
+.annot-color-preview {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  vertical-align: middle;
+}
+
+.annot-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.annot-hint-small {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.annot-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  margin-top: 0.2rem;
+}
+
+/* ==================== PROMPT COLOR BUILDER ==================== */
+
+.prompt-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pb-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: var(--bg-main);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.pb-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.1rem;
+}
+
+.pb-section-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.pb-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.pb-add-btn {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pb-add-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.pb-empty {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.pb-textarea {
+  width: 100%;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.pb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pb-row label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pb-edge-row,
+.pb-region-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 0.35rem;
+  border: 1px solid var(--border-color);
+}
+
+.pb-input-short {
+  width: 55px;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.pb-input-medium {
+  width: 120px;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+}
+
+.pb-input-long {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+}
+
+.pb-input-xs {
+  width: 48px;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.pb-unit {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.pb-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pb-color-select {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pb-color-select select {
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.pb-color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  flex-shrink: 0;
+}
+
+.pb-range {
+  flex: 1;
+  min-width: 60px;
+}
+
+.pb-range-val {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.pb-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.pb-remove:hover { color: #e74c3c; }
+
+/* Output area */
+.pb-output {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pb-output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pb-output-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.pb-copy-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0.4rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  font-weight: 600;
+}
+
+.pb-copy-btn:hover { background: var(--accent-hover, #3a7bd5); }
+
+.pb-copy-btn.pb-copied {
+  background: #27ae60;
+  transform: scale(1.02);
+}
+
+.pb-prompt-preview {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4rem;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.pb-output-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0;
+}

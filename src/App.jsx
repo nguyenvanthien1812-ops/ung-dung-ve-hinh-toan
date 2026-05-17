@@ -4,11 +4,14 @@ import './App.css'
 import { SHAPE_CATEGORIES, getShapeById } from './data/shapeCategories.js'
 import { getFormSchema, getDefaultValues } from './data/formSchemas.js'
 import { getGenerator } from './generators/index.js'
+import { appendAnnotations } from './generators/utils.js'
 import { TEMPLATE_LIBRARY, getTemplatesByCategory } from './data/templates.js'
 
 import ShapeSelector from './components/ShapeSelector.jsx'
 import DynamicShapeForm from './components/DynamicShapeForm.jsx'
 import StyleCustomizer from './components/StyleCustomizer.jsx'
+import AnnotationPanel from './components/AnnotationPanel.jsx'
+import PromptColorBuilder from './components/PromptColorBuilder.jsx'
 
 // Danh sách các mẫu hình vẽ phổ biến
 const TEMPLATES = [
@@ -78,6 +81,9 @@ function App() {
     showAxis: true
   })
 
+  // Color annotations (overlay points, segments, regions)
+  const [annotations, setAnnotations] = useState([])
+
   // Shared state
   const [svgImage, setSvgImage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -94,6 +100,7 @@ function App() {
       const defaults = getDefaultValues(selectedShape.id)
       setFormValues(defaults)
       setGeneratedCode('')
+      setAnnotations([])
     }
   }, [selectedShape])
 
@@ -121,14 +128,15 @@ function App() {
     }
 
     try {
-      const code = generator({ ...formValues, styleOptions })
+      const baseCode = generator({ ...formValues, styleOptions })
+      const code = appendAnnotations(baseCode, annotations)
       setGeneratedCode(code)
       handleCompile(code)
     } catch (err) {
       console.error('Generator error:', err)
       setError('Lỗi khi tạo mã: ' + err.message)
     }
-  }, [selectedShape, formValues, styleOptions])
+  }, [selectedShape, formValues, styleOptions, annotations])
 
   // Auto-generate khi chọn shape hoặc thay đổi form values
   useEffect(() => {
@@ -349,6 +357,16 @@ function App() {
                       onChange={setStyleOptions}
                     />
                   </details>
+
+                  {/* Annotation Panel (collapsible) */}
+                  <details className="section-card annotation-section">
+                    <summary><strong>✏️ Chú Thích Màu</strong></summary>
+                    <AnnotationPanel
+                      annotations={annotations}
+                      onAdd={(a) => setAnnotations(prev => [...prev, a])}
+                      onDelete={(id) => setAnnotations(prev => prev.filter(a => a.id !== id))}
+                    />
+                  </details>
                 </>
               ) : (
                 <div className="section-card empty-state">
@@ -464,6 +482,12 @@ function App() {
                     </div>
                   ))}
                 </div>
+              </details>
+
+              {/* Prompt Color Builder */}
+              <details className="section-card">
+                <summary><strong>🎨 Tạo Prompt Màu Sắc Cho AI</strong></summary>
+                <PromptColorBuilder />
               </details>
 
               {/* AI Prompts */}
