@@ -1,4 +1,5 @@
 // Generator cho hình học không gian
+import { buildStroke, buildFill, TYPST_HEADER } from './utils.js';
 
 // ==================== HÌNH CHÓP ====================
 
@@ -15,23 +16,22 @@ export function generatePyramid(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   if (baseType === 'triangular') {
     return generateTriangularPyramid({
       baseSize, height, perspective,
       labelS, labelA, labelB, labelC,
       showHiddenEdges, showHeight,
-      stroke, strokeWidth
+      strokeStr
     });
   } else {
     return generateSquarePyramid({
       baseSize, height, perspective,
       labelS, labelA, labelB, labelC, labelD,
       showHiddenEdges, showHeight,
-      stroke, strokeWidth
+      strokeStr
     });
   }
 }
@@ -41,7 +41,7 @@ function generateTriangularPyramid(params) {
     baseSize, height, perspective,
     labelS, labelA, labelB, labelC,
     showHiddenEdges, showHeight,
-    stroke, strokeWidth
+    strokeStr = '1.5pt + black'
   } = params;
 
   // Tọa độ phối cảnh (projection 3D -> 2D)
@@ -59,23 +59,22 @@ function generateTriangularPyramid(params) {
   // Tâm đáy (để vẽ đường cao)
   const H = [baseSize / 2 + perspectiveAngle, 0];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Đáy tam giác (cạnh phía sau - vẽ trước)
-  ${showHiddenEdges ? `line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  ${showHiddenEdges ? `line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Các cạnh bên
-  line((${S[0]}, ${S[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${S[0]}, ${S[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${S[0]}, ${S[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${S[0]}, ${S[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
+  line((${S[0]}, ${S[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${S[0]}, ${S[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
 
   // Đáy tam giác (cạnh phía trước)
-  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
 
   ${showHeight ? `
   // Đường cao
@@ -97,7 +96,7 @@ function generateSquarePyramid(params) {
     baseSize, height, perspective,
     labelS, labelA, labelB, labelC, labelD,
     showHiddenEdges, showHeight,
-    stroke, strokeWidth
+    strokeStr = '1.5pt + black'
   } = params;
 
   // Tọa độ phối cảnh
@@ -117,30 +116,29 @@ function generateSquarePyramid(params) {
   // Tâm đáy
   const H = [(A[0] + C[0]) / 2, (A[1] + C[1]) / 2];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Cạnh khuất của đáy
   ${showHiddenEdges ? `
-  line((${A[0]}, ${A[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
-  line((${D[0]}, ${D[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  line((${A[0]}, ${A[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${D[0]}, ${D[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr}, dash: "dashed")
   ` : ''}
 
   // Cạnh bên khuất
-  ${showHiddenEdges ? `line((${S[0]}, ${S[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  ${showHiddenEdges ? `line((${S[0]}, ${S[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Đáy hình vuông (cạnh nhìn thấy)
-  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
 
   // Các cạnh bên nhìn thấy
-  line((${S[0]}, ${S[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${S[0]}, ${S[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${S[0]}, ${S[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${S[0]}, ${S[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
+  line((${S[0]}, ${S[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${S[0]}, ${S[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
 
   ${showHeight ? `
   // Đường cao
@@ -170,9 +168,8 @@ export function generatePrism(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   // Tọa độ phối cảnh
   const perspectiveRatio = 0.5;
@@ -191,28 +188,27 @@ export function generatePrism(params) {
     const B1 = [baseW + offsetX * perspectiveRatio, height + offsetY * perspectiveRatio];
     const C1 = [baseW / 2 + offsetX * perspectiveRatio, (baseW * Math.sqrt(3)) / 2 + height + offsetY * perspectiveRatio];
 
-    return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+    return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Đáy dưới
-  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), close: true, stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), close: true, stroke: ${strokeStr})
 
   // Cạnh bên khuất
-  ${showHiddenEdges ? `line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  ${showHiddenEdges ? `line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Đáy trên (cạnh khuất)
-  ${showHiddenEdges ? `line((${A1[0]}, ${A1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  ${showHiddenEdges ? `line((${A1[0]}, ${A1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Đáy trên (cạnh nhìn thấy)
-  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
 
   // Cạnh bên nhìn thấy
-  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
 
   // Nhãn
   content((${A[0]}, ${A[1]}), [A], anchor: "north-east")
@@ -248,7 +244,7 @@ export function generatePrism(params) {
     const verticalEdges = hexVerts.map((v, i) => {
       const visible = i < 4;
       const dash = visible ? '' : ', dash: "dashed"';
-      return `  line((${v[0]}, ${v[1]}), (${topVerts[i][0]}, ${topVerts[i][1]}), stroke: ${strokeWidth} + ${stroke}${dash})`;
+      return `  line((${v[0]}, ${v[1]}), (${topVerts[i][0]}, ${topVerts[i][1]}), stroke: ${strokeStr}${dash})`;
     }).join('\n');
 
     const botLabelLines = hexVerts.map((v, i) => {
@@ -259,17 +255,16 @@ export function generatePrism(params) {
       return `  content((${lx}, ${ly}), [${labels[i]}], anchor: "center")`;
     }).join('\n');
 
-    return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+    return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Đáy dưới
-  line(${botLines}, close: true, stroke: ${strokeWidth} + ${stroke})
+  line(${botLines}, close: true, stroke: ${strokeStr})
 
   // Đáy trên
-  line(${topLines}, close: true, stroke: ${strokeWidth} + ${stroke})
+  line(${topLines}, close: true, stroke: ${strokeStr})
 
   // Cạnh bên
 ${verticalEdges}
@@ -292,9 +287,8 @@ export function generateCube(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   // Tọa độ phối cảnh
   const perspectiveRatio = 0.5;
@@ -313,29 +307,28 @@ export function generateCube(params) {
   const C1 = [side + offsetX, side + offsetY];
   const D1 = [offsetX, side + offsetY];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt trước
-  rect((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+  rect((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
 
   // Cạnh khuất
   ${showHiddenEdges ? `
-  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
-  line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
-  rect((${A1[0]}, ${A1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  rect((${A1[0]}, ${A1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr}, dash: "dashed")
   ` : ''}
 
   // Cạnh nhìn thấy
-  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
 
   ${showDiagonals ? `
   // Đường chéo
-  line((${A[0]}, ${A[1]}), (${C1[0]}, ${C1[1]}), stroke: 0.5pt + ${stroke} , dash: "dotted")
+  line((${A[0]}, ${A[1]}), (${C1[0]}, ${C1[1]}), stroke: 0.5pt + black , dash: "dotted")
   ` : ''}
 
   // Nhãn
@@ -358,15 +351,13 @@ export function generateCylinder(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   // Tỷ lệ phối cảnh cho ellipse
   const ellipseRatio = perspective === 'Nghiêng' ? 0.3 : 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -376,15 +367,15 @@ export function generateCylinder(params) {
   let ratio = ${ellipseRatio}
 
   // Đáy dưới (ellipse)
-  arc((0, 0), start: 0deg, stop: 180deg, radius: (r, r * ratio), stroke: ${strokeWidth} + ${stroke})
-  ${showHiddenLines ? `arc((0, 0), start: 180deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  arc((0, 0), start: 0deg, stop: 180deg, radius: (r, r * ratio), stroke: ${strokeStr})
+  ${showHiddenLines ? `arc((0, 0), start: 180deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Đường sinh
-  line((-r, 0), (-r, h), stroke: ${strokeWidth} + ${stroke})
-  line((r, 0), (r, h), stroke: ${strokeWidth} + ${stroke})
+  line((-r, 0), (-r, h), stroke: ${strokeStr})
+  line((r, 0), (r, h), stroke: ${strokeStr})
 
   // Đáy trên (ellipse)
-  arc((0, h), start: 0deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeWidth} + ${stroke})
+  arc((0, h), start: 0deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeStr})
 
   ${showAxis ? `
   // Trục
@@ -410,14 +401,12 @@ export function generateCone(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const ellipseRatio = perspective === 'Nghiêng' ? 0.3 : 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -429,12 +418,12 @@ export function generateCone(params) {
   let O = (0, 0)
 
   // Đáy (ellipse)
-  arc(O, start: 0deg, stop: 180deg, radius: (r, r * ratio), stroke: ${strokeWidth} + ${stroke})
-  arc(O, start: 180deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  arc(O, start: 0deg, stop: 180deg, radius: (r, r * ratio), stroke: ${strokeStr})
+  arc(O, start: 180deg, stop: 360deg, radius: (r, r * ratio), stroke: ${strokeStr}, dash: "dashed")
 
   // Đường sinh
-  line(S, (-r, 0), stroke: ${strokeWidth} + ${stroke})
-  line(S, (r, 0), stroke: ${strokeWidth} + ${stroke})
+  line(S, (-r, 0), stroke: ${strokeStr})
+  line(S, (r, 0), stroke: ${strokeStr})
 
   ${showAxis ? `
   // Trục (đường cao)
@@ -443,7 +432,7 @@ export function generateCone(params) {
 
   ${showGeneratrix ? `
   // Đường sinh mẫu
-  line(S, (r, 0), stroke: ${strokeWidth} + ${stroke})
+  line(S, (r, 0), stroke: ${strokeStr})
   ` : ''}
 
   // Nhãn
@@ -461,12 +450,10 @@ export function generateSphere(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -475,11 +462,11 @@ export function generateSphere(params) {
   let r = ${radius}
 
   // Hình cầu (đường tròn chính)
-  circle(O, radius: r, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: r, stroke: ${strokeStr})
 
   ${showGreatCircle ? `
   // Đường tròn lớn (ellipse phối cảnh)
-  arc(O, start: 0deg, stop: 360deg, radius: (r, r * 0.3), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  arc(O, start: 0deg, stop: 360deg, radius: (r, r * 0.3), stroke: ${strokeStr}, dash: "dashed")
   ` : ''}
 
   ${showAxis ? `
@@ -488,7 +475,7 @@ export function generateSphere(params) {
   ` : ''}
 
   // Tâm
-  circle(O, radius: 0.05, fill: ${stroke})
+  circle(O, radius: 0.05, fill: black)
 
   // Nhãn
   content(O, [${labelO}], anchor: "north-east")
@@ -506,19 +493,17 @@ export function generatePlaneBasic(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt phẳng (parallelogram phối cảnh)
   line((-3, -0.5), (3, -0.5), (2.2, 1.2), (-2.2, 1.2), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Nhãn mặt phẳng
   content((2.4, 1.3), [$(${planeName})$], anchor: "south-west")
@@ -540,28 +525,26 @@ export function generateLinePlaneIntersect(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt phẳng
   line((-3, -0.3), (3, -0.3), (2.2, 1.4), (-2.2, 1.4), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Phần đường thẳng phía dưới mặt phẳng
-  line((0.4, -1.8), (0.15, 0.55), stroke: ${strokeWidth} + ${stroke})
+  line((0.4, -1.8), (0.15, 0.55), stroke: ${strokeStr})
 
   // Phần đường thẳng phía trên mặt phẳng
-  line((0.15, 0.55), (-0.4, 2.6), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((0.15, 0.55), (-0.4, 2.6), mark: (end: ">"), stroke: ${strokeStr})
 
   // Điểm giao
-  circle((0.15, 0.55), radius: 0.08, fill: ${stroke})
+  circle((0.15, 0.55), radius: 0.08, fill: black)
 
   // Nhãn
   content((2.4, 1.5), [$(${planeName})$], anchor: "south-west")
@@ -578,26 +561,24 @@ export function generateTwoPlanesIntersect(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt phẳng α (trái)
   line((-4, -0.5), (0, -1), (0, 1.5), (-3, 1.8), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Mặt phẳng β (phải)
   line((0, -1), (4, -0.5), (3, 1.8), (0, 1.5), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Giao tuyến
-  line((0, -1.5), (0, 2.2), stroke: 1.5pt + ${stroke})
+  line((0, -1.5), (0, 2.2), stroke: 1.5pt + black)
 
   // Nhãn
   content((-3.2, 1.8), [$(${plane1Name})$], anchor: "east")
@@ -618,9 +599,8 @@ export function generateTruncatedPyramid(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const pRatio = 0.5;
   const offX = perspective === 'Trái' ? -1 : perspective === 'Phải' ? 1 : 0;
@@ -643,35 +623,34 @@ export function generateTruncatedPyramid(params) {
   const C1 = [shift + topSize + offX * pRatio, height + offY * pRatio];
   const D1 = [shift + offX * pRatio, height + offY * pRatio];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Cạnh khuất đáy lớn
   ${showHiddenEdges ? `
-  line((${A[0]}, ${A[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
-  line((${D[0]}, ${D[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  line((${A[0]}, ${A[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${D[0]}, ${D[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr}, dash: "dashed")
   ` : ''}
 
   // Đáy lớn (cạnh nhìn thấy)
-  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
 
   // Đáy nhỏ
-  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${C1[0]}, ${C1[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeWidth} + ${stroke})
-  ${showHiddenEdges ? `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke})`}
+  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
+  line((${C1[0]}, ${C1[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr})
+  ${showHiddenEdges ? `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr}, dash: "dashed")` : `line((${D1[0]}, ${D1[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr})`}
 
   // Cạnh bên nhìn thấy
-  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeWidth} + ${stroke})
-  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr})
+  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
 
   // Cạnh bên khuất
-  ${showHiddenEdges ? `line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")` : ''}
+  ${showHiddenEdges ? `line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr}, dash: "dashed")` : ''}
 
   // Nhãn đáy lớn
   content((${A[0] - 0.3}, ${A[1]}), [${labelA}], anchor: "east")
@@ -698,17 +677,15 @@ export function generateTruncatedCone(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const ratio = perspective === 'Nghiêng' ? 0.3 : 0.1;
   const r1 = Number(radiusBottom);
   const r2 = Number(radiusTop);
   const h = Number(height);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -719,15 +696,15 @@ export function generateTruncatedCone(params) {
   let ratio = ${ratio}
 
   // Đáy dưới (ellipse)
-  arc((0, 0), start: 0deg, stop: 180deg, radius: (r1, r1 * ratio), stroke: ${strokeWidth} + ${stroke})
-  arc((0, 0), start: 180deg, stop: 360deg, radius: (r1, r1 * ratio), stroke: ${strokeWidth} + ${stroke}, dash: "dashed")
+  arc((0, 0), start: 0deg, stop: 180deg, radius: (r1, r1 * ratio), stroke: ${strokeStr})
+  arc((0, 0), start: 180deg, stop: 360deg, radius: (r1, r1 * ratio), stroke: ${strokeStr}, dash: "dashed")
 
   // Đáy trên (ellipse nhỏ hơn)
-  arc((0, h), start: 0deg, stop: 360deg, radius: (r2, r2 * ratio), stroke: ${strokeWidth} + ${stroke})
+  arc((0, h), start: 0deg, stop: 360deg, radius: (r2, r2 * ratio), stroke: ${strokeStr})
 
   // Đường sinh
-  line((-r1, 0), (-r2, h), stroke: ${strokeWidth} + ${stroke})
-  line((r1, 0), (r2, h), stroke: ${strokeWidth} + ${stroke})
+  line((-r1, 0), (-r2, h), stroke: ${strokeStr})
+  line((r1, 0), (r2, h), stroke: ${strokeStr})
 
   ${showAxis ? `
   // Trục
@@ -753,17 +730,15 @@ export function generateSphereSection(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const r = Number(radius);
   const h = Number(sectionHeight);
   // Bán kính mặt cắt: r_cut = sqrt(r² - h²)
   const rCut = parseFloat(Math.sqrt(Math.max(0, r * r - h * h)).toFixed(4));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -772,14 +747,14 @@ export function generateSphereSection(params) {
   let r = ${r}
 
   // Hình cầu
-  circle(O, radius: r, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: r, stroke: ${strokeStr})
 
   // Đường tròn lớn (mặt phẳng xích đạo, nét đứt)
   arc(O, start: 0deg, stop: 360deg, radius: (r, r * 0.3), stroke: 0.8pt + gray, dash: "dashed")
 
   // Mặt cắt tại chiều cao h = ${h.toFixed(2)}
-  arc((0, ${h}), start: 0deg, stop: 180deg, radius: (${rCut}, ${rCut} * 0.3), stroke: ${strokeWidth} + blue)
-  arc((0, ${h}), start: 180deg, stop: 360deg, radius: (${rCut}, ${rCut} * 0.3), stroke: ${strokeWidth} + blue, dash: "dashed")
+  arc((0, ${h}), start: 0deg, stop: 180deg, radius: (${rCut}, ${rCut} * 0.3), stroke: 1.5pt + blue)
+  arc((0, ${h}), start: 180deg, stop: 360deg, radius: (${rCut}, ${rCut} * 0.3), stroke: 1.5pt + blue, dash: "dashed")
 
   // Bán kính mặt cắt
   line((0, ${h}), (${rCut}, ${h}), stroke: gray, dash: "dashed")
@@ -790,7 +765,7 @@ export function generateSphereSection(params) {
   content((0.25, ${h / 2}), [h = ${h.toFixed(1)}], anchor: "west")
 
   // Tâm
-  circle(O, radius: 0.06, fill: ${stroke})
+  circle(O, radius: 0.06, fill: black)
 
   // Nhãn
   content((0, 0), [${labelO}], anchor: "north-east")
@@ -807,28 +782,26 @@ export function generateLinePerpendicularPlane(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt phẳng α
   line((-3, -0.5), (3, -0.5), (2.2, 0.8), (-2.2, 0.8), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Đường thẳng vuông góc
-  line((0, 0.15), (0, 3.5), stroke: ${strokeWidth} + ${stroke})
+  line((0, 0.15), (0, 3.5), stroke: ${strokeStr})
 
   // Ký hiệu góc vuông tại chân
-  line((0.25, 0.15), (0.25, 0.4), (0, 0.4), stroke: 0.7pt + ${stroke})
+  line((0.25, 0.15), (0.25, 0.4), (0, 0.4), stroke: 0.7pt + black)
 
   ${showFoot ? `
-  circle((0, 0.15), radius: 0.07, fill: ${stroke})
+  circle((0, 0.15), radius: 0.07, fill: black)
   content((0.3, 0.1), [${footLabel}], anchor: "west")
   ` : ''}
 

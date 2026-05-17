@@ -70,6 +70,34 @@ function DynamicShapeForm({ shapeId, formValues, onValueChange, onGenerate }) {
                 onChange={(e) => onValueChange(field.name, e.target.checked)}
               />
             )}
+
+            {field.type === 'color' && (
+              <input
+                id={field.name}
+                type="color"
+                value={formValues[field.name] ?? field.default ?? '#000000'}
+                onChange={(e) => onValueChange(field.name, e.target.value)}
+              />
+            )}
+
+            {field.type === 'range' && (
+              <div className="range-field">
+                <input
+                  id={field.name}
+                  type="range"
+                  min={field.min ?? 0}
+                  max={field.max ?? 1}
+                  step={field.step ?? 0.05}
+                  value={formValues[field.name] ?? field.default ?? 0}
+                  onChange={(e) => onValueChange(field.name, parseFloat(e.target.value))}
+                />
+                <span className="range-value">
+                  {field.unit === '%'
+                    ? `${Math.round((formValues[field.name] ?? field.default ?? 0) * 100)}%`
+                    : `${formValues[field.name] ?? field.default ?? 0}${field.unit || ''}`}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>

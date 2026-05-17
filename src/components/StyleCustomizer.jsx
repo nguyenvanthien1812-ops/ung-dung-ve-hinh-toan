@@ -83,6 +83,35 @@ function StyleCustomizer({ styleOptions, onChange }) {
             </select>
           </div>
 
+          {/* Màu điểm */}
+          <div className="option-group">
+            <label>Màu điểm</label>
+            <div className="color-grid">
+              {COLORS.map((color) => (
+                <button
+                  key={color}
+                  className={`color-btn ${styleOptions.pointColor === color ? 'active' : ''}`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handleColorChange('pointColor', color)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Kích thước điểm */}
+          <div className="option-group">
+            <label>Kích thước điểm</label>
+            <input
+              type="range"
+              min="0.05"
+              max="0.25"
+              step="0.05"
+              value={styleOptions.pointSize || 0.1}
+              onChange={(e) => handleStrokeChange('pointSize', e.target.value)}
+            />
+            <span className="range-value">{styleOptions.pointSize || 0.1}</span>
+          </div>
+
           {/* Màu nền */}
           <div className="option-group">
             <label>Màu nền (fill)</label>

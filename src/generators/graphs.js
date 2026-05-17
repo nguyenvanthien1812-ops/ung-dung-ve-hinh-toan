@@ -1,4 +1,5 @@
 // Generator cho đồ thị hàm số và vectơ
+import { buildStroke, buildFill, colorToTypst, TYPST_HEADER } from './utils.js';
 
 // ==================== ĐỒ THỊ HÀM SỐ ====================
 
@@ -11,9 +12,8 @@ export function generateLinearGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -45,7 +45,7 @@ export function generateLinearGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x + ${b}, style: (stroke: ${stroke} + ${strokeWidth}))
+      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x + ${b}, style: (stroke: ${strokeStr}))
     }
   )
 
@@ -64,9 +64,8 @@ export function generateQuadraticGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   // Tính đỉnh parabol
   const vertexX = -b / (2 * a);
@@ -102,13 +101,13 @@ export function generateQuadraticGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x + ${b} * x + ${c}, style: (stroke: ${stroke} + ${strokeWidth}))
+      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x + ${b} * x + ${c}, style: (stroke: ${strokeStr}))
     }
   )
 
   ${showVertex ? `
   // Đỉnh parabol
-  circle((${vertexX}, ${vertexY}), radius: 0.08, fill: ${stroke})
+  circle((${vertexX}, ${vertexY}), radius: 0.08, fill: black)
   content((${vertexX}, ${vertexY}), [I(${vertexX.toFixed(1)}, ${vertexY.toFixed(1)})], anchor: "south-west")
   ` : ''}
 
@@ -126,9 +125,8 @@ export function generateCubicGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -160,7 +158,7 @@ export function generateCubicGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x + ${b} * x * x + ${c} * x + ${d}, style: (stroke: ${stroke} + ${strokeWidth}))
+      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x + ${b} * x * x + ${c} * x + ${d}, style: (stroke: ${strokeStr}))
     }
   )
 
@@ -179,9 +177,8 @@ export function generateHyperbolaGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -225,8 +222,8 @@ export function generateHyperbolaGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${domain1Start}, ${domain1End}), x => ${k} / x, style: (stroke: ${stroke} + ${strokeWidth}))
-      plot.add(domain: (${domain2Start}, ${domain2End}), x => ${k} / x, style: (stroke: ${stroke} + ${strokeWidth}))
+      plot.add(domain: (${domain1Start}, ${domain1End}), x => ${k} / x, style: (stroke: ${strokeStr}))
+      plot.add(domain: (${domain2Start}, ${domain2End}), x => ${k} / x, style: (stroke: ${strokeStr}))
     }
   )
 
@@ -244,9 +241,8 @@ export function generateSineGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -278,7 +274,7 @@ export function generateSineGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.sin(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.sin(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -296,9 +292,8 @@ export function generateCosineGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -330,7 +325,7 @@ export function generateCosineGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.cos(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.cos(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -349,9 +344,8 @@ export function generateTangentGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -385,7 +379,7 @@ export function generateTangentGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (-calc.pi/2 + 0.1, calc.pi/2 - 0.1), x => ${amplitude} * calc.tan(${frequency} * x), style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (-calc.pi/2 + 0.1, calc.pi/2 - 0.1), x => ${amplitude} * calc.tan(${frequency} * x), style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -402,9 +396,8 @@ export function generateExponentialGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -432,7 +425,7 @@ export function generateExponentialGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => ${base} ^ x, style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => ${base} ^ x, style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -449,9 +442,8 @@ export function generateLogarithmGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -483,7 +475,7 @@ export function generateLogarithmGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.ln(x), style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => calc.ln(x), style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -500,9 +492,8 @@ export function generateAbsoluteLinearGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -530,7 +521,7 @@ export function generateAbsoluteLinearGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x + ${b}), style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x + ${b}), style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -547,9 +538,8 @@ export function generateAbsoluteGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const axisMinX = minX - 1;
   const axisMaxX = maxX + 1;
@@ -577,7 +567,7 @@ export function generateAbsoluteGraph(params) {
     size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
     x-tick-step: none, y-tick-step: none, axis-style: none,
     {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x * x + ${b} * x + ${c}), style: (stroke: ${stroke} + ${strokeWidth}), samples: 200)
+      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x * x + ${b} * x + ${c}), style: (stroke: ${strokeStr}), samples: 200)
     }
   )
 
@@ -597,9 +587,8 @@ export function generateVector2D(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const endX = startX + x;
   const endY = startY + y;
@@ -621,7 +610,7 @@ export function generateVector2D(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ
-  line((${startX}, ${startY}), (${endX}, ${endY}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((${startX}, ${startY}), (${endX}, ${endY}), mark: (end: ">"), stroke: ${strokeStr})
 
   ${showComponents ? `
   // Thành phần
@@ -643,9 +632,8 @@ export function generateVectorSum(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   if (method === 'Hình bình hành') {
     return `#import "@preview/cetz:0.3.2": canvas, draw
@@ -665,11 +653,11 @@ export function generateVectorSum(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ a
-  line((0, 0), (${x1}, ${y1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((0, 0), (${x1}, ${y1}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${x1 / 2}, ${y1 / 2}), [$arrow(a)$], anchor: "south-east")
 
   // Vectơ b
-  line((0, 0), (${x2}, ${y2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((0, 0), (${x2}, ${y2}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${x2 / 2}, ${y2 / 2}), [$arrow(b)$], anchor: "south-west")
 
   // Hình bình hành
@@ -677,7 +665,7 @@ export function generateVectorSum(params) {
   line((${x2}, ${y2}), (${x1 + x2}, ${y1 + y2}), stroke: gray, dash: "dashed")
 
   // Vectơ tổng
-  line((0, 0), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((0, 0), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${(x1 + x2) / 2}, ${(y1 + y2) / 2}), [$arrow(a) + arrow(b)$], anchor: "south")
 })`.trim();
   } else {
@@ -699,15 +687,15 @@ export function generateVectorSum(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ a
-  line((0, 0), (${x1}, ${y1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((0, 0), (${x1}, ${y1}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${x1 / 2}, ${y1 / 2}), [$arrow(a)$], anchor: "south-east")
 
   // Vectơ b (bắt đầu từ đầu mút của a)
-  line((${x1}, ${y1}), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((${x1}, ${y1}), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${x1 + x2 / 2}, ${y1 + y2 / 2}), [$arrow(b)$], anchor: "south-west")
 
   // Vectơ tổng
-  line((0, 0), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((0, 0), (${x1 + x2}, ${y1 + y2}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${(x1 + x2) / 2}, ${(y1 + y2) / 2}), [$arrow(a) + arrow(b)$], anchor: "north")
 })`.trim();
   }
@@ -728,9 +716,8 @@ export function generateCoordinateSystem3D(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const L = Number(axisLength) || 4;
   const O  = p3(0, 0, 0);
@@ -745,9 +732,9 @@ export function generateCoordinateSystem3D(params) {
   import draw: *
 
   // Hệ tọa độ Oxyz
-  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
-  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
-  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((${O[0]}, ${O[1]}), (${Ex[0]}, ${Ex[1]}), mark: (end: ">"), stroke: ${strokeStr})
+  line((${O[0]}, ${O[1]}), (${Ey[0]}, ${Ey[1]}), mark: (end: ">"), stroke: ${strokeStr})
+  line((${O[0]}, ${O[1]}), (${Ez[0]}, ${Ez[1]}), mark: (end: ">"), stroke: ${strokeStr})
 
   content((${O[0] - 0.2}, ${O[1] - 0.2}), [$O$], anchor: "north-east")
   content((${Ex[0] + 0.2}, ${Ex[1]}), [$${labelX}$], anchor: "west")
@@ -755,9 +742,9 @@ export function generateCoordinateSystem3D(params) {
   content((${Ez[0]}, ${Ez[1] + 0.2}), [$${labelZ}$], anchor: "south")
 
   // Nhãn đơn vị trên các trục
-  circle((${p3(1,0,0)[0]}, ${p3(1,0,0)[1]}), radius: 0.05, fill: ${stroke})
-  circle((${p3(0,1,0)[0]}, ${p3(0,1,0)[1]}), radius: 0.05, fill: ${stroke})
-  circle((${p3(0,0,1)[0]}, ${p3(0,0,1)[1]}), radius: 0.05, fill: ${stroke})
+  circle((${p3(1,0,0)[0]}, ${p3(1,0,0)[1]}), radius: 0.05, fill: black)
+  circle((${p3(0,1,0)[0]}, ${p3(0,1,0)[1]}), radius: 0.05, fill: black)
+  circle((${p3(0,0,1)[0]}, ${p3(0,0,1)[1]}), radius: 0.05, fill: black)
 })`.trim();
 }
 
@@ -769,9 +756,8 @@ export function generateVector3D(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx = Number(x), ny = Number(y), nz = Number(z);
   const L = Math.max(nx, ny, nz) + 1.5;
@@ -820,7 +806,7 @@ export function generateVector3D(params) {
   ` : ''}
 
   // Vectơ
-  line((${O[0]}, ${O[1]}), (${V[0]}, ${V[1]}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})
+  line((${O[0]}, ${O[1]}), (${V[0]}, ${V[1]}), mark: (end: ">"), stroke: ${strokeStr})
   content((${V[0] + 0.2}, ${V[1] + 0.1}), [$arrow(${label}) = (${nx}; ${ny}; ${nz})$], anchor: "south-west")
 })`.trim();
 }
@@ -832,9 +818,8 @@ export function generateVector3DSum(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx1 = Number(x1), ny1 = Number(y1), nz1 = Number(z1);
   const nx2 = Number(x2), ny2 = Number(y2), nz2 = Number(z2);
@@ -865,11 +850,11 @@ export function generateVector3DSum(params) {
   content((${Ez[0]}, ${Ez[1] + 0.2}), [$z$], anchor: "south")
 
   // Vectơ a
-  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${(Va[0] / 2 + 0.15).toFixed(3)}, ${(Va[1] / 2).toFixed(3)}), [$arrow(a)$], anchor: "south-east")
 
   // Vectơ b (từ O)
-  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${(Vb[0] / 2 - 0.15).toFixed(3)}, ${(Vb[1] / 2).toFixed(3)}), [$arrow(b)$], anchor: "south-west")
 
   // Các cạnh hình hộp (dashed)
@@ -877,7 +862,7 @@ export function generateVector3DSum(params) {
   line((${Vb[0]}, ${Vb[1]}), (${Vs[0]}, ${Vs[1]}), stroke: 0.5pt + blue, dash: "dashed")
 
   // Vectơ tổng
-  line((${O[0]}, ${O[1]}), (${Vs[0]}, ${Vs[1]}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((${O[0]}, ${O[1]}), (${Vs[0]}, ${Vs[1]}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${Vs[0] + 0.2}, ${Vs[1] + 0.1}), [$arrow(a) + arrow(b)$], anchor: "south-west")
 })`.trim();
 }
@@ -889,9 +874,8 @@ export function generateVectorCrossProduct(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx1 = Number(x1), ny1 = Number(y1), nz1 = Number(z1);
   const nx2 = Number(x2), ny2 = Number(y2), nz2 = Number(z2);
@@ -931,15 +915,15 @@ export function generateVectorCrossProduct(params) {
   content((${Ez[0]}, ${Ez[1] + 0.2}), [$z$], anchor: "south")
 
   // Vectơ a
-  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${O[0]}, ${O[1]}), (${Va[0]}, ${Va[1]}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${Va[0] + 0.2}, ${Va[1]}), [$arrow(a)$], anchor: "west")
 
   // Vectơ b
-  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((${O[0]}, ${O[1]}), (${Vb[0]}, ${Vb[1]}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${Vb[0] + 0.2}, ${Vb[1]}), [$arrow(b)$], anchor: "west")
 
   // Tích có hướng a × b
-  line((${O[0]}, ${O[1]}), (${Vc[0]}, ${Vc[1]}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((${O[0]}, ${O[1]}), (${Vc[0]}, ${Vc[1]}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${Vc[0] + 0.2}, ${Vc[1] + 0.1}), [$arrow(a) times arrow(b)$], anchor: "south-west")
 })`.trim();
 }
@@ -953,9 +937,8 @@ export function generateVectorDifference(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
   const dx = nx1 - nx2;
@@ -977,11 +960,11 @@ export function generateVectorDifference(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ a
-  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${nx1 / 2 + 0.2}, ${ny1 / 2}), [$arrow(a)$], anchor: "south-east")
 
   // Vectơ b (từ đầu mút a về gốc — để tính a - b = a + (-b))
-  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${nx2 / 2}, ${ny2 / 2 + 0.2}), [$arrow(b)$], anchor: "south-west")
 
   // Vectơ −b (đảo chiều b, vẽ nét đứt từ gốc)
@@ -993,7 +976,7 @@ export function generateVectorDifference(params) {
   line((${-nx2}, ${-ny2}), (${dx}, ${dy}), stroke: gray, dash: "dashed")
 
   // Vectơ hiệu a - b
-  line((0, 0), (${dx}, ${dy}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((0, 0), (${dx}, ${dy}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${dx / 2 + 0.2}, ${dy / 2}), [$arrow(a) - arrow(b)$], anchor: "west")
 })`.trim();
 }
@@ -1007,9 +990,8 @@ export function generateVectorDotProduct(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
   const lenA = Math.sqrt(nx1 * nx1 + ny1 * ny1);
@@ -1040,11 +1022,11 @@ export function generateVectorDotProduct(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ a
-  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${(nx1 * 1.1).toFixed(2)}, ${(ny1 * 1.1).toFixed(2)}), [$arrow(a)$], anchor: "south-west")
 
   // Vectơ b
-  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${(nx2 * 1.1).toFixed(2)}, ${(ny2 * 1.1).toFixed(2)}), [$arrow(b)$], anchor: "south-east")
 
   // Góc giữa hai vectơ
@@ -1070,9 +1052,8 @@ export function generateVectorProjection(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nx1 = Number(x1), ny1 = Number(y1), nx2 = Number(x2), ny2 = Number(y2);
   const lenBSq = nx2 * nx2 + ny2 * ny2;
@@ -1097,18 +1078,18 @@ export function generateVectorProjection(params) {
   content((-0.3, -0.3), [$O$])
 
   // Vectơ b (hướng chiếu)
-  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: ${strokeWidth} + green)
+  line((0, 0), (${nx2}, ${ny2}), mark: (end: ">"), stroke: 1.5pt + green)
   content((${nx2 + 0.3}, ${ny2}), [$arrow(b)$], anchor: "west")
 
   // Vectơ a
-  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((0, 0), (${nx1}, ${ny1}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${nx1 + 0.2}, ${ny1}), [$arrow(a)$], anchor: "west")
 
   // Đường vuông góc từ đầu mút a xuống đường b
   line((${nx1}, ${ny1}), (${projX}, ${projY}), stroke: 0.7pt + gray, dash: "dashed")
 
   // Vectơ hình chiếu (projection)
-  line((0, 0), (${projX}, ${projY}), mark: (end: ">"), stroke: ${strokeWidth} + red)
+  line((0, 0), (${projX}, ${projY}), mark: (end: ">"), stroke: 1.5pt + red)
   content((${projX / 2}, ${projY / 2 - 0.3}), [$"proj"_arrow(b) arrow(a)$], anchor: "north")
 
   // Điểm chân đường vuông góc
@@ -1126,9 +1107,8 @@ export function generateParametricCircle(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
   const r = Number(radius);
 
   return `#import "@preview/cetz:0.3.2": canvas, draw
@@ -1145,7 +1125,7 @@ export function generateParametricCircle(params) {
   content((-0.3, -0.3), [$O$])
 
   // Đường tròn tham số x = r·cos(t), y = r·sin(t)
-  circle((0, 0), radius: ${r}, stroke: ${strokeWidth} + ${stroke})
+  circle((0, 0), radius: ${r}, stroke: ${strokeStr})
 
   // Bán kính mẫu
   line((0, 0), (${r}, 0), stroke: gray, dash: "dashed")
@@ -1158,7 +1138,7 @@ export function generateParametricCircle(params) {
   ` : ''}
 
   // Nhãn tâm
-  circle((0, 0), radius: 0.06, fill: ${stroke})
+  circle((0, 0), radius: 0.06, fill: black)
   content((0.15, 0.15), [${labelO}], anchor: "south-west")
 
   // Phương trình
@@ -1173,9 +1153,8 @@ export function generateParametricEllipse(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
   const a = Number(semiA), b = Number(semiB);
   const maxR = Math.max(a, b);
 
@@ -1193,7 +1172,7 @@ export function generateParametricEllipse(params) {
   content((-0.3, -0.3), [$O$])
 
   // Elip tham số x = a·cos(t), y = b·sin(t)
-  arc((0, 0), start: 0deg, stop: 360deg, radius: (${a}, ${b}), stroke: ${strokeWidth} + ${stroke})
+  arc((0, 0), start: 0deg, stop: 360deg, radius: (${a}, ${b}), stroke: ${strokeStr})
 
   ${showAxes ? `
   // Bán trục a và b
@@ -1204,7 +1183,7 @@ export function generateParametricEllipse(params) {
   ` : ''}
 
   // Tâm
-  circle((0, 0), radius: 0.06, fill: ${stroke})
+  circle((0, 0), radius: 0.06, fill: black)
 
   // Phương trình
   content((${-a - 0.5}, ${-b - 0.7}), [$x = ${a}cos(t), space y = ${b}sin(t)$], anchor: "west")
@@ -1218,9 +1197,8 @@ export function generateParametricGeneral(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nX = Number(freqX), nY = Number(freqY);
   const aX = Number(ampX), aY = Number(ampY);
@@ -1251,7 +1229,7 @@ export function generateParametricGeneral(params) {
   content((-0.3, -0.3), [$O$])
 
   // Đường cong Lissajous tham số
-  line(${ptsStr}, stroke: ${strokeWidth} + ${stroke})
+  line(${ptsStr}, stroke: ${strokeStr})
 
   // Phương trình
   content((${-aX - 0.5}, ${-aY - 0.7}),

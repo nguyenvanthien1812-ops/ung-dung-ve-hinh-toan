@@ -1,4 +1,5 @@
 // Generator cho hình học phẳng
+import { buildStroke, buildFill, buildPoint, TYPST_HEADER } from './utils.js';
 
 // ==================== TAM GIÁC ====================
 
@@ -19,30 +20,30 @@ export function generateTriangle(params) {
   const sinB = Math.sqrt(Math.max(0, 1 - cosB * cosB));
   const A = [sideC * cosB, sideC * sinB];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
-  const fillColor = styleOptions.fillColor || 'transparent';
-  const fillOpacity = styleOptions.fillOpacity || 0.1;
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  const fillStyle = fillColor !== 'transparent'
-    ? `fill: ${fillColor}.transparentize(${(1 - fillOpacity) * 100}%)`
-    : '';
-
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ tam giác
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke}${fillStyle ? ', ' + fillStyle : ''})
+       stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ''})
+
+  ${showPoints ? `
+  ${buildPoint(A[0], A[1], styleOptions, ptSize)}
+  ${buildPoint(B[0], B[1], styleOptions, ptSize)}
+  ${buildPoint(C[0], C[1], styleOptions, ptSize)}
+  ` : ''}
 
   // Nhãn đỉnh
-  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south")
-  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
-  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south", padding: 4pt)
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east", padding: 4pt)
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west", padding: 4pt)
 
   ${showSides ? `
   // Độ dài cạnh
@@ -81,29 +82,35 @@ export function generateRightTriangle(params) {
     B = [0, sideB];
   }
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ tam giác vuông
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ''})
 
   ${showRightAngleSymbol && rightAngleAt === 'A' ? `
   // Ký hiệu góc vuông
-  line((0.3, 0), (0.3, 0.3), (0, 0.3), stroke: 0.5pt + ${stroke})
+  line((0.3, 0), (0.3, 0.3), (0, 0.3), stroke: 0.5pt + black)
+  ` : ''}
+
+  ${showPoints ? `
+  ${buildPoint(A[0], A[1], styleOptions, ptSize)}
+  ${buildPoint(B[0], B[1], styleOptions, ptSize)}
+  ${buildPoint(C[0], C[1], styleOptions, ptSize)}
   ` : ''}
 
   // Nhãn đỉnh
-  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "north-east")
-  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-west")
-  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "south-east")
+  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "north-east", padding: 4pt)
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-west", padding: 4pt)
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "south-east", padding: 4pt)
 
   ${showSides ? `
   // Độ dài cạnh
@@ -130,31 +137,36 @@ export function generateIsoscelesTriangle(params) {
   const B = [0, 0];
   const C = [base, 0];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ tam giác cân
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ''})
 
   ${showEqualMarks ? `
-  // Dấu cạnh bằng nhau trên AB
-  line((${base / 2 - 0.2}, ${height / 2 + 0.1}), (${base / 2 - 0.1}, ${height / 2 - 0.1}), stroke: 0.5pt + ${stroke})
-  // Dấu cạnh bằng nhau trên AC
-  line((${base / 2 + 0.1}, ${height / 2 - 0.1}), (${base / 2 + 0.2}, ${height / 2 + 0.1}), stroke: 0.5pt + ${stroke})
+  // Dấu cạnh bằng nhau
+  line((${base / 2 - 0.2}, ${height / 2 + 0.1}), (${base / 2 - 0.1}, ${height / 2 - 0.1}), stroke: 0.8pt + black)
+  line((${base / 2 + 0.1}, ${height / 2 - 0.1}), (${base / 2 + 0.2}, ${height / 2 + 0.1}), stroke: 0.8pt + black)
+  ` : ''}
+
+  ${showPoints ? `
+  ${buildPoint(A[0], A[1], styleOptions, ptSize)}
+  ${buildPoint(B[0], B[1], styleOptions, ptSize)}
+  ${buildPoint(C[0], C[1], styleOptions, ptSize)}
   ` : ''}
 
   // Nhãn đỉnh
-  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south")
-  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
-  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south", padding: 4pt)
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east", padding: 4pt)
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west", padding: 4pt)
 
   ${showSides ? `
   // Độ dài cạnh
@@ -180,31 +192,37 @@ export function generateEquilateralTriangle(params) {
   const B = [0, 0];
   const C = [side, 0];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ tam giác đều
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ''})
 
   ${showEqualMarks ? `
   // Dấu cạnh bằng nhau
-  line((${side / 2 - 0.1}, ${0.2}), (${side / 2 + 0.1}, ${0.2}), stroke: 0.5pt + ${stroke})
-  line((${side / 4 - 0.1}, ${height / 2}), (${side / 4 + 0.1}, ${height / 2}), stroke: 0.5pt + ${stroke})
-  line((${3 * side / 4 - 0.1}, ${height / 2}), (${3 * side / 4 + 0.1}, ${height / 2}), stroke: 0.5pt + ${stroke})
+  line((${side / 2 - 0.1}, ${0.2}), (${side / 2 + 0.1}, ${0.2}), stroke: 0.8pt + black)
+  line((${side / 4 - 0.1}, ${height / 2}), (${side / 4 + 0.1}, ${height / 2}), stroke: 0.8pt + black)
+  line((${3 * side / 4 - 0.1}, ${height / 2}), (${3 * side / 4 + 0.1}, ${height / 2}), stroke: 0.8pt + black)
+  ` : ''}
+
+  ${showPoints ? `
+  ${buildPoint(A[0], A[1], styleOptions, ptSize)}
+  ${buildPoint(B[0], B[1], styleOptions, ptSize)}
+  ${buildPoint(C[0], C[1], styleOptions, ptSize)}
   ` : ''}
 
   // Nhãn đỉnh
-  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south")
-  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east")
-  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west")
+  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "south", padding: 4pt)
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-east", padding: 4pt)
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "north-west", padding: 4pt)
 
   ${showSides ? `
   // Độ dài cạnh
@@ -222,17 +240,17 @@ export function generateInscribedTriangle(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   // Tọa độ cho tam giác đều nội tiếp
   const A = [0, radius];
   const B = [-radius * Math.sqrt(3) / 2, -radius / 2];
   const C = [radius * Math.sqrt(3) / 2, -radius / 2];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -240,11 +258,11 @@ export function generateInscribedTriangle(params) {
   let R = ${radius}
 
   // Vẽ đường tròn
-  circle(O, radius: R, stroke: ${strokeWidth} + gray)
+  circle(O, radius: R, stroke: luma(150))
 
   // Vẽ tam giác nội tiếp
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(90%))
+       stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ', fill: blue.transparentize(90%)'})
 
   ${showRadius ? `
   // Bán kính
@@ -283,25 +301,25 @@ export function generateCircumscribedTriangle(params) {
   const area = Math.sqrt(Math.max(0, sp * (sp - sideA) * (sp - sideB) * (sp - sideC)));
   const r = parseFloat((area / sp).toFixed(4));
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ tam giác ngoại tiếp đường tròn
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Đường tròn nội tiếp
-  circle((${Ix}, ${Iy}), radius: ${r}, stroke: ${strokeWidth} + ${stroke})
+  circle((${Ix}, ${Iy}), radius: ${r}, stroke: ${strokeStr})
 
   // Tâm nội tiếp
-  circle((${Ix}, ${Iy}), radius: 0.06, fill: ${stroke})
+  circle((${Ix}, ${Iy}), radius: 0.06, fill: black)
 
   ${showRadius ? `
   // Bán kính nội tiếp (vuông góc từ I đến BC = cạnh x-axis)
@@ -328,18 +346,18 @@ export function generateSquare(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ hình vuông
-  rect((0, 0), (${side}, ${side}), stroke: ${strokeWidth} + ${stroke})
+  rect((0, 0), (${side}, ${side}), stroke: ${strokeStr})
 
   ${showDiagonals ? `
   // Đường chéo
@@ -369,18 +387,18 @@ export function generateRectangle(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ hình chữ nhật
-  rect((0, 0), (${width}, ${height}), stroke: ${strokeWidth} + ${stroke})
+  rect((0, 0), (${width}, ${height}), stroke: ${strokeStr})
 
   ${showDiagonals ? `
   // Đường chéo
@@ -420,19 +438,19 @@ export function generateRhombus(params) {
   const C = [side + base, height];
   const D = [base, height];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vẽ hình thoi
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   ${showDiagonals ? `
   // Đường chéo
@@ -464,12 +482,12 @@ export function generateCircle(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -477,11 +495,11 @@ export function generateCircle(params) {
   let R = ${radius}
 
   // Vẽ đường tròn
-  circle(O, radius: R, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: R, stroke: ${strokeStr})
 
   ${showCenter ? `
   // Tâm
-  circle(O, radius: 0.05, fill: ${stroke})
+  circle(O, radius: 0.05, fill: black)
   ` : ''}
 
   ${showRadius ? `
@@ -504,16 +522,16 @@ export function generateCircleChord(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
   const angleRad = (chordAngle * Math.PI) / 180;
 
   const A = [radius, 0];
   const B = [radius * Math.cos(angleRad), radius * Math.sin(angleRad)];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -521,10 +539,10 @@ export function generateCircleChord(params) {
   let R = ${radius}
 
   // Vẽ đường tròn
-  circle(O, radius: R, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: R, stroke: ${strokeStr})
 
   // Dây cung
-  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeWidth} + ${stroke})
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
 
   ${showRadius ? `
   line(O, (${A[0]}, ${A[1]}), stroke: gray, dash: "dashed")
@@ -545,9 +563,10 @@ export function generateTangentCircle(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   // Tính tọa độ tiếp điểm
   const tangentLength = Math.sqrt(distance * distance - radius * radius);
@@ -557,8 +576,7 @@ export function generateTangentCircle(params) {
   const B = [radius * Math.cos(alpha), -radius * Math.sin(alpha)];
   const M = [distance, 0];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -569,11 +587,11 @@ export function generateTangentCircle(params) {
   let B = (${A[0]}, ${-A[1]})
 
   // Vẽ đường tròn
-  circle(O, radius: R, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: R, stroke: ${strokeStr})
 
   // Tiếp tuyến
-  line(M, A, stroke: ${strokeWidth} + ${stroke})
-  ${showBothTangents ? `line(M, B, stroke: ${strokeWidth} + ${stroke})` : ''}
+  line(M, A, stroke: ${strokeStr})
+  ${showBothTangents ? `line(M, B, stroke: ${strokeStr})` : ''}
 
   // Đường nối tâm với điểm M
   line(O, M, stroke: gray, dash: "dashed")
@@ -594,12 +612,12 @@ export function generateCircleSecant(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -607,10 +625,10 @@ export function generateCircleSecant(params) {
   let R = ${radius}
 
   // Vẽ đường tròn
-  circle(O, radius: R, stroke: ${strokeWidth} + ${stroke})
+  circle(O, radius: R, stroke: ${strokeStr})
 
   // Cát tuyến
-  line((-R - 2, ${distance}), (R + 2, ${distance}), stroke: ${strokeWidth} + ${stroke})
+  line((-R - 2, ${distance}), (R + 2, ${distance}), stroke: ${strokeStr})
 
   // Đường nối tâm
   line(O, (0, ${distance}), stroke: gray, dash: "dashed")
@@ -631,9 +649,10 @@ export function generateRegularPolygon(params) {
   } = params;
 
   const n = Math.max(3, Math.round(sides));
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
   const vertices = [];
@@ -662,13 +681,12 @@ export function generateRegularPolygon(params) {
     return `  content((${lx}, ${ly}), [${labels[k] || String.fromCharCode(65 + k)}], anchor: "${anchor}")`;
   }).join('\n');
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
-  line(${lineArgs}, close: true, stroke: ${strokeWidth} + ${stroke})
+  line(${lineArgs}, close: true, stroke: ${strokeStr})
 
 ${labelLines}
 ${showSides ? `  content((0, -${(radius + 0.4).toFixed(2)}), [a = ${sideLength}], anchor: "north")` : ''}
@@ -693,18 +711,18 @@ export function generateParallelogram(params) {
   const C = [parseFloat((width + shift).toFixed(4)), height];
   const D = [shift, height];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   ${showDiagonals ? `
   line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
@@ -737,18 +755,18 @@ export function generateTrapezoid(params) {
   const C = [parseFloat((bottomWidth - offset).toFixed(4)), height];
   const D = [parseFloat(offset.toFixed(4)), height];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   ${showDiagonals ? `
   line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
@@ -781,18 +799,18 @@ export function generateKite(params) {
   const C = [0, 0];
   const D = [-diagW / 2, topY];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   ${showDiagonals ? `
   line((${A[0]}, ${A[1]}), (${C[0]}, ${C[1]}), stroke: gray, dash: "dashed")
@@ -816,18 +834,18 @@ export function generateQuadrilateralGeneral(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${ax}, ${ay}), (${bx}, ${by}), (${cx}, ${cy}), (${dx}, ${dy}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   content((${ax - 0.3}, ${ay}), [${labelA}], anchor: "east")
   content((${bx + 0.3}, ${by}), [${labelB}], anchor: "west")
@@ -859,18 +877,18 @@ export function generateTriangleWithMedians(params) {
   const mB = [(A[0] + C[0]) / 2, (A[1] + C[1]) / 2];
   const mC = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Đường trung tuyến
   line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${mA[0].toFixed(3)}, ${mA[1].toFixed(3)}), stroke: 1pt + blue, dash: "dashed")
@@ -906,18 +924,18 @@ export function generateTriangleWithAltitudes(params) {
   const tC = ((C[0] - A[0]) * abDx + (C[1] - A[1]) * abDy) / (abDx * abDx + abDy * abDy);
   const hC = [A[0] + tC * abDx, A[1] + tC * abDy];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Đường cao
   line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${hA[0].toFixed(3)}, ${hA[1].toFixed(3)}), stroke: 1pt + red, dash: "dashed")
@@ -947,18 +965,18 @@ export function generateTriangleWithBisectors(params) {
   // Angle bisector foot from C: divides AB in ratio CA:CB = sideB:sideA
   const dC = [(sideB * B[0] + sideA * A[0]) / (sideA + sideB), (sideB * B[1] + sideA * A[1]) / (sideA + sideB)];
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), (${A[0].toFixed(3)}, ${A[1].toFixed(3)}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Đường phân giác
   line((${A[0].toFixed(3)}, ${A[1].toFixed(3)}), (${dA[0].toFixed(3)}, ${dA[1].toFixed(3)}), stroke: 1pt + green, dash: "dashed")
@@ -981,9 +999,10 @@ export function generateCircleSector(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const startRad = (startAngle * Math.PI) / 180;
   const endRad = ((startAngle + sectorAngle) * Math.PI) / 180;
@@ -992,8 +1011,7 @@ export function generateCircleSector(params) {
   const Bx = parseFloat((radius * Math.cos(endRad)).toFixed(4));
   const By = parseFloat((radius * Math.sin(endRad)).toFixed(4));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -1001,7 +1019,7 @@ export function generateCircleSector(params) {
 
   // Hình quạt tròn
   arc(O, radius: ${radius}, start: ${startAngle}deg, stop: ${startAngle + sectorAngle}deg,
-      mode: "PIE", stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(85%))
+      mode: "PIE", stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ', fill: blue.transparentize(85%)'})
 
   content(O, [${labelO}], anchor: "north-east")
   content((${(Ax * 1.15).toFixed(3)}, ${(Ay * 1.15).toFixed(3)}), [${labelA}], anchor: "west")
@@ -1020,9 +1038,10 @@ export function generateCircleSegment(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const halfAngle = chordAngle / 2;
   const halfRad = halfAngle * Math.PI / 180;
@@ -1031,8 +1050,7 @@ export function generateCircleSegment(params) {
   const Bx = parseFloat((radius * Math.cos(halfRad) * 1.15).toFixed(4));
   const By = parseFloat((radius * Math.sin(halfRad) * 1.15).toFixed(4));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -1042,7 +1060,7 @@ export function generateCircleSegment(params) {
 
   // Hình viên phân (cung + dây cung)
   arc((0, 0), radius: ${radius}, start: ${-halfAngle}deg, stop: ${halfAngle}deg,
-      mode: "CHORD", stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(85%))
+      mode: "CHORD", stroke: ${strokeStr}${fillStr !== 'none' ? `, fill: ${fillStr}` : ', fill: blue.transparentize(85%)'})
 
   content((0, 0), [${labelO}], anchor: "north-east")
   content((${Ax}, ${Ay}), [${labelA}], anchor: "north-west")
@@ -1057,29 +1075,29 @@ export function generateTwoCirclesTangentExternal(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const dist = radius1 + radius2;
   const O1 = [0, 0];
   const O2 = [dist, 0];
   const T = [radius1, 0];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
-  circle((${O1[0]}, ${O1[1]}), radius: ${radius1}, stroke: ${strokeWidth} + ${stroke})
-  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeWidth} + ${stroke})
+  circle((${O1[0]}, ${O1[1]}), radius: ${radius1}, stroke: ${strokeStr})
+  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeStr})
 
   // Đường nối tâm
   line((${O1[0]}, ${O1[1]}), (${O2[0]}, ${O2[1]}), stroke: gray, dash: "dashed")
 
   // Tiếp điểm
-  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: ${stroke})
+  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: black)
 
   content((${O1[0]}, ${O1[1]}), [${labelO1}], anchor: "north-east")
   content((${O2[0]}, ${O2[1]}), [${labelO2}], anchor: "north-west")
@@ -1094,28 +1112,28 @@ export function generateTwoCirclesTangentInternal(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const dist = radius1 - radius2;
   const O2 = [dist, 0];
   const T = [radius1, 0];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
-  circle((0, 0), radius: ${radius1}, stroke: ${strokeWidth} + ${stroke})
-  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeWidth} + ${stroke})
+  circle((0, 0), radius: ${radius1}, stroke: ${strokeStr})
+  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeStr})
 
   // Đường nối tâm
   line((0, 0), (${O2[0]}, ${O2[1]}), stroke: gray, dash: "dashed")
 
   // Tiếp điểm
-  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: ${stroke})
+  circle((${T[0]}, ${T[1]}), radius: 0.08, fill: black)
 
   content((0, 0), [${labelO1}], anchor: "north-east")
   content((${O2[0]}, ${O2[1]}), [${labelO2}], anchor: "north-west")
@@ -1131,22 +1149,22 @@ export function generateTwoCirclesIntersect(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
+  const showPoints = !!styleOptions.pointColor;
+  const ptSize = styleOptions.pointSize || 0.1;
 
   const O1 = [0, 0];
   const O2 = [distance, 0];
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Hai đường tròn
-  circle((${O1[0]}, ${O1[1]}), radius: ${radius1}, stroke: ${strokeWidth} + ${stroke})
-  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeWidth} + ${stroke})
+  circle((${O1[0]}, ${O1[1]}), radius: ${radius1}, stroke: ${strokeStr})
+  circle((${O2[0]}, ${O2[1]}), radius: ${radius2}, stroke: ${strokeStr})
 
   // Đường nối tâm
   line((${O1[0]}, ${O1[1]}), (${O2[0]}, ${O2[1]}), stroke: gray, dash: "dashed")

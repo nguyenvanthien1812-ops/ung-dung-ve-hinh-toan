@@ -1,4 +1,5 @@
 // Generator cho hình Vật lý
+import { buildStroke, buildFill, TYPST_HEADER } from './utils.js';
 
 // ==================== LỰC HỌC ====================
 
@@ -12,9 +13,8 @@ export function generateInclinedPlane(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const rad = angle * Math.PI / 180;
   const cosA = parseFloat(Math.cos(rad).toFixed(4));
@@ -59,19 +59,18 @@ export function generateInclinedPlane(params) {
   const fx2 = parseFloat((cx - fLen * cosA).toFixed(4));
   const fy2 = parseFloat((cy - fLen * sinA).toFixed(4));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Mặt phẳng nghiêng (tam giác)
   line((${O[0]}, ${O[1]}), (${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), close: true,
-       stroke: ${strokeWidth} + ${stroke})
+       stroke: ${strokeStr})
 
   // Vật thể (hộp)
   line((${bx0}, ${by0}), (${bx1}, ${by1}), (${bx2}, ${by2}), (${bx3}, ${by3}), close: true,
-       stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(80%))
+       stroke: ${strokeStr}, fill: blue.transparentize(80%))
 
   ${showForces ? `
   // Trọng lực P (thẳng đứng xuống)
@@ -93,7 +92,7 @@ export function generateInclinedPlane(params) {
 
   ${showAngleLabel ? `
   // Góc nghiêng
-  arc((${O[0]}, ${O[1]}), start: 0deg, stop: ${angle}deg, radius: 1.2, stroke: 0.8pt + ${stroke})
+  arc((${O[0]}, ${O[1]}), start: 0deg, stop: ${angle}deg, radius: 1.2, stroke: 0.8pt + black)
   content((1.5, 0.5), [${labelAngle} = ${angle}°], anchor: "west")
   ` : ''}
 })`.trim();
@@ -107,18 +106,16 @@ export function generateFreeBodyDiagram(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Vật thể (hình chữ nhật)
-  rect((-0.7, -0.5), (0.7, 0.5), stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(80%))
+  rect((-0.7, -0.5), (0.7, 0.5), stroke: ${strokeStr}, fill: blue.transparentize(80%))
 
   ${showWeight ? `
   // Trọng lực (thẳng đứng xuống)
@@ -154,38 +151,36 @@ export function generatePulley(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Trần/giá đỡ
-  line((-1, 5), (1, 5), stroke: ${strokeWidth} + ${stroke})
-  line((-1, 5.2), (-1, 5), stroke: 0.5pt + ${stroke})
-  line((1, 5.2), (1, 5), stroke: 0.5pt + ${stroke})
-  line((-1, 5.2), (1, 5.2), stroke: ${strokeWidth} + ${stroke}, fill: gray.transparentize(50%))
+  line((-1, 5), (1, 5), stroke: ${strokeStr})
+  line((-1, 5.2), (-1, 5), stroke: 0.5pt + black)
+  line((1, 5.2), (1, 5), stroke: 0.5pt + black)
+  line((-1, 5.2), (1, 5.2), stroke: ${strokeStr}, fill: gray.transparentize(50%))
 
   // Ròng rọc
-  circle((0, 4.3), radius: 0.6, stroke: ${strokeWidth} + ${stroke})
-  circle((0, 4.3), radius: 0.07, fill: ${stroke})
+  circle((0, 4.3), radius: 0.6, stroke: ${strokeStr})
+  circle((0, 4.3), radius: 0.07, fill: black)
 
   // Dây bên trái (qua ròng rọc)
-  line((-0.6, 4.3), (-0.6, 1.5), stroke: ${strokeWidth} + ${stroke})
+  line((-0.6, 4.3), (-0.6, 1.5), stroke: ${strokeStr})
 
   // Dây bên phải
-  line((0.6, 4.3), (0.6, 1.5), stroke: ${strokeWidth} + ${stroke})
+  line((0.6, 4.3), (0.6, 1.5), stroke: ${strokeStr})
 
   // Vật m1 (bên trái)
-  rect((-1.2, 0.5), (-0.1, 1.5), stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(80%))
+  rect((-1.2, 0.5), (-0.1, 1.5), stroke: ${strokeStr}, fill: blue.transparentize(80%))
   content((-0.65, 1), [${label1}], anchor: "center")
 
   // Vật m2 (bên phải)
-  rect((0.1, 0.5), (1.2, 1.5), stroke: ${strokeWidth} + ${stroke}, fill: red.transparentize(80%))
+  rect((0.1, 0.5), (1.2, 1.5), stroke: ${strokeStr}, fill: red.transparentize(80%))
   content((0.65, 1), [${label2}], anchor: "center")
 
   ${showTension ? `
@@ -204,9 +199,8 @@ export function generateSpringSystem(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const numCoils = 8;
   const coilW = 0.4;
@@ -227,29 +221,28 @@ export function generateSpringSystem(params) {
   const massTop = -springLength;
   const massBot = parseFloat((massTop - 1).toFixed(2));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Trần/giá đỡ
   rect((-1, 0.2), (1, 0.5), stroke: none, fill: gray.transparentize(50%))
-  line((-1, 0.2), (1, 0.2), stroke: ${strokeWidth} + ${stroke})
+  line((-1, 0.2), (1, 0.2), stroke: ${strokeStr})
   // Gạch chéo trần
-  line((-0.8, 0.2), (-1, 0.5), stroke: 0.5pt + ${stroke})
-  line((-0.3, 0.2), (-0.5, 0.5), stroke: 0.5pt + ${stroke})
-  line((0.2, 0.2), (0, 0.5), stroke: 0.5pt + ${stroke})
-  line((0.7, 0.2), (0.5, 0.5), stroke: 0.5pt + ${stroke})
+  line((-0.8, 0.2), (-1, 0.5), stroke: 0.5pt + black)
+  line((-0.3, 0.2), (-0.5, 0.5), stroke: 0.5pt + black)
+  line((0.2, 0.2), (0, 0.5), stroke: 0.5pt + black)
+  line((0.7, 0.2), (0.5, 0.5), stroke: 0.5pt + black)
 
   // Móc treo
-  line((0, 0.2), (0, 0), stroke: ${strokeWidth} + ${stroke})
+  line((0, 0.2), (0, 0), stroke: ${strokeStr})
 
   // Lò xo
-  line(${springPtsStr}, stroke: ${strokeWidth} + ${stroke})
+  line(${springPtsStr}, stroke: ${strokeStr})
 
   // Vật nặng
-  rect((-0.6, ${massBot}), (0.6, ${massTop}), stroke: ${strokeWidth} + ${stroke}, fill: blue.transparentize(80%))
+  rect((-0.6, ${massBot}), (0.6, ${massTop}), stroke: ${strokeStr}, fill: blue.transparentize(80%))
   content((0, ${(massTop + massBot) / 2}), [${labelM}], anchor: "center")
 
   // Nhãn lò xo
@@ -277,9 +270,8 @@ export function generateConvexLens(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const f = Number(focalLength);
   const d = Number(objectDist);
@@ -291,8 +283,7 @@ export function generateConvexLens(params) {
 
   const L = Math.max(d, Math.abs(dImg)) + 1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -302,21 +293,21 @@ export function generateConvexLens(params) {
   content((${L + 1.2}, 0), [], anchor: "west")
 
   // Thấu kính hội tụ (biconvex)
-  arc((${-0.15}, 0), start: -60deg, stop: 60deg, radius: 2.5, stroke: ${strokeWidth} + ${stroke})
-  arc((${0.15}, 0), start: 120deg, stop: 240deg, radius: 2.5, stroke: ${strokeWidth} + ${stroke})
-  line((0, -3), (0, 3), stroke: 0.5pt + ${stroke}, dash: "dashed")
+  arc((${-0.15}, 0), start: -60deg, stop: 60deg, radius: 2.5, stroke: ${strokeStr})
+  arc((${0.15}, 0), start: 120deg, stop: 240deg, radius: 2.5, stroke: ${strokeStr})
+  line((0, -3), (0, 3), stroke: 0.5pt + black, dash: "dashed")
 
   // Tiêu điểm
-  circle((${f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${f}, 0), radius: 0.08, fill: black)
   content((${f}, -0.3), [${labelF}], anchor: "north")
-  circle((${-f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${-f}, 0), radius: 0.08, fill: black)
   content((${-f}, -0.3), [${labelF}'], anchor: "north")
 
   // Tâm quang học
   content((0.2, -0.3), [${labelO}], anchor: "north")
 
   // Vật (mũi tên từ trục lên)
-  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${-d - 0.2}, ${h / 2}), [AB], anchor: "east")
 
   ${showRays && d !== f ? `
@@ -332,7 +323,7 @@ export function generateConvexLens(params) {
 
   ${showImage && d !== f && Math.abs(dImg) < 20 ? `
   // Ảnh
-  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: ${strokeWidth} + purple)
+  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: 1.5pt + purple)
   content((${dImg + 0.2}, ${hImg / 2}), [A'B'], anchor: "west")
   ` : ''}
 })`.trim();
@@ -347,9 +338,8 @@ export function generateConcaveLens(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const f = -Math.abs(Number(focalLength)); // tiêu cự âm
   const d = Number(objectDist);
@@ -361,8 +351,7 @@ export function generateConcaveLens(params) {
 
   const L = Math.max(d, 1) + 1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -371,20 +360,20 @@ export function generateConcaveLens(params) {
   line((${-d - 1}, 0), (${L + 1}, 0), mark: (end: ">"), stroke: 0.8pt + black)
 
   // Thấu kính phân kỳ (biconcave)
-  arc((${0.15}, 0), start: -60deg, stop: 60deg, radius: 2.5, stroke: ${strokeWidth} + ${stroke})
-  arc((${-0.15}, 0), start: 120deg, stop: 240deg, radius: 2.5, stroke: ${strokeWidth} + ${stroke})
-  line((0, -3), (0, 3), stroke: 0.5pt + ${stroke}, dash: "dashed")
+  arc((${0.15}, 0), start: -60deg, stop: 60deg, radius: 2.5, stroke: ${strokeStr})
+  arc((${-0.15}, 0), start: 120deg, stop: 240deg, radius: 2.5, stroke: ${strokeStr})
+  line((0, -3), (0, 3), stroke: 0.5pt + black, dash: "dashed")
 
   // Tiêu điểm (ảo, bên cùng phía vật)
-  circle((${f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${f}, 0), radius: 0.08, fill: black)
   content((${f}, -0.3), [${labelF}], anchor: "north")
-  circle((${-f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${-f}, 0), radius: 0.08, fill: black)
   content((${-f}, -0.3), [${labelF}'], anchor: "north")
 
   content((0.2, -0.3), [${labelO}], anchor: "north")
 
   // Vật
-  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: 1.5pt + blue)
 
   ${showRays ? `
   // Tia 1: song song trục → kéo dài qua tiêu điểm ảo
@@ -396,7 +385,7 @@ export function generateConcaveLens(params) {
 
   ${showImage && Math.abs(dImg) < 20 ? `
   // Ảnh ảo (cùng phía với vật)
-  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: ${strokeWidth} + purple, dash: "dashed")
+  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: 1.5pt + purple, dash: "dashed")
   content((${dImg - 0.2}, ${hImg / 2}), [A'B'], anchor: "east")
   ` : ''}
 })`.trim();
@@ -411,9 +400,8 @@ export function generateConcaveMirror(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const R = Number(radius);
   const f = R / 2;
@@ -424,8 +412,7 @@ export function generateConcaveMirror(params) {
   const dImg = d !== f ? parseFloat((d * f / (d - f)).toFixed(3)) : 999;
   const hImg = d !== f ? parseFloat((-h * dImg / d).toFixed(3)) : 0;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -434,27 +421,27 @@ export function generateConcaveMirror(params) {
   line((${-d - 1}, 0), (${R + 1}, 0), mark: (end: ">"), stroke: 0.8pt + black)
 
   // Gương cầu lõm (cung bên phải, lõm về phía trái)
-  arc((${R}, 0), start: 150deg, stop: 210deg, radius: ${R}, stroke: ${strokeWidth} + ${stroke})
+  arc((${R}, 0), start: 150deg, stop: 210deg, radius: ${R}, stroke: ${strokeStr})
 
   // Ký hiệu mặt phản chiếu (gạch chéo)
-  arc((${R}, 0), start: 150deg, stop: 210deg, radius: ${R + 0.2}, stroke: 0.5pt + ${stroke}, dash: "dashed")
+  arc((${R}, 0), start: 150deg, stop: 210deg, radius: ${R + 0.2}, stroke: 0.5pt + black, dash: "dashed")
 
   // Tiêu điểm F và tâm cong C
-  circle((${f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${f}, 0), radius: 0.08, fill: black)
   content((${f}, -0.3), [${labelF}], anchor: "north")
-  circle((${R}, 0), radius: 0.08, fill: ${stroke})
+  circle((${R}, 0), radius: 0.08, fill: black)
   content((${R + 0.1}, -0.3), [${labelC}], anchor: "north")
 
   // Đỉnh gương O
   content((0.2, -0.3), [${labelO}], anchor: "north")
 
   // Vật
-  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${-d - 0.2}, ${h / 2}), [AB], anchor: "east")
 
   ${showImage && d !== f && Math.abs(dImg) < 20 ? `
   // Ảnh
-  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: ${strokeWidth} + purple)
+  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: 1.5pt + purple)
   content((${dImg + 0.2}, ${hImg / 2}), [A'B'], anchor: "west")
   ` : ''}
 })`.trim();
@@ -469,9 +456,8 @@ export function generateConvexMirror(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const R = Number(radius);
   const f = -R / 2; // tiêu cự âm
@@ -481,8 +467,7 @@ export function generateConvexMirror(params) {
   const dImg = parseFloat((d * f / (d - f)).toFixed(3));
   const hImg = parseFloat((-h * dImg / d).toFixed(3));
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -491,24 +476,24 @@ export function generateConvexMirror(params) {
   line((${-d - 1}, 0), (${R + 1}, 0), mark: (end: ">"), stroke: 0.8pt + black)
 
   // Gương cầu lồi (cung bên phải, lồi về phía trái)
-  arc((${-R}, 0), start: -30deg, stop: 30deg, radius: ${R}, stroke: ${strokeWidth} + ${stroke})
+  arc((${-R}, 0), start: -30deg, stop: 30deg, radius: ${R}, stroke: ${strokeStr})
 
   // Ký hiệu mặt phản chiếu
-  arc((${-R}, 0), start: -30deg, stop: 30deg, radius: ${R + 0.2}, stroke: 0.5pt + ${stroke}, dash: "dashed")
+  arc((${-R}, 0), start: -30deg, stop: 30deg, radius: ${R + 0.2}, stroke: 0.5pt + black, dash: "dashed")
 
   // Tiêu điểm ảo F (sau gương)
-  circle((${-f}, 0), radius: 0.08, fill: ${stroke})
+  circle((${-f}, 0), radius: 0.08, fill: black)
   content((${-f + 0.1}, -0.3), [${labelF}], anchor: "north")
 
   content((0.2, -0.3), [${labelO}], anchor: "north")
 
   // Vật
-  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: ${strokeWidth} + blue)
+  line((${-d}, 0), (${-d}, ${h}), mark: (end: ">"), stroke: 1.5pt + blue)
   content((${-d - 0.2}, ${h / 2}), [AB], anchor: "east")
 
   ${showImage && Math.abs(dImg) < 20 ? `
   // Ảnh ảo (sau gương, nét đứt)
-  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: ${strokeWidth} + purple, dash: "dashed")
+  line((${dImg}, 0), (${dImg}, ${hImg}), mark: (end: ">"), stroke: 1.5pt + purple, dash: "dashed")
   content((${dImg + 0.2}, ${hImg / 2}), [A'B'], anchor: "west")
   ` : ''}
 })`.trim();
@@ -525,15 +510,13 @@ export function generateVelocityTimeGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const maxT = Number(t3) + 1;
   const maxV = Math.max(Number(v1), Number(v2)) + 1;
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -551,9 +534,9 @@ export function generateVelocityTimeGraph(params) {
   content((-0.3, -0.3), [$O$])
 
   // Đường v-t
-  line((0, ${v0}), (${t1}, ${v1}), stroke: ${strokeWidth} + ${stroke})
-  line((${t1}, ${v1}), (${t2}, ${v2}), stroke: ${strokeWidth} + ${stroke})
-  line((${t2}, ${v2}), (${t3}, ${v3}), stroke: ${strokeWidth} + ${stroke})
+  line((0, ${v0}), (${t1}, ${v1}), stroke: ${strokeStr})
+  line((${t1}, ${v1}), (${t2}, ${v2}), stroke: ${strokeStr})
+  line((${t2}, ${v2}), (${t3}, ${v3}), stroke: ${strokeStr})
 
   ${showArea ? `
   // Diện tích (biểu thị độ dịch chuyển)
@@ -577,9 +560,8 @@ export function generatePositionTimeGraph(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const nX0 = Number(x0), nV0 = Number(v0), nA = Number(a), nTMax = Number(tMax);
 
@@ -599,8 +581,7 @@ export function generatePositionTimeGraph(params) {
   }
   const ptsStr = pts.join(', ');
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
@@ -618,7 +599,7 @@ export function generatePositionTimeGraph(params) {
   content((-0.3, -0.3), [$O$])
 
   // Đường x-t (đường cong bậc hai)
-  line(${ptsStr}, stroke: ${strokeWidth} + ${stroke})
+  line(${ptsStr}, stroke: ${strokeStr})
 
   // Thông tin phương trình
   content((${nTMax - 0.5}, ${maxX - 0.3}),
@@ -635,9 +616,8 @@ export function generateElectricFieldPositive(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const n = Math.max(4, Math.min(16, Number(numLines)));
   const lineLength = 2.5;
@@ -649,17 +629,16 @@ export function generateElectricFieldPositive(params) {
     const y1 = parseFloat((0.35 * Math.sin(ang)).toFixed(3));
     const x2 = parseFloat((lineLength * Math.cos(ang)).toFixed(3));
     const y2 = parseFloat((lineLength * Math.sin(ang)).toFixed(3));
-    lines.push(`  line((${x1}, ${y1}), (${x2}, ${y2}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})`);
+    lines.push(`  line((${x1}, ${y1}), (${x2}, ${y2}), mark: (end: ">"), stroke: ${strokeStr})`);
   }
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Điện tích dương
-  circle((0, 0), radius: 0.35, fill: red.transparentize(20%), stroke: ${strokeWidth} + red)
+  circle((0, 0), radius: 0.35, fill: red.transparentize(20%), stroke: 1.5pt + red)
   content((0, 0), [+], anchor: "center")
   content((0, -0.6), [${charge}], anchor: "north")
 
@@ -675,9 +654,8 @@ export function generateElectricFieldNegative(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const n = Math.max(4, Math.min(16, Number(numLines)));
   const lineLength = 2.5;
@@ -689,17 +667,16 @@ export function generateElectricFieldNegative(params) {
     const y1 = parseFloat((lineLength * Math.sin(ang)).toFixed(3));
     const x2 = parseFloat((0.35 * Math.cos(ang)).toFixed(3));
     const y2 = parseFloat((0.35 * Math.sin(ang)).toFixed(3));
-    lines.push(`  line((${x1}, ${y1}), (${x2}, ${y2}), mark: (end: ">"), stroke: ${strokeWidth} + ${stroke})`);
+    lines.push(`  line((${x1}, ${y1}), (${x2}, ${y2}), mark: (end: ">"), stroke: ${strokeStr})`);
   }
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Điện tích âm
-  circle((0, 0), radius: 0.35, fill: blue.transparentize(20%), stroke: ${strokeWidth} + blue)
+  circle((0, 0), radius: 0.35, fill: blue.transparentize(20%), stroke: 1.5pt + blue)
   content((0, 0), [−], anchor: "center")
   content((0, -0.6), [${charge}], anchor: "north")
 
@@ -715,9 +692,8 @@ export function generateCircuitSeries(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const n = Math.min(4, Math.max(1, Number(numResistors)));
   const totalW = 2 + n * 2.5;
@@ -733,27 +709,26 @@ export function generateCircuitSeries(params) {
     const rw = resistorSpacing * 0.6;
     resistorLines += `
   // Điện trở R${i + 1}
-  rect((${parseFloat((rx).toFixed(2))}, ${topY - 0.25}), (${parseFloat((rx + rw).toFixed(2))}, ${topY + 0.25}), stroke: ${strokeWidth} + ${stroke})
+  rect((${parseFloat((rx).toFixed(2))}, ${topY - 0.25}), (${parseFloat((rx + rw).toFixed(2))}, ${topY + 0.25}), stroke: ${strokeStr})
   content((${parseFloat((rx + rw / 2).toFixed(2))}, ${topY + 0.5}), [${labelR}${n > 1 ? `₍${i + 1}₎` : ''}], anchor: "south")`;
   }
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Dây dẫn (mạch hình chữ nhật)
-  line((0, ${botY}), (${totalW}, ${botY}), stroke: ${strokeWidth} + ${stroke})
-  line((${totalW}, ${botY}), (${totalW}, ${topY}), stroke: ${strokeWidth} + ${stroke})
-  line((${totalW}, ${topY}), (0, ${topY}), stroke: ${strokeWidth} + ${stroke})
-  line((0, ${topY}), (0, ${botY}), stroke: ${strokeWidth} + ${stroke})
+  line((0, ${botY}), (${totalW}, ${botY}), stroke: ${strokeStr})
+  line((${totalW}, ${botY}), (${totalW}, ${topY}), stroke: ${strokeStr})
+  line((${totalW}, ${topY}), (0, ${topY}), stroke: ${strokeStr})
+  line((0, ${topY}), (0, ${botY}), stroke: ${strokeStr})
 
   // Pin/Nguồn điện (bên trái dọc)
-  line((0, ${(topY + botY) / 2 + 0.5}), (0, ${(topY + botY) / 2 + 0.2}), stroke: 2pt + ${stroke})
-  line((0, ${(topY + botY) / 2 - 0.2}), (0, ${(topY + botY) / 2 - 0.5}), stroke: 2pt + ${stroke})
-  line((-0.3, ${(topY + botY) / 2 + 0.5}), (0.3, ${(topY + botY) / 2 + 0.5}), stroke: 2pt + ${stroke})
-  line((-0.15, ${(topY + botY) / 2 - 0.5}), (0.15, ${(topY + botY) / 2 - 0.5}), stroke: 1pt + ${stroke})
+  line((0, ${(topY + botY) / 2 + 0.5}), (0, ${(topY + botY) / 2 + 0.2}), stroke: 2pt + black)
+  line((0, ${(topY + botY) / 2 - 0.2}), (0, ${(topY + botY) / 2 - 0.5}), stroke: 2pt + black)
+  line((-0.3, ${(topY + botY) / 2 + 0.5}), (0.3, ${(topY + botY) / 2 + 0.5}), stroke: 2pt + black)
+  line((-0.15, ${(topY + botY) / 2 - 0.5}), (0.15, ${(topY + botY) / 2 - 0.5}), stroke: 1pt + black)
   content((-0.5, ${(topY + botY) / 2}), [${labelBattery}], anchor: "east")
 
   // Các điện trở nối tiếp
@@ -761,7 +736,7 @@ ${resistorLines}
 
   // Hướng dòng điện
   content((${totalW / 2}, ${botY - 0.4}), [$I$], anchor: "north")
-  line((${totalW * 0.4}, ${botY}), (${totalW * 0.6}, ${botY}), mark: (end: ">"), stroke: 1pt + ${stroke})
+  line((${totalW * 0.4}, ${botY}), (${totalW * 0.6}, ${botY}), mark: (end: ">"), stroke: 1pt + black)
 })`.trim();
 }
 
@@ -772,9 +747,8 @@ export function generateCircuitParallel(params) {
     styleOptions = {}
   } = params;
 
-  const stroke = styleOptions.strokeColor || 'black';
-  const sw = styleOptions.strokeWidth;
-  const strokeWidth = sw ? (typeof sw === 'string' ? sw : `${sw}pt`) : '1.5pt';
+  const strokeStr = buildStroke(styleOptions);
+  const fillStr = buildFill(styleOptions);
 
   const n = Math.min(4, Math.max(1, Number(numResistors)));
   const totalH = 1 + n * 2;
@@ -787,37 +761,36 @@ export function generateCircuitParallel(params) {
     const ry = branchY;
     resistorLines += `
   // Nhánh R${i + 1}
-  line((1.5, ${ry}), (4.5, ${ry}), stroke: ${strokeWidth} + ${stroke})
-  rect((2.5, ${ry - 0.25}), (3.5, ${ry + 0.25}), stroke: ${strokeWidth} + ${stroke})
+  line((1.5, ${ry}), (4.5, ${ry}), stroke: ${strokeStr})
+  rect((2.5, ${ry - 0.25}), (3.5, ${ry + 0.25}), stroke: ${strokeStr})
   content((3, ${ry + 0.45}), [${labelR}${n > 1 ? `₍${i + 1}₎` : ''}], anchor: "south")`;
   }
 
-  return `#import "@preview/cetz:0.3.2": canvas, draw
-#set page(width: auto, height: auto, margin: 10pt)
+  return `${TYPST_HEADER}
 
 #canvas({
   import draw: *
 
   // Đường dây chính trên và dưới
-  line((1.5, ${botY}), (4.5, ${botY}), stroke: ${strokeWidth} + ${stroke})
-  line((1.5, ${topY}), (4.5, ${topY}), stroke: ${strokeWidth} + ${stroke})
+  line((1.5, ${botY}), (4.5, ${botY}), stroke: ${strokeStr})
+  line((1.5, ${topY}), (4.5, ${topY}), stroke: ${strokeStr})
 
   // Thanh dọc trái và phải (nối các nhánh)
-  line((1.5, ${botY}), (1.5, ${topY}), stroke: ${strokeWidth} + ${stroke})
-  line((4.5, ${botY}), (4.5, ${topY}), stroke: ${strokeWidth} + ${stroke})
+  line((1.5, ${botY}), (1.5, ${topY}), stroke: ${strokeStr})
+  line((4.5, ${botY}), (4.5, ${topY}), stroke: ${strokeStr})
 
   // Dây ra ngoài (đến pin)
-  line((0, ${totalH / 2}), (1.5, ${totalH / 2}), stroke: ${strokeWidth} + ${stroke})
-  line((4.5, ${totalH / 2}), (${W}, ${totalH / 2}), stroke: ${strokeWidth} + ${stroke})
+  line((0, ${totalH / 2}), (1.5, ${totalH / 2}), stroke: ${strokeStr})
+  line((4.5, ${totalH / 2}), (${W}, ${totalH / 2}), stroke: ${strokeStr})
 
   // Bổ sung dây kết nối trái → phải bên ngoài
-  line((0, ${totalH / 2}), (0, ${topY + 0.5}), stroke: ${strokeWidth} + ${stroke})
-  line((0, ${topY + 0.5}), (${W}, ${topY + 0.5}), stroke: ${strokeWidth} + ${stroke})
-  line((${W}, ${topY + 0.5}), (${W}, ${totalH / 2}), stroke: ${strokeWidth} + ${stroke})
+  line((0, ${totalH / 2}), (0, ${topY + 0.5}), stroke: ${strokeStr})
+  line((0, ${topY + 0.5}), (${W}, ${topY + 0.5}), stroke: ${strokeStr})
+  line((${W}, ${topY + 0.5}), (${W}, ${totalH / 2}), stroke: ${strokeStr})
 
   // Pin (bên trên giữa)
-  line((${W / 2 - 0.4}, ${topY + 0.5}), (${W / 2 + 0.4}, ${topY + 0.5}), stroke: 2pt + ${stroke})
-  line((${W / 2 - 0.2}, ${topY + 0.8}), (${W / 2 + 0.2}, ${topY + 0.8}), stroke: 1pt + ${stroke})
+  line((${W / 2 - 0.4}, ${topY + 0.5}), (${W / 2 + 0.4}, ${topY + 0.5}), stroke: 2pt + black)
+  line((${W / 2 - 0.2}, ${topY + 0.8}), (${W / 2 + 0.2}, ${topY + 0.8}), stroke: 1pt + black)
   content((${W / 2}, ${topY + 1.2}), [${labelBattery}], anchor: "south")
 
   // Các điện trở song song
