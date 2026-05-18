@@ -64,6 +64,33 @@ function parseTypstError(raw) {
   return lines[0] || raw
 }
 
+function buildFixPrompt(code, errorMsg) {
+  return [
+    'Mã Typst sau bị lỗi khi biên dịch. Hãy phân tích lỗi và trả về mã đã sửa.',
+    '',
+    '── MÃ BỊ LỖI ──────────────────────────────────────────',
+    code,
+    '── KẾT THÚC MÃ ────────────────────────────────────────',
+    '',
+    '── THÔNG BÁO LỖI ──────────────────────────────────────',
+    errorMsg,
+    '── KẾT THÚC LỖI ───────────────────────────────────────',
+    '',
+    'YÊU CẦU:',
+    '  • Phân tích nguyên nhân lỗi rồi sửa lại code',
+    '  • Chỉ trả về mã Typst thuần — KHÔNG giải thích, KHÔNG dùng ```typst```',
+    '',
+    'QUY TẮC CeTZ 0.3.2 BẮT BUỘC:',
+    '  1. #import "@preview/cetz:0.3.2": canvas, draw',
+    '  2. #set page(width: auto, height: auto, margin: 10pt)',
+    '  3. Bên trong canvas({...}) phải có: import draw: *',
+    '  4. Màu hex: rgb("RRGGBB") — KHÔNG dùng #RRGGBB',
+    '  5. Điểm dùng tuple: let A = (x, y); circle((x,y), radius: r)',
+    '  6. Nhãn: content(A, [A], anchor: "south")',
+    '  7. Nét đứt: stroke: (paint: black, thickness: 1pt, dash: "dashed")',
+  ].join('\n')
+}
+
 function App() {
   // App Mode: 'builder' | 'code' | 'templates'
   const [appMode, setAppMode] = useState('builder')
@@ -216,6 +243,22 @@ function App() {
       setIsLoading(false)
     }
   }, [appMode, selectedShape, saveToHistory])
+
+  const handleFixWithGemini = useCallback(() => {
+    if (!error || !manualCode) return
+    const fixPrompt = buildFixPrompt(manualCode, error)
+    navigator.clipboard.writeText(fixPrompt).catch(() => {})
+    const winW = 840
+    const winH = window.screen.availHeight
+    const winL = Math.max(0, window.screen.availWidth - winW)
+    window.open(
+      GEMINI_GEM_URL,
+      'gemini_typst_window',
+      `width=${winW},height=${winH},left=${winL},top=0,resizable=yes,scrollbars=yes`
+    )
+    setToast('✓ Đã copy prompt sửa lỗi! Dán vào Gemini và nhấn Enter.')
+    setTimeout(() => setToast(''), 3000)
+  }, [error, manualCode])
 
   const showToast = (msg) => {
     setToast(msg)
@@ -537,7 +580,20 @@ function App() {
                 </button>
               </div>
 
-              {error && <div className="error-msg">{error}</div>}
+              {error && (
+                <div className="error-msg">
+                  <span>{error}</span>
+                  {mode === 'manual' && manualCode && (
+                    <button
+                      className="fix-gemini-btn"
+                      onClick={handleFixWithGemini}
+                      title="Copy prompt sửa lỗi và mở Gemini"
+                    >
+                      🤖 Gửi lỗi cho Gemini sửa
+                    </button>
+                  )}
+                </div>
+              )}
 
               {/* Templates for Code mode */}
               <details className="section-card">

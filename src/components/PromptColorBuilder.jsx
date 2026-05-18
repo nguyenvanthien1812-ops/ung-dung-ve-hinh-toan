@@ -18,7 +18,10 @@ function buildPrompt(description, points, edges, regions) {
   if (!description.trim()) return '';
 
   const lines = [];
-  lines.push('Hãy viết mã Typst sử dụng thư viện CeTZ 0.3.2 để vẽ:');
+
+  // Persona + task
+  lines.push('Bạn là chuyên gia vẽ hình toán bằng Typst + CeTZ 0.3.2 cho giáo viên Việt Nam.');
+  lines.push('Hãy viết mã Typst để vẽ:');
   lines.push(`"${description.trim()}"`);
   lines.push('');
 
@@ -31,8 +34,8 @@ function buildPrompt(description, points, edges, regions) {
     validPoints.forEach(p => {
       lines.push(
         `  - Điểm ${p.name.trim()}: ${p.color.label}` +
-        ` → dùng circle((...), radius: 0.06, fill: ${p.color.typst}, stroke: none)` +
-        ` rồi đặt nhãn bằng content()`
+        ` → circle((...), radius: 0.06, fill: ${p.color.typst}, stroke: none)` +
+        ` + content() đặt nhãn`
       );
     });
     lines.push('');
@@ -41,8 +44,8 @@ function buildPrompt(description, points, edges, regions) {
   if (validEdges.length > 0) {
     lines.push('YÊU CẦU MÀU SẮC CHO ĐƯỜNG KẺ/CẠNH:');
     validEdges.forEach(e => {
-      const dashNote   = e.dashed ? ', kiểu nét đứt' : '';
-      const dashTypst  = e.dashed ? ', dash: "dashed"' : '';
+      const dashNote  = e.dashed ? ', kiểu nét đứt' : '';
+      const dashTypst = e.dashed ? ', dash: "dashed"' : '';
       lines.push(
         `  - ${e.name.trim()}: ${e.color.label}, độ dày ${e.width}pt${dashNote}` +
         ` → stroke: (paint: ${e.color.typst}, thickness: ${e.width}pt${dashTypst})`
@@ -57,21 +60,86 @@ function buildPrompt(description, points, edges, regions) {
       const t = Math.round((1 - r.opacity) * 100);
       lines.push(`  - ${r.desc.trim()}: ${r.color.label}, độ mờ ${Math.round(r.opacity * 100)}%`);
       lines.push(
-        `    → line(<liệt kê các đỉnh của vùng>, close: true,` +
+        `    → line(<liệt kê các đỉnh>, close: true,` +
         ` fill: ${r.color.typst}.transparentize(${t}%), stroke: none)`
       );
     });
     lines.push('');
   }
 
-  lines.push('QUY TẮC KỸ THUẬT BẮT BUỘC (phải tuân thủ chính xác):');
-  lines.push('  1. Dòng đầu file: #import "@preview/cetz:0.3.2": canvas, draw');
-  lines.push('  2. Kích thước trang: #set page(width: auto, height: auto, margin: 10pt)');
-  lines.push('  3. Màu hex PHẢI dùng rgb("RRGGBB") — KHÔNG dùng #RRGGBB trực tiếp trong stroke/fill');
-  lines.push('  4. Vùng tô vẽ TRƯỚC các cạnh và điểm (để không bị che khuất)');
-  lines.push('  5. Điểm vẽ bằng circle() fill màu, stroke: none; sau đó đặt nhãn content()');
-  lines.push('  6. Đặt nhãn content() cho TẤT CẢ các điểm được đặt tên trong bài');
-  lines.push('  7. Chỉ trả về mã Typst thuần — không có giải thích, không có markdown code block');
+  // Technical rules — expanded and precise
+  lines.push('═══════════════════════════════════════════════');
+  lines.push('QUY TẮC KỸ THUẬT BẮT BUỘC — CeTZ 0.3.2:');
+  lines.push('');
+  lines.push('1. Header bắt buộc (luôn đặt 2 dòng đầu file):');
+  lines.push('     #import "@preview/cetz:0.3.2": canvas, draw');
+  lines.push('     #set page(width: auto, height: auto, margin: 10pt)');
+  lines.push('');
+  lines.push('2. Cấu trúc canvas — "import draw: *" PHẢI nằm BÊN TRONG canvas:');
+  lines.push('     #canvas({');
+  lines.push('       import draw: *');
+  lines.push('       // code vẽ ở đây');
+  lines.push('     })');
+  lines.push('');
+  lines.push('3. Cú pháp điểm — dùng tuple (x, y):');
+  lines.push('     let A = (0, 3)                        // khai báo biến điểm');
+  lines.push('     line(A, B)                            // nối hai điểm');
+  lines.push('     line(A, B, C, close: true)            // đa giác khép kín');
+  lines.push('     circle((0, 0), radius: 1)             // đường tròn — tuple trực tiếp');
+  lines.push('     content(A, [A], anchor: "south")      // nhãn điểm');
+  lines.push('');
+  lines.push('4. Màu sắc:');
+  lines.push('     fill: red                             // tên màu Typst');
+  lines.push('     fill: rgb("e74c3c")                   // hex → rgb("RRGGBB"), KHÔNG dùng #e74c3c');
+  lines.push('     fill: blue.lighten(70%)               // màu nhạt');
+  lines.push('     fill: green.transparentize(70%)       // trong suốt 70%');
+  lines.push('');
+  lines.push('5. Thứ tự vẽ (layer từ dưới lên trên):');
+  lines.push('     ① Vùng tô màu (fill)  →  ② Cạnh/đường  →  ③ Điểm  →  ④ Nhãn content()');
+  lines.push('');
+  lines.push('6. Nét đứt:');
+  lines.push('     stroke: (paint: black, thickness: 1pt, dash: "dashed")');
+  lines.push('');
+  lines.push('7. Đường tròn: circle((cx, cy), radius: r, stroke: 1pt, fill: none)');
+  lines.push('');
+  lines.push('8. Đặt nhãn content() cho TẤT CẢ điểm được đặt tên.');
+  lines.push('     Dùng anchor phù hợp: "south", "north", "east", "west", "north-east"...');
+  lines.push('');
+  lines.push('9. Nếu cần vẽ đồ thị hàm số, thêm:');
+  lines.push('     #import "@preview/cetz-plot:0.1.1": plot');
+  lines.push('     Dùng plot.plot() và plot.add(domain: (a, b), samples: 200, x => biểu_thức)');
+  lines.push('');
+  lines.push('10. Chỉ trả về mã Typst thuần — KHÔNG giải thích, KHÔNG dùng ```typst ... ```');
+  lines.push('');
+
+  // Few-shot example
+  lines.push('═══════════════════════════════════════════════');
+  lines.push('VÍ DỤ MẪU CODE ĐÚNG CÚ PHÁP (tham khảo cấu trúc):');
+  lines.push('');
+  lines.push('#import "@preview/cetz:0.3.2": canvas, draw');
+  lines.push('#set page(width: auto, height: auto, margin: 10pt)');
+  lines.push('');
+  lines.push('#canvas({');
+  lines.push('  import draw: *');
+  lines.push('  let A = (0, 3)');
+  lines.push('  let B = (-2, 0)');
+  lines.push('  let C = (2, 0)');
+  lines.push('  let M = ((B.at(0) + C.at(0)) / 2, (B.at(1) + C.at(1)) / 2)  // trung điểm BC');
+  lines.push('  // 1) Tô vùng trước');
+  lines.push('  line(A, B, C, close: true, fill: blue.transparentize(80%), stroke: none)');
+  lines.push('  // 2) Vẽ cạnh');
+  lines.push('  line(A, B, C, close: true, stroke: (paint: black, thickness: 1.5pt))');
+  lines.push('  line(A, M, stroke: (paint: red, thickness: 1pt, dash: "dashed"))');
+  lines.push('  // 3) Vẽ điểm');
+  lines.push('  for pt in (A, B, C, M) {');
+  lines.push('    circle(pt, radius: 0.06, fill: black, stroke: none)');
+  lines.push('  }');
+  lines.push('  // 4) Đặt nhãn');
+  lines.push('  content(A, [A], anchor: "south")');
+  lines.push('  content(B, [B], anchor: "east")');
+  lines.push('  content(C, [C], anchor: "west")');
+  lines.push('  content(M, [M], anchor: "north")');
+  lines.push('})');
 
   return lines.join('\n');
 }

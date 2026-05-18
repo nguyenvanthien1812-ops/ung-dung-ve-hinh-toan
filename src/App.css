@@ -506,6 +506,30 @@ body {
   padding: 0.75rem;
   color: #fca5a5;
   font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.fix-gemini-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+  border: none;
+  border-radius: 0.4rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fix-gemini-btn:hover {
+  background: linear-gradient(135deg, #7C3AED, #0891B2);
+  transform: translateY(-1px);
 }
 
 .generate-actions {
