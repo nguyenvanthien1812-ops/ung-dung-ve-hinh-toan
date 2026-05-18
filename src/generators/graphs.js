@@ -1,6 +1,24 @@
 // Generator cho đồ thị hàm số và vectơ
 import { buildStroke, buildFill, colorToTypst, TYPST_HEADER } from './utils.js';
 
+// Helper: wrap plot.plot in a group+translate so the curve aligns with the math axis
+function wplot(minX, maxX, minY, maxY, inner) {
+  const W = maxX - minX;
+  const H = maxY - minY;
+  return `group({
+    translate((${minX}, ${minY}))
+    plot.plot(
+      size: (${W}, ${H}),
+      x-min: ${minX}, x-max: ${maxX},
+      y-min: ${minY}, y-max: ${maxY},
+      x-tick-step: none, y-tick-step: none, axis-style: none,
+      {
+        ${inner}
+      }
+    )
+  })`;
+}
+
 // ==================== ĐỒ THỊ HÀM SỐ ====================
 
 export function generateLinearGraph(params) {
@@ -41,13 +59,8 @@ export function generateLinearGraph(params) {
   ` : ''}
 
   // Đồ thị hàm số y = ax + b
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x + ${b}, style: (stroke: ${strokeStr}))
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${a} * x + ${b}, style: (stroke: ${strokeStr}))`)}
+
 
   // Hiển thị phương trình
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${a}x ${b >= 0 ? '+' : ''} ${b}$], anchor: "east")
@@ -97,13 +110,8 @@ export function generateQuadraticGraph(params) {
   ` : ''}
 
   // Đồ thị parabol y = ax² + bx + c
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x + ${b} * x + ${c}, style: (stroke: ${strokeStr}))
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x + ${b} * x + ${c}, style: (stroke: ${strokeStr}))`)}
+
 
   ${showVertex ? `
   // Đỉnh parabol
@@ -154,13 +162,8 @@ export function generateCubicGraph(params) {
   ` : ''}
 
   // Đồ thị hàm bậc ba
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x + ${b} * x * x + ${c} * x + ${d}, style: (stroke: ${strokeStr}))
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x + ${b} * x * x + ${c} * x + ${d}, style: (stroke: ${strokeStr}))`)}
+
 
   // Hiển thị phương trình
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${a}x^3 ${b >= 0 ? '+' : ''} ${b}x^2 ${c >= 0 ? '+' : ''} ${c}x ${d >= 0 ? '+' : ''} ${d}$], anchor: "east")
@@ -203,13 +206,7 @@ export function generateQuarticGraph(params) {
   content((-0.3, -0.3), [$O$])
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x * x + ${b} * x * x + ${c}, style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x * x + ${b} * x * x + ${c}, style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${a}x^4 ${bSign}${b}x^2 ${cSign}${c}$], anchor: "east")
 })`.trim();
@@ -266,14 +263,9 @@ export function generateHyperbolaGraph(params) {
   ` : ''}
 
   // Đồ thị hypebol y = k/x
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${domain1Start}, ${domain1End}), x => ${k} / x, style: (stroke: ${strokeStr}))
-      plot.add(domain: (${domain2Start}, ${domain2End}), x => ${k} / x, style: (stroke: ${strokeStr}))
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${domain1Start}, ${domain1End}), x => ${k} / x, style: (stroke: ${strokeStr}))
+        plot.add(domain: (${domain2Start}, ${domain2End}), x => ${k} / x, style: (stroke: ${strokeStr}))`)}
+
 
   // Hiển thị phương trình
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${k}/x$], anchor: "east")
@@ -316,9 +308,7 @@ export function generateRationalLinearGraph(params) {
   content((0, ${axisMaxY + 0.2}), [$y$], anchor: "south")
   content((-0.3, -0.3), [$O$])
   ` : ''}
-  plot.plot(size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}), x-tick-step: none, y-tick-step: none, axis-style: none, {
-    plot.add(domain: (${minX}, ${maxX}), x => ${slope} * x + ${intercept}, style: (stroke: ${strokeStr}))
-  })
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${slope} * x + ${intercept}, style: (stroke: ${strokeStr}))`)}
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${slope.toFixed(2)}x ${slopeSign}${intercept.toFixed(2)}$], anchor: "east")
 })`.trim();
   }
@@ -380,13 +370,7 @@ export function generateRationalLinearGraph(params) {
 
   ${asymLines}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${d1s}, ${d1e}), x => (${na} * x + ${nb}) / (${nc} * x + ${nd}), style: (stroke: ${strokeStr}))${plot2}
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${d1s}, ${d1e}), x => (${na} * x + ${nb}) / (${nc} * x + ${nd}), style: (stroke: ${strokeStr}))${plot2}`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = frac(${numerStr}, ${denomStr})$], anchor: "east")
 })`.trim();
@@ -429,13 +413,7 @@ export function generateTrigCombinationGraph(params) {
   content((-0.3, -0.3), [$O$])
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${(axisMaxY - axisMinY).toFixed(2)}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${a} * calc.sin(x) + ${b} * calc.cos(x), style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${a} * calc.sin(x) + ${b} * calc.cos(x), style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${(axisMaxY - 0.5).toFixed(2)}), [$y = ${a} sin(x) ${bSign}${b} cos(x)$], anchor: "east")
 })`.trim();
@@ -479,13 +457,8 @@ export function generateSineGraph(params) {
   ` : ''}
 
   // Đồ thị hàm sin
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.sin(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.sin(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)`)}
+
 
   // Hiển thị phương trình
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${amplitude} sin(${frequency}x ${phase >= 0 ? '+' : ''} ${phase}) ${offset >= 0 ? '+' : ''} ${offset}$], anchor: "east")
@@ -530,13 +503,8 @@ export function generateCosineGraph(params) {
   ` : ''}
 
   // Đồ thị hàm cos
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.cos(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${amplitude} * calc.cos(${frequency} * x + ${phase}) + ${offset}, style: (stroke: ${strokeStr}), samples: 200)`)}
+
 
   // Hiển thị phương trình
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${amplitude} cos(${frequency}x ${phase >= 0 ? '+' : ''} ${phase}) ${offset >= 0 ? '+' : ''} ${offset}$], anchor: "east")
@@ -584,13 +552,7 @@ export function generateTangentGraph(params) {
   line((calc.pi/2, ${axisMinY}), (calc.pi/2, ${axisMaxY}), stroke: 0.5pt + gray, dash: "dashed")
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (-calc.pi/2 + 0.1, calc.pi/2 - 0.1), x => ${amplitude} * calc.tan(${frequency} * x), style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (-calc.pi/2 + 0.1, calc.pi/2 - 0.1), x => ${amplitude} * calc.tan(${frequency} * x), style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${amplitude} tan(${frequency}x)$], anchor: "east")
 })`.trim();
@@ -630,13 +592,7 @@ export function generateExponentialGraph(params) {
   content((-0.3, -0.3), [$O$])
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => ${base} ^ x, style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => ${base} ^ x, style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${base}^x$], anchor: "east")
 })`.trim();
@@ -680,13 +636,7 @@ export function generateLogarithmGraph(params) {
   line((0, ${axisMinY}), (0, ${axisMaxY}), stroke: 0.5pt + gray, dash: "dashed")
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.ln(x), style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => calc.ln(x), style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ln(x)$], anchor: "east")
 })`.trim();
@@ -726,13 +676,7 @@ export function generateAbsoluteLinearGraph(params) {
   content((-0.3, -0.3), [$O$])
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x + ${b}), style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x + ${b}), style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = |${a}x ${b >= 0 ? '+' : ''} ${b}|$], anchor: "east")
 })`.trim();
@@ -772,13 +716,7 @@ export function generateAbsoluteGraph(params) {
   content((-0.3, -0.3), [$O$])
   ` : ''}
 
-  plot.plot(
-    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
-    x-tick-step: none, y-tick-step: none, axis-style: none,
-    {
-      plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x * x + ${b} * x + ${c}), style: (stroke: ${strokeStr}), samples: 200)
-    }
-  )
+  ${wplot(axisMinX, axisMaxX, axisMinY, axisMaxY, `plot.add(domain: (${minX}, ${maxX}), x => calc.abs(${a} * x * x + ${b} * x + ${c}), style: (stroke: ${strokeStr}), samples: 200)`)}
 
   content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = |${a}x^2 ${b >= 0 ? '+' : ''} ${b}x ${c >= 0 ? '+' : ''} ${c}|$], anchor: "east")
 })`.trim();
