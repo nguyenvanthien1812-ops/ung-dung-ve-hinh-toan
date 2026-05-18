@@ -108,6 +108,7 @@ function App() {
   const [showGrid, setShowGrid] = useState(true)
   const [typstCode, setTypstCode] = useState('')
   const [manualCode, setManualCode] = useState(TEMPLATES[0].code)
+  const [fixSent, setFixSent] = useState(false)
 
   // Style options
   const [styleOptions, setStyleOptions] = useState({
@@ -256,8 +257,7 @@ function App() {
       'gemini_typst_window',
       `width=${winW},height=${winH},left=${winL},top=0,resizable=yes,scrollbars=yes`
     )
-    setToast('✓ Đã copy prompt sửa lỗi! Dán vào Gemini và nhấn Enter.')
-    setTimeout(() => setToast(''), 3000)
+    setFixSent(true)
   }, [error, manualCode])
 
   const showToast = (msg) => {
@@ -592,6 +592,21 @@ function App() {
                       🤖 Gửi lỗi cho Gemini sửa
                     </button>
                   )}
+                </div>
+              )}
+              {fixSent && (
+                <div className="fix-sent-notice">
+                  <div className="fix-sent-icon">✅</div>
+                  <div className="fix-sent-text">
+                    <strong>Gemini đã mở! Prompt sửa lỗi đã sao chép vào clipboard.</strong>
+                    <ol className="fix-sent-steps">
+                      <li>Trong cửa sổ Gemini vừa mở → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để dán</li>
+                      <li>Nhấn <kbd>Enter</kbd> để gửi cho Gemini phân tích lỗi</li>
+                      <li>Copy mã Typst đã sửa từ Gemini → dán lại vào ô Code Editor bên trên</li>
+                      <li>Nhấn <strong>Tạo Hình Vẽ</strong> để thử lại</li>
+                    </ol>
+                    <button className="fix-sent-close" onClick={() => setFixSent(false)}>✕ Đóng</button>
+                  </div>
                 </div>
               )}
 
