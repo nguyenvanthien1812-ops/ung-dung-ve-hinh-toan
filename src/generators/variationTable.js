@@ -205,6 +205,66 @@ ${critLines(1)}
 })`.trim();
 }
 
+// ── 3 critical points ─────────────────────────────────────────────────────────
+function gen3Crit({ x1Str, x2Str, x3Str, fx1Str, fx2Str, fx3Str, signL, signM1, signM2, signR, fxLeft, fxRight }) {
+  const TW = totalW(3);
+  const TH = 3 * RH;
+  const cx1 = r(critMidX(0)), cx2 = r(critMidX(1)), cx3 = r(critMidX(2));
+  const cxL1 = critColLeftX(0), cxR1 = cxL1 + CW;
+  const cxL2 = critColLeftX(1), cxR2 = cxL2 + CW;
+  const cxL3 = critColLeftX(2), cxR3 = cxL3 + CW;
+  const i0 = r(intervalMidX(0)), i1 = r(intervalMidX(1)), i2 = r(intervalMidX(2)), i3 = r(intervalMidX(3));
+
+  const asc0 = signL === '+', asc1 = signM1 === '+', asc2 = signM2 === '+', asc3 = signR === '+';
+
+  const a0x0 = LW + BW + 0.2, a0x1 = cxL1 - 0.1;
+  const a0y0 = asc0 ? yL : yH, a0y1 = asc0 ? yH : yL;
+  const a1x0 = cxR1 + 0.1, a1x1 = cxL2 - 0.1;
+  const a1y0 = asc1 ? yL : yH, a1y1 = asc1 ? yH : yL;
+  const a2x0 = cxR2 + 0.1, a2x1 = cxL3 - 0.1;
+  const a2y0 = asc2 ? yL : yH, a2y1 = asc2 ? yH : yL;
+  const a3x0 = cxR3 + 0.1, a3x1 = TW - BW - 0.2;
+  const a3y0 = asc3 ? yL : yH, a3y1 = asc3 ? yH : yL;
+
+  const bndLy = asc0 ? yL : yH;
+  const bndRy = asc3 ? yH : yL;
+
+  const c1Fy = (asc0 && !asc1) ? yH : (!asc0 && asc1) ? yL : yM;
+  const c2Fy = (asc1 && !asc2) ? yH : (!asc1 && asc2) ? yL : yM;
+  const c3Fy = (asc2 && !asc3) ? yH : (!asc2 && asc3) ? yL : yM;
+
+  return `${header()}${baseCode(TW, TH)}
+
+${critLines(0)}
+${critLines(1)}
+${critLines(2)}
+
+  content((${r(LW + BW / 2)}, ${r(2.5 * RH)}), [$-infinity$])
+  content((${cx1}, ${r(2.5 * RH)}), [${x1Str}])
+  content((${cx2}, ${r(2.5 * RH)}), [${x2Str}])
+  content((${cx3}, ${r(2.5 * RH)}), [${x3Str}])
+  content((${r(TW - BW / 2)}, ${r(2.5 * RH)}), [$+infinity$])
+
+  content((${i0}, ${r(1.5 * RH)}), [$${signL}$])
+  content((${cx1}, ${r(1.5 * RH)}), [$0$])
+  content((${i1}, ${r(1.5 * RH)}), [$${signM1}$])
+  content((${cx2}, ${r(1.5 * RH)}), [$0$])
+  content((${i2}, ${r(1.5 * RH)}), [$${signM2}$])
+  content((${cx3}, ${r(1.5 * RH)}), [$0$])
+  content((${i3}, ${r(1.5 * RH)}), [$${signR}$])
+
+  content((${r(LW + BW + 0.1)}, ${bndLy}), [${fxLeft}], anchor: "west")
+  ${arrow(a0x0, a0y0, a0x1, a0y1)}
+  content((${cx1}, ${c1Fy}), [${fx1Str}])
+  ${arrow(a1x0, a1y0, a1x1, a1y1)}
+  content((${cx2}, ${c2Fy}), [${fx2Str}])
+  ${arrow(a2x0, a2y0, a2x1, a2y1)}
+  content((${cx3}, ${c3Fy}), [${fx3Str}])
+  ${arrow(a3x0, a3y0, a3x1, a3y1)}
+  content((${r(TW - BW - 0.1)}, ${bndRy}), [${fxRight}], anchor: "east")
+})`.trim();
+}
+
 // ── Exported generators ───────────────────────────────────────────────────────
 
 export function generateBBTQuadratic(params) {
@@ -264,6 +324,52 @@ export function generateBBTCubic(params) {
     signL, signM, signR,
     fxLeft, fxRight
   });
+}
+
+export function generateBBTQuartic(params) {
+  const a = parseFloat(params.a ?? 1);
+  const b = parseFloat(params.b ?? -3);
+  const c = parseFloat(params.c ?? 0);
+
+  // f'(x) = 4ax³ + 2bx = 2x(2ax² + b)
+  // x=0 always a critical point; x=±√(-b/2a) when -b/(2a) > 0
+  const fxLeft = a > 0 ? '$+infinity$' : '$-infinity$';
+  const fxRight = a > 0 ? '$+infinity$' : '$-infinity$';
+
+  const disc = -b / (2 * a);
+
+  if (disc > 0.0001) {
+    // 3 critical points: x1 < 0 < x3
+    const sqD = Math.sqrt(disc);
+    const x1 = -sqD, x2 = 0, x3 = sqD;
+    const fx1 = a * x1 ** 4 + b * x1 ** 2 + c;
+    const fx2 = c;
+    const fx3 = a * x3 ** 4 + b * x3 ** 2 + c;
+
+    // a>0,b<0 → signs (−,+,−,+); a<0,b>0 → (+,−,+,−)
+    const signL  = a > 0 ? '-' : '+';
+    const signM1 = a > 0 ? '+' : '-';
+    const signM2 = a > 0 ? '-' : '+';
+    const signR  = a > 0 ? '+' : '-';
+
+    return gen3Crit({
+      x1Str: fmtVal(x1), x2Str: fmtVal(x2), x3Str: fmtVal(x3),
+      fx1Str: fmtVal(fx1), fx2Str: fmtVal(fx2), fx3Str: fmtVal(fx3),
+      signL, signM1, signM2, signR,
+      fxLeft, fxRight
+    });
+  } else {
+    // Only 1 critical point at x=0
+    const signL = a > 0 ? '-' : '+';
+    const signR = a > 0 ? '+' : '-';
+    return gen1Crit({
+      xStr: '$0$',
+      fxStr: fmtVal(c),
+      signL, signR,
+      fxLeft, fxRight,
+      fprimeAt: '0'
+    });
+  }
 }
 
 export function generateBBTRational11(params) {
@@ -370,11 +476,19 @@ export function generateBBTCustom(params) {
       fxLeft: fxL, fxRight: fxR
     });
   }
-  // Fallback for >2 points
-  return gen2Crit({
-    x1Str: pts[0], x2Str: pts[1],
-    fx1Str: fxVals[0] || '$0$', fx2Str: fxVals[1] || '$0$',
-    signL: signs[0], signM: signs[1], signR: signs[2],
+  if (n === 3) {
+    return gen3Crit({
+      x1Str: pts[0], x2Str: pts[1], x3Str: pts[2],
+      fx1Str: fxVals[0] || '$0$', fx2Str: fxVals[1] || '$0$', fx3Str: fxVals[2] || '$0$',
+      signL: signs[0], signM1: signs[1], signM2: signs[2], signR: signs[3],
+      fxLeft: fxL, fxRight: fxR
+    });
+  }
+  // Fallback for >3 points: use first 3
+  return gen3Crit({
+    x1Str: pts[0], x2Str: pts[1], x3Str: pts[2],
+    fx1Str: fxVals[0] || '$0$', fx2Str: fxVals[1] || '$0$', fx3Str: fxVals[2] || '$0$',
+    signL: signs[0], signM1: signs[1], signM2: signs[2], signR: signs[3],
     fxLeft: fxL, fxRight: fxR
   });
 }

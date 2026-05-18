@@ -34,6 +34,7 @@ import {
   generateTruncatedPyramid,
   generatePrism,
   generateCube,
+  generateBox,
   generateCylinder,
   generateCone,
   generateTruncatedCone,
@@ -48,6 +49,7 @@ import {
 import {
   generateBBTQuadratic,
   generateBBTCubic,
+  generateBBTQuartic,
   generateBBTRational11,
   generateBBTCustom
 } from './variationTable.js';
@@ -57,6 +59,8 @@ import {
   generateQuadraticGraph,
   generateCubicGraph,
   generateHyperbolaGraph,
+  generateRationalLinearGraph,
+  generateTrigCombinationGraph,
   generateSineGraph,
   generateCosineGraph,
   generateTangentGraph,
@@ -148,7 +152,7 @@ const GENERATOR_MAP = {
   'prism-triangular': (params) => generatePrism({ ...params, baseType: 'triangular' }),
   'prism-quadrilateral': generateCube,
   'prism-hexagonal': (params) => generatePrism({ ...params, baseType: 'hexagonal' }),
-  'box': generateCube,
+  'box': generateBox,
   'cube': generateCube,
 
   // Hình tròn xoay
@@ -170,13 +174,13 @@ const GENERATOR_MAP = {
   'cubic': generateCubicGraph,
   'polynomial-general': generateCubicGraph,
   'hyperbola': generateHyperbolaGraph,
-  'rational-linear': generateHyperbolaGraph,
+  'rational-linear': generateRationalLinearGraph,
   'rational-general': generateHyperbolaGraph,
   'sine': generateSineGraph,
   'cosine': generateCosineGraph,
   'tangent': generateTangentGraph,
   'trig-transform': generateSineGraph,
-  'trig-combination': generateSineGraph,
+  'trig-combination': generateTrigCombinationGraph,
   'exponential': generateExponentialGraph,
   'exponential-e': generateExponentialGraph,
   'logarithm': generateLogarithmGraph,
@@ -191,6 +195,7 @@ const GENERATOR_MAP = {
   // Bảng biến thiên
   'bbt-quadratic': generateBBTQuadratic,
   'bbt-cubic': generateBBTCubic,
+  'bbt-quartic': generateBBTQuartic,
   'bbt-rational-11': generateBBTRational11,
   'bbt-custom': generateBBTCustom,
 

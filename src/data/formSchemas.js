@@ -720,10 +720,20 @@ export const FORM_SCHEMAS = {
     ]
   },
 
-  // Hình hộp chữ nhật (reuse cube)
+  // Hình hộp chữ nhật
   'box': {
     fields: [
-      { name: 'side', label: 'Độ dài cạnh', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'length', label: 'Chiều dài', type: 'number', min: 0.5, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'width', label: 'Chiều rộng', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'height', label: 'Chiều cao', type: 'number', min: 0.5, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'labelA1', label: "Nhãn đỉnh A'", type: 'text', default: "A'" },
+      { name: 'labelB1', label: "Nhãn đỉnh B'", type: 'text', default: "B'" },
+      { name: 'labelC1', label: "Nhãn đỉnh C'", type: 'text', default: "C'" },
+      { name: 'labelD1', label: "Nhãn đỉnh D'", type: 'text', default: "D'" },
       { name: 'showHiddenEdges', label: 'Hiển thị cạnh khuất', type: 'checkbox', default: true }
     ]
   },
@@ -779,10 +789,8 @@ export const FORM_SCHEMAS = {
 
   'trig-combination': {
     fields: [
-      { name: 'amplitude', label: 'Biên độ A', type: 'number', min: 0.1, max: 10, default: 1, step: 0.1 },
-      { name: 'frequency', label: 'Tần số B', type: 'number', min: 0.1, max: 10, default: 1, step: 0.1 },
-      { name: 'phase', label: 'Pha C', type: 'number', min: -10, max: 10, default: 0.785, step: 0.1 },
-      { name: 'offset', label: 'Dịch D', type: 'number', min: -10, max: 10, default: 0, step: 0.1 },
+      { name: 'sinCoeff', label: 'Hệ số a (của sin x)', type: 'number', min: -10, max: 10, default: 1, step: 0.5 },
+      { name: 'cosCoeff', label: 'Hệ số b (của cos x)', type: 'number', min: -10, max: 10, default: 1, step: 0.5 },
       { name: 'minX', label: 'X min', type: 'number', default: -6.28 },
       { name: 'maxX', label: 'X max', type: 'number', default: 6.28 },
       { name: 'showGrid', label: 'Hiển thị lưới', type: 'checkbox', default: true },
@@ -812,9 +820,12 @@ export const FORM_SCHEMAS = {
 
   'rational-linear': {
     fields: [
-      { name: 'k', label: 'Hệ số k (y = k/x)', type: 'number', min: -10, max: 10, default: 2, step: 0.1 },
-      { name: 'minX', label: 'X min', type: 'number', default: -5 },
-      { name: 'maxX', label: 'X max', type: 'number', default: 5 },
+      { name: 'numerA', label: 'Tử số: hệ số a (của x)', type: 'number', min: -10, max: 10, step: 1, default: 2 },
+      { name: 'numerB', label: 'Tử số: hệ số b', type: 'number', min: -20, max: 20, step: 1, default: 1 },
+      { name: 'denomC', label: 'Mẫu số: hệ số c (của x)', type: 'number', min: -10, max: 10, step: 1, default: 1 },
+      { name: 'denomD', label: 'Mẫu số: hệ số d', type: 'number', min: -20, max: 20, step: 1, default: -3 },
+      { name: 'minX', label: 'X min', type: 'number', default: -8 },
+      { name: 'maxX', label: 'X max', type: 'number', default: 8 },
       { name: 'showGrid', label: 'Hiển thị lưới', type: 'checkbox', default: true },
       { name: 'showAsymptotes', label: 'Hiển thị tiệm cận', type: 'checkbox', default: true },
       { name: 'showAxis', label: 'Hiển thị trục tọa độ', type: 'checkbox', default: true }
@@ -1102,6 +1113,14 @@ export const FORM_SCHEMAS = {
       { name: 'fxAtCrits', label: 'Giá trị f(x) tại điểm tới hạn', type: 'text', default: '3, -1' },
       { name: 'fxAtLeft', label: 'Giá trị f(x) khi x→-∞', type: 'text', default: '+∞' },
       { name: 'fxAtRight', label: 'Giá trị f(x) khi x→+∞', type: 'text', default: '+∞' }
+    ]
+  },
+
+  'bbt-quartic': {
+    fields: [
+      { name: 'a', label: 'Hệ số a (của x⁴)', type: 'number', min: -5, max: 5, step: 0.5, default: 1 },
+      { name: 'b', label: 'Hệ số b (của x²)', type: 'number', min: -10, max: 10, step: 0.5, default: -3 },
+      { name: 'c', label: 'Hệ số c (hằng số)', type: 'number', min: -20, max: 20, step: 0.5, default: 2 }
     ]
   }
 };

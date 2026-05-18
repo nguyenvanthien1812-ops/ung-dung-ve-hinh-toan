@@ -261,6 +261,7 @@ export const SHAPE_CATEGORIES = {
         shapes: [
           { id: 'bbt-quadratic', name: 'BBT Hàm bậc hai', description: 'y = ax² + bx + c' },
           { id: 'bbt-cubic', name: 'BBT Hàm bậc ba', description: 'y = ax³ + bx² + cx + d' },
+          { id: 'bbt-quartic', name: 'BBT Hàm bậc bốn', description: 'y = ax⁴ + bx² + c' },
           { id: 'bbt-rational-11', name: 'BBT Phân thức bậc nhất/bậc nhất', description: 'y = (ax+b)/(cx+d)' }
         ]
       },

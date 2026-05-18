@@ -232,6 +232,139 @@ export function generateHyperbolaGraph(params) {
 })`.trim();
 }
 
+export function generateRationalLinearGraph(params) {
+  const {
+    numerA = 1, numerB = 0,
+    denomC = 1, denomD = -2,
+    minX = -8, maxX = 8,
+    showGrid = true,
+    showAsymptotes = true,
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const strokeStr = buildStroke(styleOptions);
+  const na = Number(numerA), nb = Number(numerB);
+  const nc = Number(denomC), nd = Number(denomD);
+
+  // Vertical asymptote x = -d/c, horizontal asymptote y = a/c
+  const xAsym = nc !== 0 ? -nd / nc : null;
+  const yAsym = nc !== 0 ? na / nc : null;
+
+  const axisMinX = Number(minX) - 1;
+  const axisMaxX = Number(maxX) + 1;
+  const axisMinY = -6;
+  const axisMaxY = 6;
+
+  // Split domain around vertical asymptote
+  const gap = 0.15;
+  let d1s = Number(minX), d1e, d2s, d2e;
+  if (xAsym !== null && xAsym > Number(minX) && xAsym < Number(maxX)) {
+    d1e = xAsym - gap;
+    d2s = xAsym + gap;
+    d2e = Number(maxX);
+  } else {
+    d1e = Number(maxX);
+    d2s = null;
+    d2e = null;
+  }
+
+  const nbSign = nb >= 0 ? '+' : '';
+  const ndSign = nd >= 0 ? '+' : '';
+  const numerStr = `${na}x ${nbSign}${nb}`;
+  const denomStr = `${nc}x ${ndSign}${nd}`;
+
+  const asymLines = showAsymptotes && xAsym !== null ? `
+  // Tiệm cận đứng x = ${xAsym.toFixed(2)}
+  line((${xAsym.toFixed(3)}, ${axisMinY}), (${xAsym.toFixed(3)}, ${axisMaxY}), stroke: (paint: gray, dash: "dashed", thickness: 0.7pt))
+  // Tiệm cận ngang y = ${yAsym.toFixed(2)}
+  line((${axisMinX}, ${yAsym.toFixed(3)}), (${axisMaxX}, ${yAsym.toFixed(3)}), stroke: (paint: gray, dash: "dashed", thickness: 0.7pt))
+  ` : '';
+
+  const plot2 = d2s !== null
+    ? `\n      plot.add(domain: (${d2s}, ${d2e}), x => (${na} * x + ${nb}) / (${nc} * x + ${nd}), style: (stroke: ${strokeStr}))`
+    : '';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((${axisMinX}, ${axisMinY}), (${axisMaxX}, ${axisMaxY}), step: 1, stroke: luma(240))` : ''}
+
+  ${showAxis ? `
+  line((${axisMinX}, 0), (${axisMaxX}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${axisMaxX + 0.2}, 0), [$x$], anchor: "west")
+  line((0, ${axisMinY}), (0, ${axisMaxY}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${axisMaxY + 0.2}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+  ` : ''}
+
+  ${asymLines}
+
+  plot.plot(
+    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (${d1s}, ${d1e}), x => (${na} * x + ${nb}) / (${nc} * x + ${nd}), style: (stroke: ${strokeStr}))${plot2}
+    }
+  )
+
+  content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = frac(${numerStr}, ${denomStr})$], anchor: "east")
+})`.trim();
+}
+
+export function generateTrigCombinationGraph(params) {
+  const {
+    sinCoeff = 1, cosCoeff = 1,
+    minX = -6.28, maxX = 6.28,
+    showGrid = true,
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const strokeStr = buildStroke(styleOptions);
+  const a = Number(sinCoeff), b = Number(cosCoeff);
+  const amplitude = Math.sqrt(a * a + b * b);
+
+  const axisMinX = Number(minX) - 1;
+  const axisMaxX = Number(maxX) + 1;
+  const axisMinY = -(amplitude + 2);
+  const axisMaxY = amplitude + 2;
+
+  const bSign = b >= 0 ? '+' : '';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((${axisMinX}, ${axisMinY.toFixed(2)}), (${axisMaxX}, ${axisMaxY.toFixed(2)}), step: 1, stroke: luma(240))` : ''}
+
+  ${showAxis ? `
+  line((${axisMinX}, 0), (${axisMaxX}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${axisMaxX + 0.2}, 0), [$x$], anchor: "west")
+  line((0, ${axisMinY.toFixed(2)}), (0, ${axisMaxY.toFixed(2)}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${(axisMaxY + 0.2).toFixed(2)}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+  ` : ''}
+
+  plot.plot(
+    size: (${axisMaxX - axisMinX}, ${(axisMaxY - axisMinY).toFixed(2)}),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (${minX}, ${maxX}), x => ${a} * calc.sin(x) + ${b} * calc.cos(x), style: (stroke: ${strokeStr}), samples: 200)
+    }
+  )
+
+  content((${axisMaxX - 1}, ${(axisMaxY - 0.5).toFixed(2)}), [$y = ${a} sin(x) ${bSign}${b} cos(x)$], anchor: "east")
+})`.trim();
+}
+
 export function generateSineGraph(params) {
   const {
     amplitude = 1, frequency = 1, phase = 0, offset = 0,

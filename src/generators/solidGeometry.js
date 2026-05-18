@@ -339,6 +339,74 @@ export function generateCube(params) {
 })`.trim();
 }
 
+export function generateBox(params) {
+  const {
+    length = 5,
+    width = 3,
+    height = 4,
+    labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    labelA1 = "A'", labelB1 = "B'", labelC1 = "C'", labelD1 = "D'",
+    showHiddenEdges = true,
+    styleOptions = {}
+  } = params;
+
+  const strokeStr = buildStroke(styleOptions);
+
+  const l = Number(length), w = Number(width), h = Number(height);
+
+  // Perspective offset proportional to width
+  const ox = w * 0.4;
+  const oy = w * 0.2;
+
+  // Front face corners
+  const A = [0, 0];
+  const B = [l, 0];
+  const C = [l, h];
+  const D = [0, h];
+
+  // Back face corners (offset by perspective)
+  const A1 = [ox, oy];
+  const B1 = [l + ox, oy];
+  const C1 = [l + ox, h + oy];
+  const D1 = [ox, h + oy];
+
+  return `${TYPST_HEADER}
+
+#canvas({
+  import draw: *
+
+  // Mặt trước
+  line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
+  line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${D[0]}, ${D[1]}), stroke: ${strokeStr})
+  line((${D[0]}, ${D[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
+
+  // Cạnh khuất
+  ${showHiddenEdges ? `
+  line((${A[0]}, ${A[1]}), (${A1[0]}, ${A1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${D[0]}, ${D[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${A1[0]}, ${A1[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  line((${A1[0]}, ${A1[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr}, dash: "dashed")
+  ` : ''}
+
+  // Cạnh nhìn thấy
+  line((${B[0]}, ${B[1]}), (${B1[0]}, ${B1[1]}), stroke: ${strokeStr})
+  line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
+  line((${B1[0]}, ${B1[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
+  line((${C1[0]}, ${C1[1]}), (${D1[0]}, ${D1[1]}), stroke: ${strokeStr})
+
+  // Nhãn
+  content((${A[0] - 0.3}, ${A[1]}), [${labelA}], anchor: "east")
+  content((${B[0] + 0.3}, ${B[1]}), [${labelB}], anchor: "west")
+  content((${C[0] + 0.3}, ${C[1]}), [${labelC}], anchor: "west")
+  content((${D[0] - 0.3}, ${D[1]}), [${labelD}], anchor: "east")
+  content((${A1[0] - 0.3}, ${A1[1]}), [${labelA1}], anchor: "east")
+  content((${B1[0] + 0.3}, ${B1[1]}), [${labelB1}], anchor: "west")
+  content((${C1[0] + 0.3}, ${C1[1]}), [${labelC1}], anchor: "west")
+  content((${D1[0] - 0.3}, ${D1[1]}), [${labelD1}], anchor: "east")
+})`.trim();
+}
+
 // ==================== HÌNH TRÒN XOAY ====================
 
 export function generateCylinder(params) {
