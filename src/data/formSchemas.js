@@ -1152,6 +1152,61 @@ export const FORM_SCHEMAS = {
       { name: 'b', label: 'Hệ số b (của x²)', type: 'number', min: -10, max: 10, step: 0.5, default: -3 },
       { name: 'c', label: 'Hệ số c (hằng số)', type: 'number', min: -20, max: 20, step: 0.5, default: 2 }
     ]
+  },
+
+  // ── Miền nghiệm hệ BPT bậc nhất hai ẩn ────────────────────────────────────
+  'inequality-region': {
+    fields: [
+      { name: 'a1',    label: 'BPT 1 — hệ số a₁ (của x)', type: 'number', step: 1, default: 1 },
+      { name: 'b1',    label: 'BPT 1 — hệ số b₁ (của y)', type: 'number', step: 1, default: 1 },
+      { name: 'c1',    label: 'BPT 1 — vế phải c₁',       type: 'number', step: 1, default: 4 },
+      { name: 'sign1', label: 'BPT 1 — dấu',               type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'a2',    label: 'BPT 2 — hệ số a₂',         type: 'number', step: 1, default: 2 },
+      { name: 'b2',    label: 'BPT 2 — hệ số b₂',         type: 'number', step: 1, default: 1 },
+      { name: 'c2',    label: 'BPT 2 — vế phải c₂',       type: 'number', step: 1, default: 6 },
+      { name: 'sign2', label: 'BPT 2 — dấu',               type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'a3',    label: 'BPT 3 — hệ số a₃ (=0 để bỏ)', type: 'number', step: 1, default: 0 },
+      { name: 'b3',    label: 'BPT 3 — hệ số b₃',         type: 'number', step: 1, default: 0 },
+      { name: 'c3',    label: 'BPT 3 — vế phải c₃',       type: 'number', step: 1, default: 0 },
+      { name: 'sign3', label: 'BPT 3 — dấu',               type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'xge0',     label: 'Thêm ràng buộc x ≥ 0', type: 'checkbox', default: true },
+      { name: 'yge0',     label: 'Thêm ràng buộc y ≥ 0', type: 'checkbox', default: true },
+      { name: 'minX',     label: 'Trục X — giá trị min',  type: 'number', step: 1, default: -1 },
+      { name: 'maxX',     label: 'Trục X — giá trị max',  type: 'number', step: 1, default: 6 },
+      { name: 'minY',     label: 'Trục Y — giá trị min',  type: 'number', step: 1, default: -1 },
+      { name: 'maxY',     label: 'Trục Y — giá trị max',  type: 'number', step: 1, default: 6 },
+      { name: 'showGrid', label: 'Hiển thị lưới',         type: 'checkbox', default: true }
+    ]
+  },
+
+  // ── Bảng xét dấu ───────────────────────────────────────────────────────────
+  'sign-product2': {
+    fields: [
+      { name: 'a1', label: 'Nhân tử 1: hệ số a₁ (a₁x + b₁)', type: 'number', step: 1, default: 1 },
+      { name: 'b1', label: 'Nhân tử 1: hằng số b₁',           type: 'number', step: 1, default: -1 },
+      { name: 'a2', label: 'Nhân tử 2: hệ số a₂',             type: 'number', step: 1, default: 1 },
+      { name: 'b2', label: 'Nhân tử 2: hằng số b₂',           type: 'number', step: 1, default: 2 }
+    ]
+  },
+
+  'sign-product3': {
+    fields: [
+      { name: 'a1', label: 'Nhân tử 1: hệ số a₁', type: 'number', step: 1, default: 1 },
+      { name: 'b1', label: 'Nhân tử 1: hằng số b₁', type: 'number', step: 1, default: -2 },
+      { name: 'a2', label: 'Nhân tử 2: hệ số a₂', type: 'number', step: 1, default: 1 },
+      { name: 'b2', label: 'Nhân tử 2: hằng số b₂', type: 'number', step: 1, default: 1 },
+      { name: 'a3', label: 'Nhân tử 3: hệ số a₃', type: 'number', step: 1, default: 1 },
+      { name: 'b3', label: 'Nhân tử 3: hằng số b₃', type: 'number', step: 1, default: 3 }
+    ]
+  },
+
+  'sign-fraction': {
+    fields: [
+      { name: 'a1', label: 'Tử số: hệ số a₁ (a₁x + b₁)', type: 'number', step: 1, default: 1 },
+      { name: 'b1', label: 'Tử số: hằng số b₁',           type: 'number', step: 1, default: -1 },
+      { name: 'a2', label: 'Mẫu số: hệ số a₂',            type: 'number', step: 1, default: 1 },
+      { name: 'b2', label: 'Mẫu số: hằng số b₂',          type: 'number', step: 1, default: 2 }
+    ]
   }
 };
 

@@ -272,6 +272,30 @@ export const SHAPE_CATEGORIES = {
         shapes: [
           { id: 'bbt-custom', name: 'BBT Tùy chỉnh', description: 'Nhập tự do các giá trị x, dấu f\', giá trị f(x)' }
         ]
+      },
+      'sign-table': {
+        id: 'sign-table',
+        name: 'Bảng xét dấu',
+        shapes: [
+          { id: 'sign-product2', name: 'Tích hai nhân tử', description: 'f(x) = (a₁x+b₁)(a₂x+b₂)' },
+          { id: 'sign-product3', name: 'Tích ba nhân tử', description: 'f(x) = (a₁x+b₁)(a₂x+b₂)(a₃x+b₃)' },
+          { id: 'sign-fraction', name: 'Phân thức bậc nhất/bậc nhất', description: 'f(x) = (a₁x+b₁)/(a₂x+b₂)' }
+        ]
+      }
+    }
+  },
+
+  'inequality': {
+    id: 'inequality',
+    name: 'Bất phương trình',
+    icon: '📉',
+    subcategories: {
+      'inequality-region': {
+        id: 'inequality-region',
+        name: 'Miền nghiệm',
+        shapes: [
+          { id: 'inequality-region', name: 'Miền nghiệm hệ BPT', description: 'Biểu diễn miền nghiệm hệ BPT bậc nhất hai ẩn (tối đa 3 BPT + x≥0, y≥0)' }
+        ]
       }
     }
   }

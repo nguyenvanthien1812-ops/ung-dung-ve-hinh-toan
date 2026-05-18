@@ -100,6 +100,14 @@ import {
   generateCircuitParallel
 } from './physics.js';
 
+import { generateInequalityRegion } from './inequalities.js';
+
+import {
+  generateSignProduct2,
+  generateSignProduct3,
+  generateSignFraction
+} from './signTable.js';
+
 import { getFormSchema } from '../data/formSchemas.js';
 
 const GENERATOR_MAP = {
@@ -232,7 +240,15 @@ const GENERATOR_MAP = {
   'physics-electric-field-positive': generateElectricFieldPositive,
   'physics-electric-field-negative': generateElectricFieldNegative,
   'physics-circuit-series': generateCircuitSeries,
-  'physics-circuit-parallel': generateCircuitParallel
+  'physics-circuit-parallel': generateCircuitParallel,
+
+  // Miền nghiệm bất phương trình
+  'inequality-region': generateInequalityRegion,
+
+  // Bảng xét dấu
+  'sign-product2': generateSignProduct2,
+  'sign-product3': generateSignProduct3,
+  'sign-fraction': generateSignFraction
 };
 
 export function getGenerator(shapeId) {
