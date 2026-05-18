@@ -317,8 +317,8 @@ export function generateConvexLens(params) {
   // Tia 2: qua tâm O
   line((${-d}, ${h}), (${dImg}, ${hImg}), stroke: 0.7pt + green)
   // Tia 3: qua tiêu điểm vật → song song trục
-  line((${-d}, ${h}), (0, ${-f > 0 ? -h * f / d : h * f / d}), stroke: 0.7pt + orange)
-  line((0, ${-f > 0 ? -h * f / d : h * f / d}), (${dImg}, ${hImg}), stroke: 0.7pt + orange)
+  line((${-d}, ${h}), (0, ${(-h * f / (d - f)).toFixed(4)}), stroke: 0.7pt + orange)
+  line((0, ${(-h * f / (d - f)).toFixed(4)}), (${dImg}, ${hImg}), stroke: 0.7pt + orange)
   ` : ''}
 
   ${showImage && d !== f && Math.abs(dImg) < 20 ? `
@@ -378,7 +378,7 @@ export function generateConcaveLens(params) {
   ${showRays ? `
   // Tia 1: song song trục → kéo dài qua tiêu điểm ảo
   line((${-d}, ${h}), (0, ${h}), stroke: 0.7pt + red)
-  line((0, ${h}), (${L}, ${h - (h - dImg * h / f) * L / Math.abs(f)}), stroke: 0.7pt + red, dash: "dashed")
+  line((0, ${h}), (${L}, ${(h + h * L / Math.abs(f)).toFixed(4)}), stroke: 0.7pt + red, dash: "dashed")
   // Tia 2: qua tâm O
   line((${-d}, ${h}), (${L}, ${-h * L / d}), stroke: 0.7pt + green)
   ` : ''}
