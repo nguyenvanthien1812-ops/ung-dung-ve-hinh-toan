@@ -41,6 +41,32 @@ export function buildPoint(x, y, styleOptions, size = 0.1) {
 export const TYPST_HEADER = `#import "@preview/cetz:0.3.2": canvas, draw
 #set page(width: auto, height: auto, margin: 10pt)`;
 
+// ── Key points for graphs ─────────────────────────────────────────
+// Parse "A(1;2), B(-1;3)" or "A(1,2) B(-1,3)" → [{name,x,y}, ...]
+export function parseKeyPoints(str) {
+  if (!str || !str.trim()) return [];
+  const pts = [];
+  const re = /([A-Za-z][A-Za-z0-9'_]*)\s*\(\s*(-?[\d.]+)\s*[;,]\s*(-?[\d.]+)\s*\)/g;
+  let m;
+  while ((m = re.exec(str)) !== null) {
+    const x = parseFloat(m[2]), y = parseFloat(m[3]);
+    if (!isNaN(x) && !isNaN(y)) pts.push({ name: m[1], x, y });
+  }
+  return pts;
+}
+
+// Format a number cleanly (no trailing zeros)
+function fmtKP(n) { return parseFloat(n.toFixed(4)).toString(); }
+
+// Render key points as Typst/CeTZ draw code
+export function renderKeyPoints(pts) {
+  if (!pts.length) return '';
+  return pts.map(({ name, x, y }) =>
+    `  circle((${x}, ${y}), radius: 0.08, fill: red, stroke: none)\n` +
+    `  content((${x}, ${y}), [$${name}(${fmtKP(x)};${fmtKP(y)})$], anchor: "south-west", padding: 3pt)`
+  ).join('\n');
+}
+
 // Parse vertex string "x1,y1 ; x2,y2 ; x3,y3" into array of [x, y] pairs
 function parseVertices(str) {
   if (!str) return [];

@@ -1266,8 +1266,30 @@ export const FORM_SCHEMAS = {
 };
 
 // Helper function để lấy schema theo shape id
+// Các shape đồ thị hàm số hỗ trợ keyPoints
+const GRAPH_SHAPE_IDS = new Set([
+  'linear', 'quadratic', 'cubic', 'quartic', 'polynomial-general',
+  'hyperbola', 'rational-linear', 'rational-general',
+  'sine', 'cosine', 'tangent', 'trig-transform', 'trig-combination',
+  'exponential', 'exponential-e', 'logarithm', 'natural-log',
+  'absolute-linear', 'absolute-quadratic', 'absolute-composite',
+  'parametric-circle', 'parametric-ellipse', 'parametric-general'
+]);
+
+const KEY_POINTS_FIELD = {
+  name: 'keyPoints',
+  label: 'Điểm đặc biệt (VD: A(1;2), B(-1;3))',
+  type: 'text',
+  default: ''
+};
+
 export function getFormSchema(shapeId) {
-  return FORM_SCHEMAS[shapeId] || null;
+  const schema = FORM_SCHEMAS[shapeId];
+  if (!schema) return null;
+  if (GRAPH_SHAPE_IDS.has(shapeId)) {
+    return { ...schema, fields: [...schema.fields, KEY_POINTS_FIELD] };
+  }
+  return schema;
 }
 
 // Helper function để lấy giá trị mặc định

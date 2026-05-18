@@ -109,6 +109,20 @@ import {
 } from './signTable.js';
 
 import { getFormSchema } from '../data/formSchemas.js';
+import { parseKeyPoints, renderKeyPoints } from './utils.js';
+
+// Wrap a graph generator to support keyPoints param ("A(1;2), B(2;3)")
+function withKeyPoints(generator) {
+  return function(params) {
+    const code = generator(params);
+    const pts = parseKeyPoints(params.keyPoints || '');
+    if (!pts.length) return code;
+    const ptCode = '\n\n  // Điểm đặc biệt\n' + renderKeyPoints(pts) + '\n';
+    const lastClose = code.lastIndexOf('})');
+    if (lastClose === -1) return code;
+    return code.slice(0, lastClose) + ptCode + code.slice(lastClose);
+  };
+}
 
 const GENERATOR_MAP = {
   // Tam giác
@@ -178,29 +192,29 @@ const GENERATOR_MAP = {
   'line-perpendicular-plane': generateLinePerpendicularPlane,
 
   // Đồ thị hàm số
-  'linear': generateLinearGraph,
-  'quadratic': generateQuadraticGraph,
-  'cubic': generateCubicGraph,
-  'quartic': generateQuarticGraph,
-  'polynomial-general': generateCubicGraph,
-  'hyperbola': generateHyperbolaGraph,
-  'rational-linear': generateRationalLinearGraph,
-  'rational-general': generateHyperbolaGraph,
-  'sine': generateSineGraph,
-  'cosine': generateCosineGraph,
-  'tangent': generateTangentGraph,
-  'trig-transform': generateSineGraph,
-  'trig-combination': generateTrigCombinationGraph,
-  'exponential': generateExponentialGraph,
-  'exponential-e': generateExponentialGraph,
-  'logarithm': generateLogarithmGraph,
-  'natural-log': generateLogarithmGraph,
-  'absolute-linear': generateAbsoluteLinearGraph,
-  'absolute-quadratic': generateAbsoluteGraph,
-  'absolute-composite': generateAbsoluteGraph,
-  'parametric-circle': generateParametricCircle,
-  'parametric-ellipse': generateParametricEllipse,
-  'parametric-general': generateParametricGeneral,
+  'linear': withKeyPoints(generateLinearGraph),
+  'quadratic': withKeyPoints(generateQuadraticGraph),
+  'cubic': withKeyPoints(generateCubicGraph),
+  'quartic': withKeyPoints(generateQuarticGraph),
+  'polynomial-general': withKeyPoints(generateCubicGraph),
+  'hyperbola': withKeyPoints(generateHyperbolaGraph),
+  'rational-linear': withKeyPoints(generateRationalLinearGraph),
+  'rational-general': withKeyPoints(generateHyperbolaGraph),
+  'sine': withKeyPoints(generateSineGraph),
+  'cosine': withKeyPoints(generateCosineGraph),
+  'tangent': withKeyPoints(generateTangentGraph),
+  'trig-transform': withKeyPoints(generateSineGraph),
+  'trig-combination': withKeyPoints(generateTrigCombinationGraph),
+  'exponential': withKeyPoints(generateExponentialGraph),
+  'exponential-e': withKeyPoints(generateExponentialGraph),
+  'logarithm': withKeyPoints(generateLogarithmGraph),
+  'natural-log': withKeyPoints(generateLogarithmGraph),
+  'absolute-linear': withKeyPoints(generateAbsoluteLinearGraph),
+  'absolute-quadratic': withKeyPoints(generateAbsoluteGraph),
+  'absolute-composite': withKeyPoints(generateAbsoluteGraph),
+  'parametric-circle': withKeyPoints(generateParametricCircle),
+  'parametric-ellipse': withKeyPoints(generateParametricEllipse),
+  'parametric-general': withKeyPoints(generateParametricGeneral),
 
   // Bảng biến thiên
   'bbt-quadratic': generateBBTQuadratic,
