@@ -100,7 +100,7 @@ import {
   generateCircuitParallel
 } from './physics.js';
 
-import { generateInequalityRegion } from './inequalities.js';
+import { generateInequalityRegion, generateCircleRegion, generateParabolaRegion, generateMixedRegion } from './inequalities.js';
 
 import {
   generateSignProduct2,
@@ -244,6 +244,9 @@ const GENERATOR_MAP = {
 
   // Miền nghiệm bất phương trình
   'inequality-region': generateInequalityRegion,
+  'circle-region': generateCircleRegion,
+  'parabola-region': generateParabolaRegion,
+  'mixed-region': generateMixedRegion,
 
   // Bảng xét dấu
   'sign-product2': generateSignProduct2,

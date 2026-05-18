@@ -1207,6 +1207,61 @@ export const FORM_SCHEMAS = {
       { name: 'a2', label: 'Mẫu số: hệ số a₂',            type: 'number', step: 1, default: 1 },
       { name: 'b2', label: 'Mẫu số: hằng số b₂',          type: 'number', step: 1, default: 2 }
     ]
+  },
+
+  // ── Miền nghiệm BPT đường tròn ─────────────────────────────────────────────
+  'circle-region': {
+    fields: [
+      { name: 'h',        label: 'Tâm h (tọa độ x)',      type: 'number', step: 0.5, default: 0 },
+      { name: 'k',        label: 'Tâm k (tọa độ y)',      type: 'number', step: 0.5, default: 0 },
+      { name: 'rad',      label: 'Bán kính r',             type: 'number', min: 0.1, step: 0.5, default: 3 },
+      { name: 'sign',     label: 'Dấu BPT',                type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'minX',     label: 'Trục X — min',           type: 'number', step: 1, default: -5 },
+      { name: 'maxX',     label: 'Trục X — max',           type: 'number', step: 1, default: 5 },
+      { name: 'minY',     label: 'Trục Y — min',           type: 'number', step: 1, default: -5 },
+      { name: 'maxY',     label: 'Trục Y — max',           type: 'number', step: 1, default: 5 },
+      { name: 'showGrid', label: 'Hiển thị lưới',          type: 'checkbox', default: true }
+    ]
+  },
+
+  // ── Miền nghiệm BPT parabol ────────────────────────────────────────────────
+  'parabola-region': {
+    fields: [
+      { name: 'a',        label: 'Hệ số a (y = ax² + bx + c)', type: 'number', step: 0.5, default: 1 },
+      { name: 'b',        label: 'Hệ số b',                     type: 'number', step: 0.5, default: 0 },
+      { name: 'c',        label: 'Hệ số c',                     type: 'number', step: 0.5, default: 0 },
+      { name: 'sign',     label: 'Dấu BPT',                     type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'minX',     label: 'Trục X — min',                type: 'number', step: 1, default: -4 },
+      { name: 'maxX',     label: 'Trục X — max',                type: 'number', step: 1, default: 4 },
+      { name: 'minY',     label: 'Trục Y — min',                type: 'number', step: 1, default: -3 },
+      { name: 'maxY',     label: 'Trục Y — max',                type: 'number', step: 1, default: 6 },
+      { name: 'showGrid', label: 'Hiển thị lưới',               type: 'checkbox', default: true }
+    ]
+  },
+
+  // ── Miền nghiệm hỗn hợp: đường thẳng + đường tròn ────────────────────────
+  'mixed-region': {
+    fields: [
+      { name: 'h',          label: 'Tâm đường tròn h',          type: 'number', step: 0.5, default: 0 },
+      { name: 'k',          label: 'Tâm đường tròn k',          type: 'number', step: 0.5, default: 0 },
+      { name: 'rad',        label: 'Bán kính r',                 type: 'number', min: 0.1, step: 0.5, default: 2 },
+      { name: 'circleSign', label: 'Dấu BPT đường tròn',        type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'a1',         label: 'BPT 1 — hệ số a₁ (x)',      type: 'number', step: 1, default: 1 },
+      { name: 'b1',         label: 'BPT 1 — hệ số b₁ (y)',      type: 'number', step: 1, default: 1 },
+      { name: 'c1',         label: 'BPT 1 — vế phải c₁',        type: 'number', step: 1, default: 3 },
+      { name: 'sign1',      label: 'BPT 1 — dấu',               type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'a2',         label: 'BPT 2 — hệ số a₂ (=0 bỏ)', type: 'number', step: 1, default: 0 },
+      { name: 'b2',         label: 'BPT 2 — hệ số b₂',          type: 'number', step: 1, default: 0 },
+      { name: 'c2',         label: 'BPT 2 — vế phải c₂',        type: 'number', step: 1, default: 0 },
+      { name: 'sign2',      label: 'BPT 2 — dấu',               type: 'select', options: ['≤', '≥'], default: '≤' },
+      { name: 'xge0',       label: 'Thêm ràng buộc x ≥ 0',      type: 'checkbox', default: false },
+      { name: 'yge0',       label: 'Thêm ràng buộc y ≥ 0',      type: 'checkbox', default: false },
+      { name: 'minX',       label: 'Trục X — min',               type: 'number', step: 1, default: -4 },
+      { name: 'maxX',       label: 'Trục X — max',               type: 'number', step: 1, default: 4 },
+      { name: 'minY',       label: 'Trục Y — min',               type: 'number', step: 1, default: -4 },
+      { name: 'maxY',       label: 'Trục Y — max',               type: 'number', step: 1, default: 4 },
+      { name: 'showGrid',   label: 'Hiển thị lưới',              type: 'checkbox', default: true }
+    ]
   }
 };
 

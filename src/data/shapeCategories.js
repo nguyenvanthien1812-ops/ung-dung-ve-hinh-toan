@@ -294,7 +294,10 @@ export const SHAPE_CATEGORIES = {
         id: 'inequality-region',
         name: 'Miền nghiệm',
         shapes: [
-          { id: 'inequality-region', name: 'Miền nghiệm hệ BPT', description: 'Biểu diễn miền nghiệm hệ BPT bậc nhất hai ẩn (tối đa 3 BPT + x≥0, y≥0)' }
+          { id: 'inequality-region', name: 'Miền nghiệm hệ BPT bậc nhất', description: 'Hệ BPT bậc nhất hai ẩn (tối đa 3 BPT + x≥0, y≥0)' },
+          { id: 'circle-region', name: 'Miền nghiệm BPT đường tròn', description: '(x-h)² + (y-k)² ≤ r² hoặc ≥ r²' },
+          { id: 'parabola-region', name: 'Miền nghiệm BPT parabol', description: 'y ≤ ax² + bx + c hoặc y ≥ ax² + bx + c' },
+          { id: 'mixed-region', name: 'Miền nghiệm hỗn hợp', description: 'Hệ BPT: đường thẳng + đường tròn' }
         ]
       }
     }

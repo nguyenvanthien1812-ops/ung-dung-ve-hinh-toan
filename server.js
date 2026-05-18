@@ -43,6 +43,54 @@ function getTypstCommand() {
   return `.\\typst.exe`;
 }
 
+// ── Auto-fix lệnh LaTeX → Typst (Gemini hay sinh ra sai) ─────────
+function sanitizeTypstCode(code) {
+  // Degree: ^\circ → ° (phổ biến nhất)
+  code = code.replace(/\^\s*\\circ\b/g, '°');
+
+  // Greek letters lowercase: \alpha → alpha, \beta → beta, ...
+  const greekLower = ['alpha','beta','gamma','delta','epsilon','zeta','eta',
+    'theta','iota','kappa','lambda','mu','nu','xi','pi','rho','sigma',
+    'tau','upsilon','phi','chi','psi','omega'];
+  for (const g of greekLower) {
+    code = code.replace(new RegExp(`\\\\${g}\\b`, 'g'), g);
+  }
+
+  // Greek letters uppercase: \Gamma → Gamma, ...
+  const greekUpper = ['Gamma','Delta','Theta','Lambda','Xi','Pi','Sigma',
+    'Upsilon','Phi','Psi','Omega'];
+  for (const g of greekUpper) {
+    code = code.replace(new RegExp(`\\\\${g}\\b`, 'g'), g);
+  }
+
+  // Math symbols
+  code = code.replace(/\\infty\b/g, '∞');
+  code = code.replace(/\\rightarrow\b/g, '→');
+  code = code.replace(/\\leftarrow\b/g, '←');
+  code = code.replace(/\\Rightarrow\b/g, '⇒');
+  code = code.replace(/\\Leftarrow\b/g, '⇐');
+  code = code.replace(/\\leftrightarrow\b/g, '↔');
+  code = code.replace(/\\leq\b|\\le\b/g, '<=');
+  code = code.replace(/\\geq\b|\\ge\b/g, '>=');
+  code = code.replace(/\\neq\b|\\ne\b/g, '≠');
+  code = code.replace(/\\approx\b/g, '≈');
+  code = code.replace(/\\times\b/g, '×');
+  code = code.replace(/\\cdot\b/g, '·');
+  code = code.replace(/\\pm\b/g, '±');
+  code = code.replace(/\\mp\b/g, '∓');
+  code = code.replace(/\\in\b/g, '∈');
+  code = code.replace(/\\notin\b/g, '∉');
+  code = code.replace(/\\subset\b/g, '⊂');
+  code = code.replace(/\\cup\b/g, '∪');
+  code = code.replace(/\\cap\b/g, '∩');
+  code = code.replace(/\\forall\b/g, '∀');
+  code = code.replace(/\\exists\b/g, '∃');
+  code = code.replace(/\\partial\b/g, '∂');
+  code = code.replace(/\\nabla\b/g, '∇');
+
+  return code;
+}
+
 // ── API: Compile Typst → SVG ─────────────────────────────────────
 app.post('/api/compile', (req, res) => {
   const { code } = req.body;
@@ -50,13 +98,15 @@ app.post('/api/compile', (req, res) => {
     return res.status(400).json({ error: 'No code provided' });
   }
 
+  const sanitized = sanitizeTypstCode(code);
+
   // Dùng thư mục /tmp trên Linux, __dirname trên Windows
   const tmpDir = process.platform !== 'win32' ? '/tmp' : __dirname;
   const uid = Date.now() + '_' + Math.random().toString(36).slice(2, 7);
   const tempTypPath = path.join(tmpDir, `typst_${uid}.typ`);
   const tempSvgPath = path.join(tmpDir, `typst_${uid}.svg`);
 
-  fs.writeFileSync(tempTypPath, code, 'utf8');
+  fs.writeFileSync(tempTypPath, sanitized, 'utf8');
 
   const typstCmd = getTypstCommand();
   const command = `${typstCmd} compile "${tempTypPath}" "${tempSvgPath}"`;
