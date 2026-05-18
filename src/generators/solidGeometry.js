@@ -133,7 +133,6 @@ function generateSquarePyramid(params) {
   // Đáy hình vuông (cạnh nhìn thấy)
   line((${A[0]}, ${A[1]}), (${B[0]}, ${B[1]}), stroke: ${strokeStr})
   line((${B[0]}, ${B[1]}), (${C[0]}, ${C[1]}), stroke: ${strokeStr})
-  line((${C[0]}, ${C[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
 
   // Các cạnh bên nhìn thấy
   line((${S[0]}, ${S[1]}), (${A[0]}, ${A[1]}), stroke: ${strokeStr})
@@ -164,6 +163,8 @@ export function generatePrism(params) {
     baseSize,
     height,
     perspective = 'Trước',
+    labelA = 'A', labelB = 'B', labelC = 'C',
+    labelA1 = "A'", labelB1 = "B'", labelC1 = "C'",
     showHiddenEdges = true,
     styleOptions = {}
   } = params;
@@ -211,12 +212,12 @@ export function generatePrism(params) {
   line((${C[0]}, ${C[1]}), (${C1[0]}, ${C1[1]}), stroke: ${strokeStr})
 
   // Nhãn
-  content((${A[0]}, ${A[1]}), [A], anchor: "north-east")
-  content((${B[0]}, ${B[1]}), [B], anchor: "north-west")
-  content((${C[0]}, ${C[1]}), [C], anchor: "south")
-  content((${A1[0]}, ${A1[1]}), [A'], anchor: "south-east")
-  content((${B1[0]}, ${B1[1]}), [B'], anchor: "south-west")
-  content((${C1[0]}, ${C1[1]}), [C'], anchor: "north")
+  content((${A[0]}, ${A[1]}), [${labelA}], anchor: "north-east")
+  content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-west")
+  content((${C[0]}, ${C[1]}), [${labelC}], anchor: "south")
+  content((${A1[0]}, ${A1[1]}), [${labelA1}], anchor: "south-east")
+  content((${B1[0]}, ${B1[1]}), [${labelB1}], anchor: "south-west")
+  content((${C1[0]}, ${C1[1]}), [${labelC1}], anchor: "north")
 })`.trim();
   }
 
@@ -282,6 +283,7 @@ export function generateCube(params) {
     side,
     perspective = 'Trước',
     labelA = 'A', labelB = 'B', labelC = 'C', labelD = 'D',
+    labelA1 = "A'", labelB1 = "B'", labelC1 = "C'", labelD1 = "D'",
     showHiddenEdges = true,
     showDiagonals = false,
     styleOptions = {}
@@ -331,11 +333,16 @@ export function generateCube(params) {
   line((${A[0]}, ${A[1]}), (${C1[0]}, ${C1[1]}), stroke: 0.5pt + black , dash: "dotted")
   ` : ''}
 
-  // Nhãn
+  // Nhãn mặt trước
   content((${A[0]}, ${A[1]}), [${labelA}], anchor: "north-east")
   content((${B[0]}, ${B[1]}), [${labelB}], anchor: "north-west")
   content((${C[0]}, ${C[1]}), [${labelC}], anchor: "south-west")
   content((${D[0]}, ${D[1]}), [${labelD}], anchor: "south-east")
+  // Nhãn mặt sau
+  content((${A1[0]}, ${A1[1]}), [${labelA1}], anchor: "south-east")
+  content((${B1[0]}, ${B1[1]}), [${labelB1}], anchor: "south-west")
+  content((${C1[0]}, ${C1[1]}), [${labelC1}], anchor: "north-west")
+  content((${D1[0]}, ${D1[1]}), [${labelD1}], anchor: "north-east")
 })`.trim();
 }
 

@@ -388,6 +388,189 @@ export const TEMPLATE_LIBRARY = {
 
     'prisms': [
       {
+        id: 'prism-abc-midpoint',
+        name: 'Lăng trụ ABC.A\'B\'C\' với trung điểm',
+        category: 'prisms',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  // Tọa độ đáy dưới ABC
+  let A = (0, 0)
+  let B = (4, 0)
+  let C = (2, 1.5)
+
+  // Đáy trên A'B'C' (dịch lên trên)
+  let h = 3
+  let dx = 0.8
+  let dy = 0.4
+  let Ap = (A.x + dx, A.y + h + dy)
+  let Bp = (B.x + dx, B.y + h + dy)
+  let Cp = (C.x + dx, C.y + h + dy)
+
+  // Trung điểm M của AB và N của A'B'
+  let M = ((A.x + B.x)/2, (A.y + B.y)/2)
+  let N = ((Ap.x + Bp.x)/2, (Ap.y + Bp.y)/2)
+
+  // Cạnh khuất
+  line(A, C, stroke: 1.5pt + black, dash: "dashed")
+  line(A, Ap, stroke: 1.5pt + black, dash: "dashed")
+  line(Ap, Cp, stroke: 1.5pt + black, dash: "dashed")
+
+  // Đáy dưới (cạnh nhìn thấy)
+  line(A, B, stroke: 1.5pt + black)
+  line(B, C, stroke: 1.5pt + black)
+
+  // Đáy trên
+  line(Ap, Bp, stroke: 1.5pt + black)
+  line(Bp, Cp, stroke: 1.5pt + black)
+
+  // Cạnh bên nhìn thấy
+  line(B, Bp, stroke: 1.5pt + black)
+  line(C, Cp, stroke: 1.5pt + black)
+
+  // Trung điểm M và N
+  circle(M, radius: 0.07, fill: red)
+  circle(N, radius: 0.07, fill: red)
+  line(M, N, stroke: (paint: red, thickness: 1pt, dash: "dashed"))
+
+  // Nhãn
+  content(A, [A], anchor: "east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(Ap, [A'], anchor: "south-east")
+  content(Bp, [B'], anchor: "south-west")
+  content(Cp, [C'], anchor: "north")
+  content(M, [M], anchor: "north")
+  content(N, [N], anchor: "south")
+})`
+      },
+      {
+        id: 'box-space-diagonal',
+        name: 'Hình hộp chữ nhật ABCD.A\'B\'C\'D\' - đường chéo không gian',
+        category: 'prisms',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let l = 4   // chiều dài
+  let w = 3   // chiều rộng (phối cảnh)
+  let h = 2.5 // chiều cao
+  let ox = w * 0.4
+  let oy = w * 0.2
+
+  // Mặt trước
+  let A = (0, 0)
+  let B = (l, 0)
+  let C = (l, h)
+  let D = (0, h)
+
+  // Mặt sau
+  let Ap = (ox, oy)
+  let Bp = (l + ox, oy)
+  let Cp = (l + ox, h + oy)
+  let Dp = (ox, h + oy)
+
+  // Mặt trước
+  line(A, B, stroke: 1.5pt + black)
+  line(B, C, stroke: 1.5pt + black)
+  line(C, D, stroke: 1.5pt + black)
+  line(D, A, stroke: 1.5pt + black)
+
+  // Cạnh khuất
+  line(A, Ap, stroke: 1.5pt + black, dash: "dashed")
+  line(D, Dp, stroke: 1.5pt + black, dash: "dashed")
+  line(Ap, Bp, stroke: 1.5pt + black, dash: "dashed")
+  line(Ap, Dp, stroke: 1.5pt + black, dash: "dashed")
+
+  // Cạnh nhìn thấy mặt sau
+  line(B, Bp, stroke: 1.5pt + black)
+  line(C, Cp, stroke: 1.5pt + black)
+  line(Bp, Cp, stroke: 1.5pt + black)
+  line(Cp, Dp, stroke: 1.5pt + black)
+
+  // Đường chéo không gian AC'
+  line(A, Cp, stroke: (paint: red, thickness: 1.2pt, dash: "dashed"))
+
+  // Đường chéo đáy AC (phụ trợ)
+  line(A, B, stroke: (paint: gray, thickness: 0.5pt, dash: "dotted"))
+
+  // Nhãn
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+  content(Ap, [A'], anchor: "south-east")
+  content(Bp, [B'], anchor: "south-west")
+  content(Cp, [C'], anchor: "north-west")
+  content(Dp, [D'], anchor: "north-east")
+})`
+      },
+      {
+        id: 'pyramid-with-cross-section',
+        name: 'Hình chóp S.ABCD với thiết diện',
+        category: 'prisms',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  let S = (2, 5)
+  let A = (0, 0)
+  let B = (4, 0)
+  let C = (4.5, 1.2)
+  let D = (0.5, 1.2)
+
+  // Trung điểm M của SA, N của SB, P của SC, Q của SD
+  let M = ((S.x + A.x)/2, (S.y + A.y)/2)
+  let N = ((S.x + B.x)/2, (S.y + B.y)/2)
+  let P = ((S.x + C.x)/2, (S.y + C.y)/2)
+  let Q = ((S.x + D.x)/2, (S.y + D.y)/2)
+
+  // Cạnh khuất đáy
+  line(A, D, stroke: 1.5pt + black, dash: "dashed")
+  line(D, C, stroke: 1.5pt + black, dash: "dashed")
+
+  // Cạnh bên khuất
+  line(S, D, stroke: 1.5pt + black, dash: "dashed")
+
+  // Đáy nhìn thấy
+  line(A, B, stroke: 1.5pt + black)
+  line(B, C, stroke: 1.5pt + black)
+
+  // Cạnh bên nhìn thấy
+  line(S, A, stroke: 1.5pt + black)
+  line(S, B, stroke: 1.5pt + black)
+  line(S, C, stroke: 1.5pt + black)
+
+  // Thiết diện MNPQ (song song đáy, qua trung điểm)
+  line(M, N, stroke: (paint: blue, thickness: 1.5pt))
+  line(N, P, stroke: (paint: blue, thickness: 1.5pt))
+  line(M, Q, stroke: (paint: blue, thickness: 1.5pt, dash: "dashed"))
+  line(Q, P, stroke: (paint: blue, thickness: 1.5pt, dash: "dashed"))
+
+  // Điểm trung điểm
+  circle(M, radius: 0.07, fill: blue)
+  circle(N, radius: 0.07, fill: blue)
+  circle(P, radius: 0.07, fill: blue)
+  circle(Q, radius: 0.07, fill: blue)
+
+  // Nhãn
+  content(S, [S], anchor: "south")
+  content(A, [A], anchor: "north-east")
+  content(B, [B], anchor: "north-west")
+  content(C, [C], anchor: "south-west")
+  content(D, [D], anchor: "south-east")
+  content(M, [M], anchor: "east")
+  content(N, [N], anchor: "west")
+  content(P, [P], anchor: "west")
+  content(Q, [Q], anchor: "east")
+})`
+      },
+      {
         id: 'cube',
         name: 'Hình lập phương',
         category: 'prisms',
@@ -823,6 +1006,48 @@ export const TEMPLATE_LIBRARY = {
       }
     ],
 
+    'quartic': [
+      {
+        id: 'graph-quartic',
+        name: 'Đồ thị hàm bậc 4',
+        category: 'quartic',
+        code: `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  grid((-4, -5), (4, 5), step: 1, stroke: luma(240))
+
+  // Trục tọa độ
+  line((-4, 0), (4, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((4.2, 0), [$x$], anchor: "west")
+  line((0, -5), (0, 5), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, 5.2), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+
+  // Đồ thị y = x⁴ - 3x² + 2
+  // Có cực trị tại x = 0 (cực đại cục bộ) và x = ±√(3/2) ≈ ±1.22
+  plot.plot(
+    size: (8, 10),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (-2.5, 2.5), x => x * x * x * x - 3 * x * x + 2, style: (stroke: blue + 1.5pt), samples: 200)
+    }
+  )
+
+  // Điểm cực trị
+  circle((0, 2), radius: 0.08, fill: red)
+  content((0, 2), [(0, 2)], anchor: "west")
+  circle((calc.sqrt(1.5), -0.25), radius: 0.08, fill: green)
+  circle((-calc.sqrt(1.5), -0.25), radius: 0.08, fill: green)
+
+  content((2, 4.5), [$y = x^4 - 3x^2 + 2$], anchor: "east")
+})`
+      }
+    ],
+
     'absolute': [
       {
         id: 'graph-absolute-linear',
@@ -859,6 +1084,148 @@ export const TEMPLATE_LIBRARY = {
       }
     ]
   }
+};
+
+// ==================== BẢNG BIẾN THIÊN MẪU ====================
+TEMPLATE_LIBRARY['variation-table'] = {
+  'bbt-manual': [
+    {
+      id: 'bbt-cubic-example',
+      name: 'BBT hàm bậc ba mẫu',
+      category: 'bbt-manual',
+      code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+// BBT hàm y = x³ - 3x + 2
+// f'(x) = 3x² - 3 = 3(x-1)(x+1), nghiệm: x = -1 và x = 1
+
+#canvas({
+  import draw: *
+
+  // Kích thước
+  let LW = 1.4  // cột x/f'/f
+  let BW = 0.9  // cột biên
+  let IW = 2.3  // cột khoảng
+  let CW = 1.4  // cột cực trị
+  let RH = 1.1  // chiều cao hàng
+  let TW = LW + 2*BW + 3*IW + 2*CW
+  let TH = 3*RH
+
+  // Khung bảng
+  rect((0,0), (TW, TH), stroke: 1pt + black)
+  line((0, RH), (TW, RH), stroke: 0.8pt + black)
+  line((0, 2*RH), (TW, 2*RH), stroke: 0.8pt + black)
+  line((LW, 0), (LW, TH), stroke: 1pt + black)
+
+  // Nhãn cột đầu
+  content((LW/2, 2.5*RH), [$x$])
+  content((LW/2, 1.5*RH), [$f'(x)$])
+  content((LW/2, 0.5*RH), [$f(x)$])
+
+  // Cột cực trị x=-1
+  let cx1 = LW + BW + IW + CW/2
+  line((LW+BW+IW, 0), (LW+BW+IW, TH), stroke: 0.8pt + black)
+  line((LW+BW+IW+CW, 0), (LW+BW+IW+CW, TH), stroke: 0.8pt + black)
+
+  // Cột cực trị x=1
+  let cx2 = LW + BW + 2*IW + 1.5*CW
+  line((LW+BW+2*IW+CW, 0), (LW+BW+2*IW+CW, TH), stroke: 0.8pt + black)
+  line((LW+BW+2*IW+2*CW, 0), (LW+BW+2*IW+2*CW, TH), stroke: 0.8pt + black)
+
+  // Hàng x
+  content((LW+BW/2, 2.5*RH), [$-infinity$])
+  content((LW+BW+IW+CW/2, 2.5*RH), [$-1$])
+  content((LW+BW+2*IW+1.5*CW, 2.5*RH), [$1$])
+  content((TW-BW/2, 2.5*RH), [$+infinity$])
+
+  // Hàng f'(x)
+  content((LW+BW+IW/2, 1.5*RH), [$+$])
+  content((LW+BW+IW+CW/2, 1.5*RH), [$0$])
+  content((LW+BW+1.5*IW+CW, 1.5*RH), [$-$])
+  content((LW+BW+2*IW+1.5*CW, 1.5*RH), [$0$])
+  content((LW+BW+2.5*IW+2*CW, 1.5*RH), [$+$])
+
+  // Hàng f(x) — mũi tên và giá trị
+  content((LW+BW+0.1, 0.12*RH), [$-infinity$], anchor: "west")
+  line((LW+BW+0.2, 0.12*RH), (LW+BW+IW-0.1, 0.88*RH), mark: (end: ">"), stroke: 0.8pt + black)
+  content((LW+BW+IW+CW/2, 0.88*RH), [$4$])
+  line((LW+BW+IW+CW+0.1, 0.88*RH), (LW+BW+2*IW+CW-0.1, 0.12*RH), mark: (end: ">"), stroke: 0.8pt + black)
+  content((LW+BW+2*IW+1.5*CW, 0.12*RH), [$0$])
+  line((LW+BW+2*IW+2*CW+0.1, 0.12*RH), (TW-BW-0.1, 0.88*RH), mark: (end: ">"), stroke: 0.8pt + black)
+  content((TW-BW-0.1, 0.88*RH), [$+infinity$], anchor: "east")
+})`
+    },
+    {
+      id: 'bbt-composite',
+      name: 'BBT hàm hợp u = g(t) rồi f(u)',
+      category: 'bbt-manual',
+      code: `#import "@preview/cetz:0.3.2": canvas, draw
+#set page(width: auto, height: auto, margin: 10pt)
+
+// Ví dụ: y = (x² - 1)² - 2(x² - 1) = t² - 2t  với t = x² - 1
+// Đặt t = x² - 1, BBT của t: t' = 2x, CĐ x=0, t(0)=-1; t→+∞ khi x→±∞
+// Sau đó thay vào y = t² - 2t
+
+// BBT hàm số y = x⁴ - 4x² + 3 (triển khai từ hàm hợp trên)
+// y' = 4x³ - 8x = 4x(x²-2), nghiệm: x=0, x=±√2
+
+#canvas({
+  import draw: *
+  let LW = 1.4
+  let BW = 0.9
+  let IW = 2.0
+  let CW = 1.4
+  let RH = 1.1
+  let TW = LW + 2*BW + 4*IW + 3*CW
+  let TH = 3*RH
+
+  rect((0,0), (TW, TH), stroke: 1pt + black)
+  line((0, RH), (TW, RH), stroke: 0.8pt + black)
+  line((0, 2*RH), (TW, 2*RH), stroke: 0.8pt + black)
+  line((LW, 0), (LW, TH), stroke: 1pt + black)
+
+  content((LW/2, 2.5*RH), [$x$])
+  content((LW/2, 1.5*RH), [$y'$])
+  content((LW/2, 0.5*RH), [$y$])
+
+  // 3 cột cực trị
+  for i in range(3) {
+    let xl = LW + BW + (i+1)*IW + i*CW
+    line((xl, 0), (xl, TH), stroke: 0.8pt + black)
+    line((xl+CW, 0), (xl+CW, TH), stroke: 0.8pt + black)
+  }
+
+  // Hàng x: -∞, -√2, 0, √2, +∞
+  content((LW+BW/2, 2.5*RH), [$-infinity$])
+  content((LW+BW+IW+CW/2, 2.5*RH), [$-sqrt(2)$])
+  content((LW+BW+2*IW+1.5*CW, 2.5*RH), [$0$])
+  content((LW+BW+3*IW+2.5*CW, 2.5*RH), [$sqrt(2)$])
+  content((TW-BW/2, 2.5*RH), [$+infinity$])
+
+  // Hàng y': -, 0, +, 0, -, 0, +
+  content((LW+BW+IW/2, 1.5*RH), [$-$])
+  content((LW+BW+IW+CW/2, 1.5*RH), [$0$])
+  content((LW+BW+1.5*IW+CW, 1.5*RH), [$+$])
+  content((LW+BW+2*IW+1.5*CW, 1.5*RH), [$0$])
+  content((LW+BW+2.5*IW+2*CW, 1.5*RH), [$-$])
+  content((LW+BW+3*IW+2.5*CW, 1.5*RH), [$0$])
+  content((LW+BW+3.5*IW+3*CW, 1.5*RH), [$+$])
+
+  // Hàng y: giá trị tại các cực trị: f(-√2)=-1, f(0)=3, f(√2)=-1
+  let hi = 0.88*RH
+  let lo = 0.12*RH
+  content((LW+BW+0.1, hi), [$+infinity$], anchor: "west")
+  line((LW+BW+0.2, hi), (LW+BW+IW-0.1, lo), mark: (end: ">"), stroke: 0.8pt)
+  content((LW+BW+IW+CW/2, lo), [$-1$])
+  line((LW+BW+IW+CW+0.1, lo), (LW+BW+2*IW+CW-0.1, hi), mark: (end: ">"), stroke: 0.8pt)
+  content((LW+BW+2*IW+1.5*CW, hi), [$3$])
+  line((LW+BW+2*IW+2*CW+0.1, hi), (LW+BW+3*IW+2*CW-0.1, lo), mark: (end: ">"), stroke: 0.8pt)
+  content((LW+BW+3*IW+2.5*CW, lo), [$-1$])
+  line((LW+BW+3*IW+3*CW+0.1, lo), (TW-BW-0.1, hi), mark: (end: ">"), stroke: 0.8pt)
+  content((TW-BW-0.1, hi), [$+infinity$], anchor: "east")
+})`
+    }
+  ]
 };
 
 // Helper function để lấy tất cả templates dưới dạng flat array

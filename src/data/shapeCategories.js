@@ -124,6 +124,7 @@ export const SHAPE_CATEGORIES = {
           { id: 'linear', name: 'Hàm bậc nhất', description: 'y = ax + b (đường thẳng)' },
           { id: 'quadratic', name: 'Hàm bậc hai', description: 'y = ax² + bx + c (parabol)' },
           { id: 'cubic', name: 'Hàm bậc ba', description: 'y = ax³ + bx² + cx + d' },
+          { id: 'quartic', name: 'Hàm bậc bốn', description: 'y = ax⁴ + bx² + c' },
           { id: 'polynomial-general', name: 'Đa thức bậc cao', description: 'Đa thức bậc n' }
         ]
       },

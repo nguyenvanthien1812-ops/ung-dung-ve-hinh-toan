@@ -378,6 +378,23 @@ export const FORM_SCHEMAS = {
     ]
   },
 
+  'prism-quadrilateral': {
+    fields: [
+      { name: 'length', label: 'Chiều dài', type: 'number', min: 0.5, max: 20, default: 5, unit: 'đơn vị' },
+      { name: 'width', label: 'Chiều rộng', type: 'number', min: 0.5, max: 20, default: 3, unit: 'đơn vị' },
+      { name: 'height', label: 'Chiều cao', type: 'number', min: 0.5, max: 20, default: 4, unit: 'đơn vị' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'labelA1', label: "Nhãn đỉnh A'", type: 'text', default: "A'" },
+      { name: 'labelB1', label: "Nhãn đỉnh B'", type: 'text', default: "B'" },
+      { name: 'labelC1', label: "Nhãn đỉnh C'", type: 'text', default: "C'" },
+      { name: 'labelD1', label: "Nhãn đỉnh D'", type: 'text', default: "D'" },
+      { name: 'showHiddenEdges', label: 'Hiển thị cạnh khuất', type: 'checkbox', default: true }
+    ]
+  },
+
   'cube': {
     fields: [
       { name: 'side', label: 'Độ dài cạnh', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
@@ -386,6 +403,10 @@ export const FORM_SCHEMAS = {
       { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
       { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
       { name: 'labelD', label: 'Nhãn đỉnh D', type: 'text', default: 'D' },
+      { name: 'labelA1', label: "Nhãn đỉnh A'", type: 'text', default: "A'" },
+      { name: 'labelB1', label: "Nhãn đỉnh B'", type: 'text', default: "B'" },
+      { name: 'labelC1', label: "Nhãn đỉnh C'", type: 'text', default: "C'" },
+      { name: 'labelD1', label: "Nhãn đỉnh D'", type: 'text', default: "D'" },
       { name: 'showHiddenEdges', label: 'Hiển thị cạnh khuất', type: 'checkbox', default: true },
       { name: 'showDiagonals', label: 'Hiển thị đường chéo', type: 'checkbox', default: false }
     ]
@@ -697,15 +718,12 @@ export const FORM_SCHEMAS = {
       { name: 'baseSize', label: 'Cạnh đáy', type: 'number', min: 0.5, max: 20, default: 4, unit: 'đơn vị' },
       { name: 'height', label: 'Chiều cao', type: 'number', min: 0.5, max: 20, default: 5, unit: 'đơn vị' },
       { name: 'perspective', label: 'Góc nhìn', type: 'select', options: ['Trước', 'Trái', 'Phải'], default: 'Phải' },
-      { name: 'showHiddenEdges', label: 'Hiển thị cạnh khuất', type: 'checkbox', default: true }
-    ]
-  },
-
-  // Lăng trụ tứ giác (reuse cube)
-  'prism-quadrilateral': {
-    fields: [
-      { name: 'side', label: 'Độ dài cạnh', type: 'number', min: 0.1, max: 20, default: 4, unit: 'đơn vị' },
-      { name: 'perspective', label: 'Góc nhìn', type: 'select', options: ['Trước', 'Trái', 'Phải', 'Trên'], default: 'Trước' },
+      { name: 'labelA', label: 'Nhãn đỉnh A', type: 'text', default: 'A' },
+      { name: 'labelB', label: 'Nhãn đỉnh B', type: 'text', default: 'B' },
+      { name: 'labelC', label: 'Nhãn đỉnh C', type: 'text', default: 'C' },
+      { name: 'labelA1', label: "Nhãn đỉnh A'", type: 'text', default: "A'" },
+      { name: 'labelB1', label: "Nhãn đỉnh B'", type: 'text', default: "B'" },
+      { name: 'labelC1', label: "Nhãn đỉnh C'", type: 'text', default: "C'" },
       { name: 'showHiddenEdges', label: 'Hiển thị cạnh khuất', type: 'checkbox', default: true }
     ]
   },
@@ -839,6 +857,18 @@ export const FORM_SCHEMAS = {
       { name: 'maxX', label: 'X max', type: 'number', default: 5 },
       { name: 'showGrid', label: 'Hiển thị lưới', type: 'checkbox', default: true },
       { name: 'showAsymptotes', label: 'Hiển thị tiệm cận', type: 'checkbox', default: true },
+      { name: 'showAxis', label: 'Hiển thị trục tọa độ', type: 'checkbox', default: true }
+    ]
+  },
+
+  'quartic': {
+    fields: [
+      { name: 'a', label: 'Hệ số a (x⁴)', type: 'number', min: -5, max: 5, default: 1, step: 0.5 },
+      { name: 'b', label: 'Hệ số b (x²)', type: 'number', min: -10, max: 10, default: -3, step: 0.5 },
+      { name: 'c', label: 'Hệ số c (hằng số)', type: 'number', min: -10, max: 10, default: 0, step: 0.5 },
+      { name: 'minX', label: 'X min', type: 'number', default: -4 },
+      { name: 'maxX', label: 'X max', type: 'number', default: 4 },
+      { name: 'showGrid', label: 'Hiển thị lưới', type: 'checkbox', default: true },
       { name: 'showAxis', label: 'Hiển thị trục tọa độ', type: 'checkbox', default: true }
     ]
   },

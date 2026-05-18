@@ -167,6 +167,54 @@ export function generateCubicGraph(params) {
 })`.trim();
 }
 
+export function generateQuarticGraph(params) {
+  const {
+    a = 1, b = -3, c = 0,
+    minX = -4, maxX = 4,
+    showGrid = true,
+    showAxis = true,
+    styleOptions = {}
+  } = params;
+
+  const strokeStr = buildStroke(styleOptions);
+  const axisMinX = Number(minX) - 1;
+  const axisMaxX = Number(maxX) + 1;
+  const axisMinY = -5;
+  const axisMaxY = 5;
+
+  // Tính đỉnh/cực trị để hiển thị phương trình đẹp
+  const bSign = Number(b) >= 0 ? '+' : '';
+  const cSign = Number(c) >= 0 ? '+' : '';
+
+  return `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+
+  ${showGrid ? `grid((${axisMinX}, ${axisMinY}), (${axisMaxX}, ${axisMaxY}), step: 1, stroke: luma(240))` : ''}
+
+  ${showAxis ? `
+  line((${axisMinX}, 0), (${axisMaxX}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${axisMaxX + 0.2}, 0), [$x$], anchor: "west")
+  line((0, ${axisMinY}), (0, ${axisMaxY}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${axisMaxY + 0.2}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+  ` : ''}
+
+  plot.plot(
+    size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}),
+    x-tick-step: none, y-tick-step: none, axis-style: none,
+    {
+      plot.add(domain: (${minX}, ${maxX}), x => ${a} * x * x * x * x + ${b} * x * x + ${c}, style: (stroke: ${strokeStr}), samples: 200)
+    }
+  )
+
+  content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${a}x^4 ${bSign}${b}x^2 ${cSign}${c}$], anchor: "east")
+})`.trim();
+}
+
 export function generateHyperbolaGraph(params) {
   const {
     k,
@@ -247,9 +295,37 @@ export function generateRationalLinearGraph(params) {
   const na = Number(numerA), nb = Number(numerB);
   const nc = Number(denomC), nd = Number(denomD);
 
+  // Nếu mẫu số là hằng số (nc=0, nd≠0) → thực ra là hàm bậc nhất (ax+b)/d
+  if (nc === 0) {
+    const slope = nd !== 0 ? na / nd : 0;
+    const intercept = nd !== 0 ? nb / nd : 0;
+    const axisMinX = Number(minX) - 1, axisMaxX = Number(maxX) + 1;
+    const axisMinY = -6, axisMaxY = 6;
+    const slopeSign = slope >= 0 ? '+' : '';
+    return `#import "@preview/cetz:0.3.2": canvas, draw
+#import "@preview/cetz-plot:0.1.1": plot
+#set page(width: auto, height: auto, margin: 10pt)
+
+#canvas({
+  import draw: *
+  ${showGrid ? `grid((${axisMinX}, ${axisMinY}), (${axisMaxX}, ${axisMaxY}), step: 1, stroke: luma(240))` : ''}
+  ${showAxis ? `
+  line((${axisMinX}, 0), (${axisMaxX}, 0), mark: (end: ">"), stroke: 0.8pt + black)
+  content((${axisMaxX + 0.2}, 0), [$x$], anchor: "west")
+  line((0, ${axisMinY}), (0, ${axisMaxY}), mark: (end: ">"), stroke: 0.8pt + black)
+  content((0, ${axisMaxY + 0.2}), [$y$], anchor: "south")
+  content((-0.3, -0.3), [$O$])
+  ` : ''}
+  plot.plot(size: (${axisMaxX - axisMinX}, ${axisMaxY - axisMinY}), x-tick-step: none, y-tick-step: none, axis-style: none, {
+    plot.add(domain: (${minX}, ${maxX}), x => ${slope} * x + ${intercept}, style: (stroke: ${strokeStr}))
+  })
+  content((${axisMaxX - 1}, ${axisMaxY - 0.5}), [$y = ${slope.toFixed(2)}x ${slopeSign}${intercept.toFixed(2)}$], anchor: "east")
+})`.trim();
+  }
+
   // Vertical asymptote x = -d/c, horizontal asymptote y = a/c
-  const xAsym = nc !== 0 ? -nd / nc : null;
-  const yAsym = nc !== 0 ? na / nc : null;
+  const xAsym = -nd / nc;
+  const yAsym = na / nc;
 
   const axisMinX = Number(minX) - 1;
   const axisMaxX = Number(maxX) + 1;

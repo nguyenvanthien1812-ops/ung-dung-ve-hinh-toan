@@ -61,6 +61,7 @@ import {
   generateHyperbolaGraph,
   generateRationalLinearGraph,
   generateTrigCombinationGraph,
+  generateQuarticGraph,
   generateSineGraph,
   generateCosineGraph,
   generateTangentGraph,
@@ -150,7 +151,7 @@ const GENERATOR_MAP = {
 
   // Lăng trụ
   'prism-triangular': (params) => generatePrism({ ...params, baseType: 'triangular' }),
-  'prism-quadrilateral': generateCube,
+  'prism-quadrilateral': generateBox,
   'prism-hexagonal': (params) => generatePrism({ ...params, baseType: 'hexagonal' }),
   'box': generateBox,
   'cube': generateCube,
@@ -172,6 +173,7 @@ const GENERATOR_MAP = {
   'linear': generateLinearGraph,
   'quadratic': generateQuadraticGraph,
   'cubic': generateCubicGraph,
+  'quartic': generateQuarticGraph,
   'polynomial-general': generateCubicGraph,
   'hyperbola': generateHyperbolaGraph,
   'rational-linear': generateRationalLinearGraph,
