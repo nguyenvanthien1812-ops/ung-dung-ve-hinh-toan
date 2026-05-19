@@ -1274,7 +1274,9 @@ export const FORM_SCHEMAS = {
       { name: 'xLabel',     label: 'Nhãn trục x',                              type: 'text', default: 'Năm' },
       { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: 'Giá trị' },
       { name: 'showValues', label: 'Hiển thị số trên cột',                     type: 'checkbox', default: true },
-      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true }
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
+      { name: 'userYMax',   label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',  label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
   },
 
@@ -1286,7 +1288,9 @@ export const FORM_SCHEMAS = {
       { name: 'xLabel',     label: 'Nhãn trục x',                              type: 'text', default: 'Điểm' },
       { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: '' },
       { name: 'showValues', label: 'Hiển thị số trên cột',                     type: 'checkbox', default: true },
-      { name: 'showGrid',   label: 'Hiển thị lưới dọc',                        type: 'checkbox', default: true }
+      { name: 'showGrid',   label: 'Hiển thị lưới dọc',                        type: 'checkbox', default: true },
+      { name: 'userYMax',   label: 'Giá trị tối đa trục X (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',  label: 'Bước chia trục X (để trống = tự động)',     type: 'text', default: '' }
     ]
   },
 
@@ -1304,7 +1308,9 @@ export const FORM_SCHEMAS = {
       { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
       { name: 'showValues',   label: 'Hiển thị số trên cột',                     type: 'checkbox', default: false },
       { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
-      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true },
+      { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
   },
 
@@ -1322,7 +1328,9 @@ export const FORM_SCHEMAS = {
       { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
       { name: 'showValues',   label: 'Hiển thị số trong cột',                    type: 'checkbox', default: false },
       { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
-      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true },
+      { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
   },
 
@@ -1335,7 +1343,9 @@ export const FORM_SCHEMAS = {
       { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: '' },
       { name: 'showPoints', label: 'Hiển thị điểm dữ liệu',                    type: 'checkbox', default: true },
       { name: 'showValues', label: 'Hiển thị số liệu',                         type: 'checkbox', default: false },
-      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true }
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
+      { name: 'userYMax',   label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',  label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
   },
 
@@ -1354,7 +1364,9 @@ export const FORM_SCHEMAS = {
       { name: 'showPoints',   label: 'Hiển thị điểm dữ liệu',                    type: 'checkbox', default: true },
       { name: 'showValues',   label: 'Hiển thị số liệu',                         type: 'checkbox', default: false },
       { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
-      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true },
+      { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
+      { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
   }
 };

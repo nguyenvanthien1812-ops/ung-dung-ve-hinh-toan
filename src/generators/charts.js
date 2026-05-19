@@ -25,6 +25,21 @@ function niceScale(maxVal) {
   return { yMax: step * nTicks, step, nTicks };
 }
 
+// Nếu user nhập yMax/yStep thì dùng, không thì tự tính
+function resolveScale(autoMaxVal, userYMax, userYStep) {
+  const manualMax = parseFloat(userYMax);
+  const manualStep = parseFloat(userYStep);
+  if (manualMax > 0 && manualStep > 0) {
+    const nTicks = Math.round(manualMax / manualStep);
+    return { yMax: manualMax, step: manualStep, nTicks };
+  }
+  if (manualMax > 0) {
+    const auto = niceScale(manualMax);
+    return { yMax: manualMax, step: auto.step, nTicks: Math.ceil(manualMax / auto.step) };
+  }
+  return niceScale(autoMaxVal);
+}
+
 function fmt(n) { return parseFloat(n.toFixed(4)).toString(); }
 
 function tickLabel(val) {
@@ -110,6 +125,7 @@ export function generateBarChart(params) {
     values = '10, 25, 15, 30',
     title = '', xLabel = '', yLabel = '',
     showValues = true, showGrid = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -120,7 +136,7 @@ export function generateBarChart(params) {
 
   const chartH = 6.0, slotW = 1.0, barW = 0.65, chartW = n * slotW;
   const maxVal = Math.max(...valArr.slice(0, n));
-  const { yMax, step, nTicks } = niceScale(maxVal);
+  const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartH / yMax;
   const color = colorToTypst(styleOptions?.strokeColor || 'blue');
 
@@ -152,6 +168,7 @@ export function generateBarChartHorizontal(params) {
     values = '8, 7, 9, 8.5, 7.5',
     title = '', xLabel = '', yLabel = '',
     showValues = true, showGrid = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -162,7 +179,7 @@ export function generateBarChartHorizontal(params) {
 
   const chartW = 8.0, slotH = 0.8, barH = 0.55, chartH = n * slotH;
   const maxVal = Math.max(...valArr.slice(0, n));
-  const { yMax: xMax, step: xStep, nTicks } = niceScale(maxVal);
+  const { yMax: xMax, step: xStep, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartW / xMax;
   const color = colorToTypst(styleOptions?.strokeColor || 'blue');
 
@@ -201,6 +218,7 @@ export function generateBarChartGrouped(params) {
     series3Label = 'Chuỗi 3',
     title = '', xLabel = '', yLabel = '',
     showValues = false, showGrid = true, showLegend = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -222,7 +240,7 @@ export function generateBarChartGrouped(params) {
   const chartW = n * slotW;
 
   const maxVal = Math.max(...raw.flatMap(s => s.values.slice(0, n)));
-  const { yMax, step, nTicks } = niceScale(maxVal);
+  const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartH / yMax;
 
   const lines = [];
@@ -263,6 +281,7 @@ export function generateBarChartStacked(params) {
     series3Label = 'Chuỗi 3',
     title = '', xLabel = '', yLabel = '',
     showValues = false, showGrid = true, showLegend = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -282,7 +301,7 @@ export function generateBarChartStacked(params) {
   const maxTotal = Math.max(...totals);
 
   const chartH = 6.0, slotW = 1.0, barW = 0.65, chartW = n * slotW;
-  const { yMax, step, nTicks } = niceScale(maxTotal);
+  const { yMax, step, nTicks } = resolveScale(maxTotal, userYMax, userYStep);
   const scale = chartH / yMax;
 
   const lines = [];
@@ -325,6 +344,7 @@ export function generateLineChart(params) {
     values = '10, 15, 12, 20, 18',
     title = '', xLabel = '', yLabel = '',
     showPoints = true, showValues = false, showGrid = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -335,7 +355,7 @@ export function generateLineChart(params) {
 
   const chartH = 6.0, slotW = 1.0, chartW = n * slotW;
   const maxVal = Math.max(...valArr.slice(0, n));
-  const { yMax, step, nTicks } = niceScale(maxVal);
+  const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartH / yMax;
   const color = colorToTypst(styleOptions?.strokeColor || 'blue');
 
@@ -384,6 +404,7 @@ export function generateLineChartMulti(params) {
     series3Label = 'Chuỗi 3',
     title = '', xLabel = '', yLabel = '',
     showPoints = true, showValues = false, showGrid = true, showLegend = true,
+    userYMax = '', userYStep = '',
     styleOptions = {}
   } = params;
 
@@ -400,7 +421,7 @@ export function generateLineChartMulti(params) {
 
   const chartH = 6.0, slotW = 1.0, chartW = n * slotW;
   const maxVal = Math.max(...raw.flatMap(s => s.values.slice(0, n)));
-  const { yMax, step, nTicks } = niceScale(maxVal);
+  const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartH / yMax;
 
   const lines = [];
