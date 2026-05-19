@@ -26,7 +26,9 @@ function buildPrompt(description, points, edges, regions, hasImage = false) {
     lines.push('Hãy viết mã Typst để vẽ:');
     lines.push(`"${description.trim()}"`);
   } else {
-    lines.push('Nhìn vào ảnh đề bài đính kèm và viết mã Typst để vẽ lại hình đó chính xác.');
+    lines.push('Đây là ảnh một bài toán. Hãy đọc yêu cầu trong ảnh, xác định các biểu đồ / hình học mà đề bài yêu cầu vẽ, rồi viết mã Typst để vẽ chúng.');
+    lines.push('QUAN TRỌNG: KHÔNG tái tạo lại văn bản đề bài, KHÔNG vẽ lại bảng số liệu — chỉ vẽ các hình / biểu đồ mà đề yêu cầu (ý a, ý b, ý c...) bằng canvas CeTZ.');
+    lines.push('Nếu đề yêu cầu nhiều biểu đồ, hãy vẽ từng biểu đồ riêng biệt, mỗi biểu đồ là một #canvas riêng.');
   }
   lines.push('');
 
