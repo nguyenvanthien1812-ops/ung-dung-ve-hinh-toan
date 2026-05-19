@@ -174,6 +174,35 @@ function PromptColorBuilder({ geminiUrl }) {
   const [regions, setRegions] = useState([]);
   const [copied,  setCopied]  = useState(false);
   const [sent,    setSent]    = useState(false);
+  const [image,   setImage]   = useState(null);   // { dataUrl, type }
+  const [dragOver, setDragOver] = useState(false);
+  const [imgCopied, setImgCopied] = useState(false);
+
+  // --- Image upload ---
+  const handleImageFile = (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e) => setImage({ dataUrl: e.target.result, type: file.type });
+    reader.readAsDataURL(file);
+  };
+  const handleImageInput  = (e) => { if (e.target.files[0]) handleImageFile(e.target.files[0]); };
+  const handleDrop        = (e) => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]); };
+  const handleDragOver    = (e) => { e.preventDefault(); setDragOver(true); };
+  const handleDragLeave   = ()  => setDragOver(false);
+  const removeImage       = ()  => setImage(null);
+
+  const handleCopyImage = async () => {
+    if (!image) return;
+    try {
+      const res  = await fetch(image.dataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      setImgCopied(true);
+      setTimeout(() => setImgCopied(false), 2000);
+    } catch {
+      alert('Trình duyệt không hỗ trợ copy ảnh tự động. Hãy tải ảnh xuống và đính kèm thủ công vào Gemini.');
+    }
+  };
 
   // --- Points ---
   const addPoint    = () => setPoints(p => [...p, { id: newId(), name: '', color: COLORS[0] }]);
@@ -202,21 +231,31 @@ function PromptColorBuilder({ geminiUrl }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSendToGemini = () => {
+  const handleSendToGemini = async () => {
     if (!prompt) return;
-    // Sao chép prompt vào clipboard trước
-    navigator.clipboard.writeText(prompt).catch(() => {});
-    // Mở Gemini trong cửa sổ mới căn phải màn hình
-    const winW  = 840;
-    const winH  = window.screen.availHeight;
-    const winL  = Math.max(0, window.screen.availWidth - winW);
+    if (image) {
+      // Khi có ảnh: copy ảnh trước, prompt để user copy riêng sau
+      try {
+        const res  = await fetch(image.dataUrl);
+        const blob = await res.blob();
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      } catch {
+        // Nếu browser không hỗ trợ copy ảnh, copy text thay
+        navigator.clipboard.writeText(prompt).catch(() => {});
+      }
+    } else {
+      navigator.clipboard.writeText(prompt).catch(() => {});
+    }
+    const winW = 840;
+    const winH = window.screen.availHeight;
+    const winL = Math.max(0, window.screen.availWidth - winW);
     window.open(
       geminiUrl || 'https://gemini.google.com',
       'gemini_typst_window',
       `width=${winW},height=${winH},left=${winL},top=0,resizable=yes,scrollbars=yes`
     );
     setSent(true);
-    setTimeout(() => setSent(false), 6000);
+    setTimeout(() => setSent(false), 10000);
   };
 
   return (
@@ -232,6 +271,46 @@ function PromptColorBuilder({ geminiUrl }) {
           onChange={e => setDescription(e.target.value)}
           placeholder="VD: Tam giác ABC nội tiếp đường tròn tâm O bán kính 2. M là trung điểm BC, AH là đường cao."
         />
+      </div>
+
+      {/* Ảnh đề bài */}
+      <div className="pb-section">
+        <label className="pb-label">Ảnh đề bài (tùy chọn)</label>
+        {image ? (
+          <div className="pb-image-preview">
+            <img src={image.dataUrl} alt="Đề bài" className="pb-image-img" />
+            <div className="pb-image-actions">
+              <button
+                className={`pb-copy-btn ${imgCopied ? 'pb-copied' : ''}`}
+                style={{ fontSize: '0.76rem', padding: '0.25rem 0.6rem' }}
+                onClick={handleCopyImage}
+                title="Copy ảnh vào clipboard để dán vào Gemini"
+              >
+                {imgCopied ? '✓ Đã copy!' : '📋 Copy ảnh'}
+              </button>
+              <button className="pb-image-remove" onClick={removeImage}>× Xóa ảnh</button>
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`pb-image-drop ${dragOver ? 'pb-image-drop--over' : ''}`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => document.getElementById('pb-img-input').click()}
+          >
+            <span className="pb-image-drop-icon">🖼</span>
+            <span>Kéo thả ảnh vào đây hoặc <u>bấm để chọn file</u></span>
+            <span className="pb-image-drop-hint">Hỗ trợ JPG, PNG, GIF, WEBP...</span>
+            <input
+              id="pb-img-input"
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleImageInput}
+            />
+          </div>
+        )}
       </div>
 
       {/* Màu điểm / đỉnh */}
@@ -372,12 +451,26 @@ function PromptColorBuilder({ geminiUrl }) {
             <div className="pb-sent-notice">
               <div className="pb-sent-icon">✅</div>
               <div className="pb-sent-text">
-                <strong>Gemini đã mở! Prompt đã sao chép vào clipboard.</strong>
-                <ol className="pb-sent-steps">
-                  <li>Trong cửa sổ Gemini vừa mở → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để dán prompt</li>
-                  <li>Nhấn <kbd>Enter</kbd> để gửi cho Gemini</li>
-                  <li>Copy mã Typst từ Gemini → Dán vào <strong>Code Editor (Manual)</strong></li>
-                </ol>
+                {image ? (
+                  <>
+                    <strong>Gemini đã mở! Ảnh đề bài đã copy vào clipboard.</strong>
+                    <ol className="pb-sent-steps">
+                      <li>Trong Gemini → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để <strong>dán ảnh đề bài</strong></li>
+                      <li>Bấm nút <strong>📋 Sao chép</strong> bên cạnh để copy prompt</li>
+                      <li>Nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> lần nữa để dán prompt vào Gemini</li>
+                      <li>Nhấn <kbd>Enter</kbd> để gửi → copy mã Typst → dán vào <strong>Code Editor</strong></li>
+                    </ol>
+                  </>
+                ) : (
+                  <>
+                    <strong>Gemini đã mở! Prompt đã sao chép vào clipboard.</strong>
+                    <ol className="pb-sent-steps">
+                      <li>Trong cửa sổ Gemini vừa mở → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để dán prompt</li>
+                      <li>Nhấn <kbd>Enter</kbd> để gửi cho Gemini</li>
+                      <li>Copy mã Typst từ Gemini → Dán vào <strong>Code Editor (Manual)</strong></li>
+                    </ol>
+                  </>
+                )}
               </div>
             </div>
           )}

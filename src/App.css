@@ -1735,6 +1735,79 @@ body {
   margin: 0;
 }
 
+/* Image upload drop zone */
+.pb-image-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 1.1rem 0.8rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.pb-image-drop:hover,
+.pb-image-drop--over {
+  border-color: var(--accent);
+  background: rgba(66, 153, 225, 0.06);
+  color: var(--text-main);
+}
+
+.pb-image-drop-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.pb-image-drop-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.pb-image-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.pb-image-img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 0.4rem;
+  border: 1px solid var(--border-color);
+  object-fit: contain;
+  background: var(--bg-main);
+}
+
+.pb-image-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pb-image-remove {
+  background: none;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 0.22rem 0.55rem;
+  border-radius: 0.35rem;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pb-image-remove:hover {
+  background: #e74c3c;
+  color: white;
+}
+
 /* ==================== VIDEO BUTTON ==================== */
 
 .video-btn {
