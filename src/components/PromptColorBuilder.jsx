@@ -14,15 +14,20 @@ const COLORS = [
 ];
 
 // Build the full prompt string from user inputs
-function buildPrompt(description, points, edges, regions) {
-  if (!description.trim()) return '';
+// hasImage = true → description optional; Gemini sẽ nhìn ảnh đính kèm
+function buildPrompt(description, points, edges, regions, hasImage = false) {
+  if (!description.trim() && !hasImage) return '';
 
   const lines = [];
 
   // Persona + task
   lines.push('Bạn là chuyên gia vẽ hình toán bằng Typst + CeTZ 0.3.2 cho giáo viên Việt Nam.');
-  lines.push('Hãy viết mã Typst để vẽ:');
-  lines.push(`"${description.trim()}"`);
+  if (description.trim()) {
+    lines.push('Hãy viết mã Typst để vẽ:');
+    lines.push(`"${description.trim()}"`);
+  } else {
+    lines.push('Nhìn vào ảnh đề bài đính kèm và viết mã Typst để vẽ lại hình đó chính xác.');
+  }
   lines.push('');
 
   const validPoints  = points.filter(p => p.name.trim());
@@ -222,7 +227,7 @@ function PromptColorBuilder({ geminiUrl }) {
   const updateRegion = (id, field, val) =>
     setRegions(r => r.map(x => x.id === id ? { ...x, [field]: val } : x));
 
-  const prompt = buildPrompt(description, points, edges, regions);
+  const prompt = buildPrompt(description, points, edges, regions, !!image);
 
   const handleCopy = () => {
     if (!prompt) return;
@@ -263,13 +268,18 @@ function PromptColorBuilder({ geminiUrl }) {
 
       {/* Mô tả hình vẽ */}
       <div className="pb-section">
-        <label className="pb-label">Mô tả hình vẽ muốn AI vẽ</label>
+        <label className="pb-label">
+          Mô tả hình vẽ muốn AI vẽ
+          {image && <span className="pb-label-optional"> — tùy chọn khi đã có ảnh</span>}
+        </label>
         <textarea
           className="pb-textarea"
           rows={3}
           value={description}
           onChange={e => setDescription(e.target.value)}
-          placeholder="VD: Tam giác ABC nội tiếp đường tròn tâm O bán kính 2. M là trung điểm BC, AH là đường cao."
+          placeholder={image
+            ? "Để trống — Gemini sẽ nhìn ảnh đính kèm và tự vẽ. Hoặc gõ thêm yêu cầu cụ thể..."
+            : "VD: Tam giác ABC nội tiếp đường tròn tâm O bán kính 2. M là trung điểm BC, AH là đường cao."}
         />
       </div>
 
@@ -424,7 +434,7 @@ function PromptColorBuilder({ geminiUrl }) {
       </div>
 
       {/* Prompt đã tạo + nút gửi / copy */}
-      {description.trim() ? (
+      {(description.trim() || image) ? (
         <div className="pb-output">
           <div className="pb-output-header">
             <span className="pb-output-label">Prompt tự động tạo:</span>
@@ -455,10 +465,10 @@ function PromptColorBuilder({ geminiUrl }) {
                   <>
                     <strong>Gemini đã mở! Ảnh đề bài đã copy vào clipboard.</strong>
                     <ol className="pb-sent-steps">
-                      <li>Trong Gemini → nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> để <strong>dán ảnh đề bài</strong></li>
-                      <li>Bấm nút <strong>📋 Sao chép</strong> bên cạnh để copy prompt</li>
-                      <li>Nhấn <kbd>Ctrl</kbd>+<kbd>V</kbd> lần nữa để dán prompt vào Gemini</li>
-                      <li>Nhấn <kbd>Enter</kbd> để gửi → copy mã Typst → dán vào <strong>Code Editor</strong></li>
+                      <li>Trong Gemini → <kbd>Ctrl</kbd>+<kbd>V</kbd> để <strong>dán ảnh đề bài</strong></li>
+                      <li>Bấm <strong>📋 Sao chép</strong> bên dưới để copy câu lệnh kỹ thuật</li>
+                      <li><kbd>Ctrl</kbd>+<kbd>V</kbd> lần nữa để dán câu lệnh → nhấn <kbd>Enter</kbd></li>
+                      <li>Copy mã Typst từ Gemini → dán vào <strong>Code Editor</strong></li>
                     </ol>
                   </>
                 ) : (
@@ -478,7 +488,7 @@ function PromptColorBuilder({ geminiUrl }) {
           <textarea className="pb-prompt-preview" value={prompt} readOnly rows={10} />
         </div>
       ) : (
-        <p className="pb-output-hint">Điền mô tả hình vẽ ở trên để xem prompt được tạo tự động.</p>
+        <p className="pb-output-hint">Tải ảnh đề bài lên, hoặc điền mô tả hình vẽ ở trên để xem prompt được tạo tự động.</p>
       )}
     </div>
   );
