@@ -104,7 +104,7 @@ function StyleCustomizer({ styleOptions, onChange }) {
             <label>Màu nền (fill)</label>
             <input
               type="color"
-              value={styleOptions.fillColor || '#ffffff'}
+              value={styleOptions.fillColor?.startsWith('#') ? styleOptions.fillColor : '#ffffff'}
               onChange={(e) => handleColorChange('fillColor', e.target.value)}
             />
           </div>

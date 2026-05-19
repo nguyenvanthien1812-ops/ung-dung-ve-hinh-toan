@@ -107,7 +107,10 @@ function drawXAxisHorizontal(lines, chartW, chartH, nTicks, step, scale, xLabel)
 }
 
 function drawTitle(lines, chartW, chartH, title) {
-  if (title) lines.push(`  content((${fmt(chartW / 2)}, ${fmt(chartH + 0.8)}), [*${title}*], anchor: "south")`);
+  if (!title) return;
+  // Line ẩn buộc CeTZ tính bounding box phía trên tiêu đề (tránh bị cắt)
+  lines.push(`  line((0, ${fmt(chartH + 1.4)}), (${fmt(chartW)}, ${fmt(chartH + 1.4)}), stroke: none)`);
+  lines.push(`  content((${fmt(chartW / 2)}, ${fmt(chartH + 0.9)}), [*${title}*], anchor: "center")`);
 }
 
 // ─── Legend cho biểu đồ nhiều chuỗi ──────────────────────────────────────────
@@ -580,7 +583,10 @@ export function generatePieChart(params) {
   const lines = [];
   drawPieSectors(lines, lblArr, valArr, n, total, r, showLabels, showPercent, r * 0.63);
   if (showLegend) drawPieLegend(lines, lblArr, valArr, n, total, r);
-  if (title) lines.push(`  content((0, ${fmt(r + 0.6)}), [*${title}*], anchor: "south")`);
+  if (title) {
+    lines.push(`  line((-${fmt(r)}, ${fmt(r + 1.2)}), (${fmt(r)}, ${fmt(r + 1.2)}), stroke: none)`);
+    lines.push(`  content((0, ${fmt(r + 0.7)}), [*${title}*], anchor: "center")`);
+  }
   return buildCanvas(lines);
 }
 
@@ -617,6 +623,9 @@ export function generateDonutChart(params) {
   drawPieSectors(lines, lblArr, valArr, n, total, r, showLabels, showPercent, labelR, innerRVal);
   if (centerText) lines.push(`  content((0, 0), [${centerText}], anchor: "center")`);
   if (showLegend) drawPieLegend(lines, lblArr, valArr, n, total, r);
-  if (title) lines.push(`  content((0, ${fmt(r + 0.6)}), [*${title}*], anchor: "south")`);
+  if (title) {
+    lines.push(`  line((-${fmt(r)}, ${fmt(r + 1.2)}), (${fmt(r)}, ${fmt(r + 1.2)}), stroke: none)`);
+    lines.push(`  content((0, ${fmt(r + 0.7)}), [*${title}*], anchor: "center")`);
+  }
   return buildCanvas(lines);
 }
