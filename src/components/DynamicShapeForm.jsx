@@ -1,4 +1,5 @@
 import { getFormSchema, getDefaultValues } from '../data/formSchemas.js';
+import ShapeGuidePanel from './ShapeGuidePanel.jsx';
 
 function DynamicShapeForm({ shapeId, formValues, onValueChange, onGenerate }) {
   const schema = getFormSchema(shapeId);
@@ -19,6 +20,7 @@ function DynamicShapeForm({ shapeId, formValues, onValueChange, onGenerate }) {
 
   return (
     <form className="dynamic-form" onSubmit={handleSubmit}>
+      <ShapeGuidePanel shapeId={shapeId} />
       <div className="form-fields">
         {schema.fields.map((field) => (
           <div key={field.name} className="field-group">

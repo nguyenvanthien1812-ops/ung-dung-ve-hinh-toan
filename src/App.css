@@ -440,6 +440,116 @@ body {
   height: auto;
 }
 
+/* ==================== SHAPE GUIDE ==================== */
+
+.shape-guide-wrapper {
+  margin-bottom: 0.75rem;
+}
+
+.guide-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.guide-toggle-btn:hover,
+.guide-toggle-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.guide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.shape-guide-panel {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.guide-description {
+  margin: 0 0 0.6rem 0;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.guide-section {
+  margin-top: 0.55rem;
+}
+
+.guide-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+
+.guide-tips {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.guide-tips li {
+  margin-bottom: 0.2rem;
+}
+
+.guide-examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-examples li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 50%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.guide-examples li:last-child {
+  border-bottom: none;
+}
+
+.example-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.example-values {
+  color: var(--text-secondary);
+  font-size: 0.77rem;
+  font-family: monospace;
+}
+
 /* ==================== SHAPE INFO ==================== */
 
 .shape-info h3 {
