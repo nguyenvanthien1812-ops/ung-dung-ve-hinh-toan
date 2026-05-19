@@ -661,6 +661,11 @@ function fmtPct(pct) {
   return `${parseFloat(pct.toFixed(1))}%`;
 }
 
+// Escape [ và ] trong nhãn để Typst không hiểu nhầm là content block
+function escapeLabel(label) {
+  return label.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+}
+
 // Tính mảng phần trăm từ tần số thô
 function computePct(valArr, n, totalN) {
   const parsedTotal = parseFloat(totalN);
@@ -708,7 +713,7 @@ export function generateHistogram(params) {
     if (showValues) {
       lines.push(`  content((${cx}, ${fmt(val * scale + 0.15)}), [${tickLabel(val)}], anchor: "south")`);
     }
-    lines.push(`  content((${cx}, -0.3), [${lblArr[i]}], anchor: "north")`);
+    lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
   }
 
   drawYAxis(lines, chartH, nTicks, step, scale, yLabel);
@@ -758,7 +763,7 @@ export function generateHistogramRelative(params) {
     if (showValues) {
       lines.push(`  content((${cx}, ${fmt(pct * scale + 0.15)}), [${fmtPct(pct)}], anchor: "south")`);
     }
-    lines.push(`  content((${cx}, -0.3), [${lblArr[i]}], anchor: "north")`);
+    lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
   }
 
   drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
@@ -818,7 +823,7 @@ export function generateLineChartRelative(params) {
     if (showValues) {
       lines.push(`  content((${pts[i].x}, ${fmt(parseFloat(pts[i].y) + 0.22)}), [${fmtPct(pts[i].pct)}], anchor: "south")`);
     }
-    lines.push(`  content((${pts[i].x}, -0.3), [${lblArr[i]}], anchor: "north")`);
+    lines.push(`  content((${pts[i].x}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
   }
 
   drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
