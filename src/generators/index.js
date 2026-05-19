@@ -103,6 +103,15 @@ import {
 import { generateInequalityRegion, generateCircleRegion, generateParabolaRegion, generateMixedRegion } from './inequalities.js';
 
 import {
+  generateBarChart,
+  generateBarChartHorizontal,
+  generateBarChartGrouped,
+  generateBarChartStacked,
+  generateLineChart,
+  generateLineChartMulti
+} from './charts.js';
+
+import {
   generateSignProduct2,
   generateSignProduct3,
   generateSignFraction
@@ -265,7 +274,15 @@ const GENERATOR_MAP = {
   // Bảng xét dấu
   'sign-product2': generateSignProduct2,
   'sign-product3': generateSignProduct3,
-  'sign-fraction': generateSignFraction
+  'sign-fraction': generateSignFraction,
+
+  // Biểu đồ thống kê
+  'bar-chart': generateBarChart,
+  'bar-chart-horizontal': generateBarChartHorizontal,
+  'bar-chart-grouped': generateBarChartGrouped,
+  'bar-chart-stacked': generateBarChartStacked,
+  'line-chart': generateLineChart,
+  'line-chart-multi': generateLineChartMulti
 };
 
 export function getGenerator(shapeId) {

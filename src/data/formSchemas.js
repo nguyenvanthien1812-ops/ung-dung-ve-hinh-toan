@@ -1262,6 +1262,100 @@ export const FORM_SCHEMAS = {
       { name: 'maxY',       label: 'Trục Y — max',               type: 'number', step: 1, default: 4 },
       { name: 'showGrid',   label: 'Hiển thị lưới',              type: 'checkbox', default: true }
     ]
+  },
+
+  // ==================== BIỂU ĐỒ THỐNG KÊ ====================
+
+  'bar-chart': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)', type: 'text', default: '2020, 2021, 2022, 2023' },
+      { name: 'values',     label: 'Giá trị (cách nhau bằng dấu phẩy)',        type: 'text', default: '10, 25, 15, 30' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                              type: 'text', default: 'Năm' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: 'Giá trị' },
+      { name: 'showValues', label: 'Hiển thị số trên cột',                     type: 'checkbox', default: true },
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true }
+    ]
+  },
+
+  'bar-chart-horizontal': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)', type: 'text', default: 'Toán, Văn, Anh, Lý, Hóa' },
+      { name: 'values',     label: 'Giá trị (cách nhau bằng dấu phẩy)',        type: 'text', default: '8, 7, 9, 8.5, 7.5' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                              type: 'text', default: 'Điểm' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: '' },
+      { name: 'showValues', label: 'Hiển thị số trên cột',                     type: 'checkbox', default: true },
+      { name: 'showGrid',   label: 'Hiển thị lưới dọc',                        type: 'checkbox', default: true }
+    ]
+  },
+
+  'bar-chart-grouped': {
+    fields: [
+      { name: 'labels',       label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)',   type: 'text', default: 'Q1, Q2, Q3, Q4' },
+      { name: 'series1Values',label: 'Chuỗi 1 — giá trị (cách nhau bằng dấu phẩy)', type: 'text', default: '10, 25, 15, 30' },
+      { name: 'series2Values',label: 'Chuỗi 2 — giá trị (để trống nếu không dùng)', type: 'text', default: '8, 20, 18, 25' },
+      { name: 'series3Values',label: 'Chuỗi 3 — giá trị (để trống nếu không dùng)', type: 'text', default: '' },
+      { name: 'series1Label', label: 'Nhãn chuỗi 1',                              type: 'text', default: 'Chuỗi 1' },
+      { name: 'series2Label', label: 'Nhãn chuỗi 2',                              type: 'text', default: 'Chuỗi 2' },
+      { name: 'series3Label', label: 'Nhãn chuỗi 3',                              type: 'text', default: 'Chuỗi 3' },
+      { name: 'title',        label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',       label: 'Nhãn trục x',                              type: 'text', default: '' },
+      { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
+      { name: 'showValues',   label: 'Hiển thị số trên cột',                     type: 'checkbox', default: false },
+      { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+    ]
+  },
+
+  'bar-chart-stacked': {
+    fields: [
+      { name: 'labels',       label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)',   type: 'text', default: 'Q1, Q2, Q3, Q4' },
+      { name: 'series1Values',label: 'Chuỗi 1 — giá trị (cách nhau bằng dấu phẩy)', type: 'text', default: '10, 25, 15, 30' },
+      { name: 'series2Values',label: 'Chuỗi 2 — giá trị (để trống nếu không dùng)', type: 'text', default: '8, 20, 18, 25' },
+      { name: 'series3Values',label: 'Chuỗi 3 — giá trị (để trống nếu không dùng)', type: 'text', default: '' },
+      { name: 'series1Label', label: 'Nhãn chuỗi 1',                              type: 'text', default: 'Chuỗi 1' },
+      { name: 'series2Label', label: 'Nhãn chuỗi 2',                              type: 'text', default: 'Chuỗi 2' },
+      { name: 'series3Label', label: 'Nhãn chuỗi 3',                              type: 'text', default: 'Chuỗi 3' },
+      { name: 'title',        label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',       label: 'Nhãn trục x',                              type: 'text', default: '' },
+      { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
+      { name: 'showValues',   label: 'Hiển thị số trong cột',                    type: 'checkbox', default: false },
+      { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+    ]
+  },
+
+  'line-chart': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)', type: 'text', default: '2019, 2020, 2021, 2022, 2023' },
+      { name: 'values',     label: 'Giá trị (cách nhau bằng dấu phẩy)',        type: 'text', default: '10, 15, 12, 20, 18' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                              type: 'text', default: '' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                              type: 'text', default: '' },
+      { name: 'showPoints', label: 'Hiển thị điểm dữ liệu',                    type: 'checkbox', default: true },
+      { name: 'showValues', label: 'Hiển thị số liệu',                         type: 'checkbox', default: false },
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true }
+    ]
+  },
+
+  'line-chart-multi': {
+    fields: [
+      { name: 'labels',       label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)',   type: 'text', default: '2019, 2020, 2021, 2022, 2023' },
+      { name: 'series1Values',label: 'Chuỗi 1 — giá trị (cách nhau bằng dấu phẩy)', type: 'text', default: '10, 15, 12, 20, 18' },
+      { name: 'series2Values',label: 'Chuỗi 2 — giá trị (để trống nếu không dùng)', type: 'text', default: '5, 8, 10, 14, 16' },
+      { name: 'series3Values',label: 'Chuỗi 3 — giá trị (để trống nếu không dùng)', type: 'text', default: '' },
+      { name: 'series1Label', label: 'Nhãn chuỗi 1',                              type: 'text', default: 'Chuỗi 1' },
+      { name: 'series2Label', label: 'Nhãn chuỗi 2',                              type: 'text', default: 'Chuỗi 2' },
+      { name: 'series3Label', label: 'Nhãn chuỗi 3',                              type: 'text', default: 'Chuỗi 3' },
+      { name: 'title',        label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
+      { name: 'xLabel',       label: 'Nhãn trục x',                              type: 'text', default: '' },
+      { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
+      { name: 'showPoints',   label: 'Hiển thị điểm dữ liệu',                    type: 'checkbox', default: true },
+      { name: 'showValues',   label: 'Hiển thị số liệu',                         type: 'checkbox', default: false },
+      { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
+      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true }
+    ]
   }
 };
 

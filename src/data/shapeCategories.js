@@ -285,6 +285,32 @@ export const SHAPE_CATEGORIES = {
     }
   },
 
+  'charts': {
+    id: 'charts',
+    name: 'Biểu đồ thống kê',
+    icon: '📊',
+    subcategories: {
+      'bar-charts': {
+        id: 'bar-charts',
+        name: 'Biểu đồ cột',
+        shapes: [
+          { id: 'bar-chart',            name: 'Biểu đồ cột đứng',   description: 'Biểu đồ cột thẳng đứng, một chuỗi dữ liệu' },
+          { id: 'bar-chart-horizontal', name: 'Biểu đồ cột ngang',  description: 'Biểu đồ cột nằm ngang, một chuỗi dữ liệu' },
+          { id: 'bar-chart-grouped',    name: 'Biểu đồ cột nhóm',   description: 'Nhiều chuỗi dữ liệu đặt cạnh nhau theo nhóm' },
+          { id: 'bar-chart-stacked',    name: 'Biểu đồ cột chồng',  description: 'Nhiều chuỗi dữ liệu xếp chồng lên nhau' }
+        ]
+      },
+      'line-charts': {
+        id: 'line-charts',
+        name: 'Biểu đồ đoạn thẳng',
+        shapes: [
+          { id: 'line-chart',       name: 'Biểu đồ đường',              description: 'Biểu đồ đoạn thẳng nối các điểm dữ liệu' },
+          { id: 'line-chart-multi', name: 'Biểu đồ đường nhiều chuỗi',  description: 'Nhiều đường dữ liệu trên cùng một biểu đồ' }
+        ]
+      }
+    }
+  },
+
   'inequality': {
     id: 'inequality',
     name: 'Bất phương trình',
