@@ -307,6 +307,14 @@ export const SHAPE_CATEGORIES = {
           { id: 'line-chart',       name: 'Biểu đồ đường',              description: 'Biểu đồ đoạn thẳng nối các điểm dữ liệu' },
           { id: 'line-chart-multi', name: 'Biểu đồ đường nhiều chuỗi',  description: 'Nhiều đường dữ liệu trên cùng một biểu đồ' }
         ]
+      },
+      'pie-charts': {
+        id: 'pie-charts',
+        name: 'Biểu đồ hình tròn',
+        shapes: [
+          { id: 'pie-chart',   name: 'Biểu đồ tròn',   description: 'Biểu đồ hình tròn phân chia theo tỷ lệ phần trăm' },
+          { id: 'donut-chart', name: 'Biểu đồ donut',  description: 'Biểu đồ hình tròn có lỗ giữa (donut/ring chart)' }
+        ]
       }
     }
   },

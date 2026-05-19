@@ -1368,6 +1368,34 @@ export const FORM_SCHEMAS = {
       { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
       { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
     ]
+  },
+
+  // ==================== BIỂU ĐỒ HÌNH TRÒN ====================
+
+  'pie-chart': {
+    fields: [
+      { name: 'labels',      label: 'Nhãn các phần (cách nhau bằng dấu phẩy)',    type: 'text', default: 'Toán, Văn, Anh, Lý, Hóa' },
+      { name: 'values',      label: 'Giá trị các phần (cách nhau bằng dấu phẩy)', type: 'text', default: '30, 20, 25, 15, 10' },
+      { name: 'title',       label: 'Tiêu đề biểu đồ',                            type: 'text', default: '' },
+      { name: 'radius',      label: 'Bán kính (cm)',                               type: 'number', min: 1, max: 6, step: 0.5, default: 3 },
+      { name: 'showLabels',  label: 'Hiển thị nhãn trong phần',                   type: 'checkbox', default: true },
+      { name: 'showPercent', label: 'Hiển thị phần trăm trong phần',              type: 'checkbox', default: true },
+      { name: 'showLegend',  label: 'Hiển thị chú thích bên phải',               type: 'checkbox', default: true }
+    ]
+  },
+
+  'donut-chart': {
+    fields: [
+      { name: 'labels',      label: 'Nhãn các phần (cách nhau bằng dấu phẩy)',    type: 'text', default: 'Toán, Văn, Anh, Lý, Hóa' },
+      { name: 'values',      label: 'Giá trị các phần (cách nhau bằng dấu phẩy)', type: 'text', default: '30, 20, 25, 15, 10' },
+      { name: 'title',       label: 'Tiêu đề biểu đồ',                            type: 'text', default: '' },
+      { name: 'centerText',  label: 'Chữ ở giữa vòng tròn (để trống = không có)', type: 'text', default: '' },
+      { name: 'radius',      label: 'Bán kính ngoài (cm)',                         type: 'number', min: 1, max: 6, step: 0.5, default: 3 },
+      { name: 'innerRatio',  label: 'Tỷ lệ lỗ giữa (0.3–0.8)',                    type: 'number', min: 0.3, max: 0.8, step: 0.05, default: 0.55 },
+      { name: 'showLabels',  label: 'Hiển thị nhãn trong phần',                   type: 'checkbox', default: false },
+      { name: 'showPercent', label: 'Hiển thị phần trăm trong phần',              type: 'checkbox', default: true },
+      { name: 'showLegend',  label: 'Hiển thị chú thích bên phải',               type: 'checkbox', default: true }
+    ]
   }
 };
 

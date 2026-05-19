@@ -31,7 +31,7 @@ function DynamicShapeForm({ shapeId, formValues, onValueChange, onGenerate }) {
               <input
                 id={field.name}
                 type="text"
-                value={formValues[field.name] || field.default}
+                value={formValues[field.name] ?? field.default}
                 onChange={(e) => onValueChange(field.name, e.target.value)}
               />
             )}
@@ -43,7 +43,7 @@ function DynamicShapeForm({ shapeId, formValues, onValueChange, onGenerate }) {
                 min={field.min}
                 max={field.max}
                 step={field.step || 0.1}
-                value={formValues[field.name] || field.default}
+                value={formValues[field.name] ?? field.default}
                 onChange={(e) => onValueChange(field.name, e.target.value)}
               />
             )}

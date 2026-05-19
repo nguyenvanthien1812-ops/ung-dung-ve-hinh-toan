@@ -108,7 +108,9 @@ import {
   generateBarChartGrouped,
   generateBarChartStacked,
   generateLineChart,
-  generateLineChartMulti
+  generateLineChartMulti,
+  generatePieChart,
+  generateDonutChart
 } from './charts.js';
 
 import {
@@ -282,7 +284,9 @@ const GENERATOR_MAP = {
   'bar-chart-grouped': generateBarChartGrouped,
   'bar-chart-stacked': generateBarChartStacked,
   'line-chart': generateLineChart,
-  'line-chart-multi': generateLineChartMulti
+  'line-chart-multi': generateLineChartMulti,
+  'pie-chart': generatePieChart,
+  'donut-chart': generateDonutChart
 };
 
 export function getGenerator(shapeId) {

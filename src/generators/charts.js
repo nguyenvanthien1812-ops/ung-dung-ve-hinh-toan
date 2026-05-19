@@ -37,6 +37,11 @@ function resolveScale(autoMaxVal, userYMax, userYStep) {
     const auto = niceScale(manualMax);
     return { yMax: manualMax, step: auto.step, nTicks: Math.ceil(manualMax / auto.step) };
   }
+  if (manualStep > 0) {
+    // Chỉ nhập step: tự tính max = bội số nhỏ nhất của step vượt qua autoMaxVal*1.2
+    const nTicks = Math.ceil(autoMaxVal * 1.2 / manualStep);
+    return { yMax: nTicks * manualStep, step: manualStep, nTicks };
+  }
   return niceScale(autoMaxVal);
 }
 
@@ -361,6 +366,12 @@ export function generateLineChart(params) {
 
   const lines = [];
   drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
+  if (showGrid) {
+    for (let i = 0; i < n; i++) {
+      const cx = fmt((i + 0.5) * slotW);
+      lines.push(`  line((${cx}, 0), (${cx}, ${fmt(chartH)}), stroke: 0.3pt + luma(210))`);
+    }
+  }
 
   // Tọa độ các điểm
   const pts = valArr.slice(0, n).map((val, i) => ({
@@ -389,6 +400,81 @@ export function generateLineChart(params) {
   drawXAxisVertical(lines, chartW, xLabel);
   drawTitle(lines, chartW, chartH, title);
   return buildCanvas(lines);
+}
+
+const PIE_COLORS = ['blue', 'red', 'olive', 'orange', 'purple', 'teal', 'maroon', 'fuchsia'];
+
+// labelR: bán kính đặt nhãn (tính từ tâm)
+// innerR: bán kính lỗ donut (0 = không có lỗ); vẽ TRƯỚC nhãn để không che chữ
+function drawPieSectors(lines, lblArr, valArr, n, total, r, showLabels, showPercent, labelR, innerR = 0) {
+  let currentAngle = 90;
+
+  // Pass 1: vẽ các sector bằng polygon (tâm + các điểm trên cung)
+  for (let i = 0; i < n; i++) {
+    const val = valArr[i];
+    const sliceAngle = val / total * 360;
+    const color = PIE_COLORS[i % PIE_COLORS.length];
+    const steps = Math.max(4, Math.ceil(sliceAngle / 5));
+    const pts = ['(0, 0)'];
+    for (let s = 0; s <= steps; s++) {
+      const ang = (currentAngle + (s / steps) * sliceAngle) * Math.PI / 180;
+      pts.push(`(${fmt(r * Math.cos(ang))}, ${fmt(r * Math.sin(ang))})`);
+    }
+    lines.push(`  line(${pts.join(', ')}, close: true, fill: ${color}.transparentize(20%), stroke: none)`);
+    currentAngle += sliceAngle;
+  }
+
+  // Pass 2: đường phân chia trắng từ tâm (hoặc từ viền trong) ra viền ngoài
+  currentAngle = 90;
+  for (let i = 0; i < n; i++) {
+    const rad = currentAngle * Math.PI / 180;
+    const sx = innerR > 0 ? fmt(innerR * Math.cos(rad)) : '0';
+    const sy = innerR > 0 ? fmt(innerR * Math.sin(rad)) : '0';
+    lines.push(`  line((${sx}, ${sy}), (${fmt(r * Math.cos(rad))}, ${fmt(r * Math.sin(rad))}), stroke: 1.5pt + white)`);
+    currentAngle += valArr[i] / total * 360;
+  }
+
+  // Viền ngoài
+  lines.push(`  circle((0, 0), radius: ${fmt(r)}, fill: none, stroke: 0.8pt + black)`);
+
+  // Lỗ donut (vẽ TRƯỚC nhãn để không che chữ)
+  if (innerR > 0) {
+    lines.push(`  circle((0, 0), radius: ${fmt(innerR)}, fill: white, stroke: 0.8pt + black)`);
+  }
+
+  // Pass 3: nhãn
+  currentAngle = 90;
+  for (let i = 0; i < n; i++) {
+    const val = valArr[i];
+    const sliceAngle = val / total * 360;
+    const midAngle = currentAngle + sliceAngle / 2;
+    if (sliceAngle >= 12) {
+      const midRad = midAngle * Math.PI / 180;
+      const lx = fmt(labelR * Math.cos(midRad));
+      const ly = fmt(labelR * Math.sin(midRad));
+      const pct = (val / total * 100).toFixed(1);
+      if (showLabels && showPercent) {
+        lines.push(`  content((${lx}, ${fmt(parseFloat(ly) + 0.12)}), [${lblArr[i]}], anchor: "center")`);
+        lines.push(`  content((${lx}, ${fmt(parseFloat(ly) - 0.18)}), [${pct}%], anchor: "center")`);
+      } else if (showLabels) {
+        lines.push(`  content((${lx}, ${ly}), [${lblArr[i]}], anchor: "center")`);
+      } else if (showPercent) {
+        lines.push(`  content((${lx}, ${ly}), [${pct}%], anchor: "center")`);
+      }
+    }
+    currentAngle += sliceAngle;
+  }
+}
+
+function drawPieLegend(lines, lblArr, valArr, n, total, r) {
+  const lx = r + 0.5;
+  for (let i = 0; i < n; i++) {
+    const color = PIE_COLORS[i % PIE_COLORS.length];
+    const pct = (valArr[i] / total * 100).toFixed(1);
+    const ly = fmt(r * 0.7 - i * 0.6);
+    lines.push(`  rect((${fmt(lx)}, ${fmt(parseFloat(ly) - 0.22)}), (${fmt(lx + 0.38)}, ${ly}), fill: ${color}.transparentize(20%), stroke: 0.7pt + ${color})`);
+    lines.push(`  content((${fmt(lx + 0.48)}, ${fmt(parseFloat(ly) - 0.11)}), [${lblArr[i]}: ${pct}%], anchor: "west")`);
+  }
 }
 
 // ==================== BIỂU ĐỒ ĐƯỜNG NHIỀU SERIES ====================
@@ -426,6 +512,12 @@ export function generateLineChartMulti(params) {
 
   const lines = [];
   drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
+  if (showGrid) {
+    for (let i = 0; i < n; i++) {
+      const cx = fmt((i + 0.5) * slotW);
+      lines.push(`  line((${cx}, 0), (${cx}, ${fmt(chartH)}), stroke: 0.3pt + luma(210))`);
+    }
+  }
 
   for (let j = 0; j < m; j++) {
     const color = raw[j].color;
@@ -460,5 +552,71 @@ export function generateLineChartMulti(params) {
   drawXAxisVertical(lines, chartW, xLabel);
   if (showLegend) drawLegend(lines, chartW, chartH, raw);
   drawTitle(lines, chartW, chartH, title);
+  return buildCanvas(lines);
+}
+
+// ==================== BIỂU ĐỒ HÌNH TRÒN ====================
+
+export function generatePieChart(params) {
+  const {
+    labels = 'Toán, Văn, Anh, Lý, Hóa',
+    values = '30, 20, 25, 15, 10',
+    title = '',
+    showLabels = true,
+    showPercent = true,
+    showLegend = true,
+    radius = 3.0,
+  } = params;
+
+  const lblArr = parseLabels(labels);
+  const valArr = parseValues(values);
+  const n = Math.min(lblArr.length, valArr.length);
+  if (n === 0) return emptyChart();
+
+  const total = valArr.slice(0, n).reduce((sum, v) => sum + v, 0);
+  if (total <= 0) return emptyChart();
+
+  const r = parseFloat(radius) || 3.0;
+  const lines = [];
+  drawPieSectors(lines, lblArr, valArr, n, total, r, showLabels, showPercent, r * 0.63);
+  if (showLegend) drawPieLegend(lines, lblArr, valArr, n, total, r);
+  if (title) lines.push(`  content((0, ${fmt(r + 0.6)}), [*${title}*], anchor: "south")`);
+  return buildCanvas(lines);
+}
+
+// ==================== BIỂU ĐỒ DONUT ====================
+
+export function generateDonutChart(params) {
+  const {
+    labels = 'Toán, Văn, Anh, Lý, Hóa',
+    values = '30, 20, 25, 15, 10',
+    title = '',
+    centerText = '',
+    showLabels = false,
+    showPercent = true,
+    showLegend = true,
+    radius = 3.0,
+    innerRatio = 0.55,
+  } = params;
+
+  const lblArr = parseLabels(labels);
+  const valArr = parseValues(values);
+  const n = Math.min(lblArr.length, valArr.length);
+  if (n === 0) return emptyChart();
+
+  const total = valArr.slice(0, n).reduce((sum, v) => sum + v, 0);
+  if (total <= 0) return emptyChart();
+
+  const r = parseFloat(radius) || 3.0;
+  const iRatio = parseFloat(innerRatio) || 0.55;
+  const innerRVal = r * iRatio;
+  // Đặt nhãn giữa vành donut: midpoint của (innerR, r)
+  const labelR = (innerRVal + r) * 0.5;
+
+  const lines = [];
+  drawPieSectors(lines, lblArr, valArr, n, total, r, showLabels, showPercent, labelR, innerRVal);
+  if (centerText) lines.push(`  content((0, 0), [${centerText}], anchor: "center")`);
+  if (showLegend) drawPieLegend(lines, lblArr, valArr, n, total, r);
+  if (title) lines.push(`  content((0, ${fmt(r + 0.6)}), [*${title}*], anchor: "south")`);
   return buildCanvas(lines);
 }
