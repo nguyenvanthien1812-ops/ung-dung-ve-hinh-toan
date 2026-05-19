@@ -474,6 +474,51 @@ export const SHAPE_GUIDES = {
     ],
   },
 
+  // ==================== BIỂU ĐỒ TẦN SỐ ====================
+
+  'histogram': {
+    description: 'Biểu đồ tần số ghép nhóm: các cột sát nhau thể hiện số lượng (tần số) trong mỗi khoảng giá trị.',
+    tips: [
+      'Nhãn khoảng dùng ký hiệu toán học như [0;0.5), [0.5;1), ...',
+      'Trục Y là tần số (số học sinh, số lần, số sản phẩm, ...)',
+      '"Tổng số" để trống thì trục Y hiển thị giá trị thực',
+      'Bật "Hiển thị giá trị" để ghi số lên đỉnh mỗi cột',
+    ],
+    examples: [
+      { label: 'Thời gian tự học theo nhóm', values: 'nhãn: [0;0.5),[0.5;1),[1;1.5),[1.5;2),[2;2.5) | giá trị: 21,15,33,25,6' },
+      { label: 'Điểm thi theo thang 10', values: 'nhãn: [4;5),[5;6),[6;7),[7;8),[8;9),[9;10] | giá trị: 2,5,12,18,10,3' },
+    ],
+  },
+
+  'histogram-relative': {
+    description: 'Biểu đồ tần số tương đối ghép nhóm (dạng cột): trục Y là tỷ lệ phần trăm thay vì số lượng.',
+    tips: [
+      'Nhập dữ liệu gốc (số lượng), hệ thống tự tính % chia cho tổng',
+      '"Tổng số" (n): để trống = tự tổng hợp từ các giá trị nhập vào; nhập số cụ thể nếu có cỡ mẫu riêng',
+      'Trục Y hiển thị %, phù hợp khi cần so sánh tỷ lệ giữa các nhóm',
+      'Bật "Hiển thị giá trị" để hiện % trên đỉnh mỗi cột',
+    ],
+    examples: [
+      { label: 'Thời gian tự học — tỷ lệ %', values: 'nhãn: [0;0.5),[0.5;1),[1;1.5),[1.5;2),[2;2.5) | giá trị: 21,15,33,25,6 | tổng: (để trống)' },
+      { label: 'Với cỡ mẫu biết trước n=200', values: 'giá trị: 40,30,60,50,20 | tổng: 200' },
+    ],
+  },
+
+  'line-chart-relative': {
+    description: 'Biểu đồ tần số tương đối ghép nhóm (đoạn thẳng): dùng đường gấp khúc nối điểm giữa các khoảng, trục Y là %.',
+    tips: [
+      'Nhãn là điểm giữa của từng khoảng (ví dụ: khoảng [0;0.5) → điểm giữa 0.25)',
+      'Nhập dữ liệu gốc (số lượng), hệ thống tự tính %',
+      '"Tổng số" để trống = tự tổng; nhập n nếu có cỡ mẫu riêng',
+      'Bật "Hiển thị điểm" để vẽ chấm tròn tại mỗi điểm dữ liệu',
+      'Bật "Hiển thị giá trị" để hiện % cạnh mỗi điểm',
+    ],
+    examples: [
+      { label: 'Thời gian tự học — đường tần suất', values: 'điểm giữa: 0.25,0.75,1.25,1.75,2.25 | giá trị: 21,15,33,25,6' },
+      { label: 'Điểm thi (điểm giữa thang 10)', values: 'điểm giữa: 4.5,5.5,6.5,7.5,8.5,9.5 | giá trị: 2,5,12,18,10,3' },
+    ],
+  },
+
   // ==================== VẬT LÝ ====================
 
   'physics-fbd': {

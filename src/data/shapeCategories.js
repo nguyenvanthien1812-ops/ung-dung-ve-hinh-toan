@@ -315,6 +315,15 @@ export const SHAPE_CATEGORIES = {
           { id: 'pie-chart',   name: 'Biểu đồ tròn',   description: 'Biểu đồ hình tròn phân chia theo tỷ lệ phần trăm' },
           { id: 'donut-chart', name: 'Biểu đồ donut',  description: 'Biểu đồ hình tròn có lỗ giữa (donut/ring chart)' }
         ]
+      },
+      'frequency-charts': {
+        id: 'frequency-charts',
+        name: 'Biểu đồ tần số',
+        shapes: [
+          { id: 'histogram',          name: 'Biểu đồ tần số ghép nhóm',                      description: 'Biểu đồ cột sát nhau, trục Y là tần số (số lượng)' },
+          { id: 'histogram-relative', name: 'Biểu đồ tần số tương đối ghép nhóm (cột)',       description: 'Biểu đồ cột sát nhau, trục Y là tỷ lệ phần trăm' },
+          { id: 'line-chart-relative', name: 'Biểu đồ tần số tương đối ghép nhóm (đoạn thẳng)', description: 'Biểu đồ đường, trục Y là tỷ lệ phần trăm, điểm giữa các khoảng' }
+        ]
       }
     }
   },

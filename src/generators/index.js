@@ -110,7 +110,10 @@ import {
   generateLineChart,
   generateLineChartMulti,
   generatePieChart,
-  generateDonutChart
+  generateDonutChart,
+  generateHistogram,
+  generateHistogramRelative,
+  generateLineChartRelative
 } from './charts.js';
 
 import {
@@ -286,7 +289,12 @@ const GENERATOR_MAP = {
   'line-chart': generateLineChart,
   'line-chart-multi': generateLineChartMulti,
   'pie-chart': generatePieChart,
-  'donut-chart': generateDonutChart
+  'donut-chart': generateDonutChart,
+
+  // Biểu đồ tần số
+  'histogram': generateHistogram,
+  'histogram-relative': generateHistogramRelative,
+  'line-chart-relative': generateLineChartRelative
 };
 
 export function getGenerator(shapeId) {

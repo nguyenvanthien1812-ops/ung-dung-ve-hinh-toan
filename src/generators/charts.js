@@ -629,3 +629,200 @@ export function generateDonutChart(params) {
   }
   return buildCanvas(lines);
 }
+
+// ==================== BIỂU ĐỒ TẦN SỐ GHÉP NHÓM ====================
+
+// Tính thang đo đẹp cho trục Y phần trăm (ưu tiên bước 5%)
+function niceScalePercent(maxPct) {
+  if (!maxPct || maxPct <= 0) return { yMax: 100, step: 10, nTicks: 10 };
+  const rawStep = maxPct * 1.15 / 7;
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const frac = rawStep / mag;
+  const niceFrac = frac < 1.5 ? 1 : frac < 3 ? 2 : frac < 7 ? 5 : 10;
+  const step = niceFrac * mag;
+  const nTicks = Math.ceil(maxPct / step);
+  return { yMax: step * nTicks, step, nTicks };
+}
+
+// Trục Y hiển thị nhãn dạng "X%"
+function drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel) {
+  for (let i = 0; i <= nTicks; i++) {
+    const y = i * step;
+    const cy = fmt(y * scale);
+    lines.push(`  line((-0.1, ${cy}), (0, ${cy}), stroke: 0.6pt + black)`);
+    lines.push(`  content((-0.15, ${cy}), [${tickLabel(y)}%], anchor: "east")`);
+  }
+  lines.push(`  line((0, 0), (0, ${fmt(chartH + 0.5)}), mark: (end: ">"), stroke: 0.8pt + black)`);
+  if (yLabel) lines.push(`  content((0, ${fmt(chartH + 0.5)}), [${yLabel}], anchor: "south-west")`);
+}
+
+// Format nhãn phần trăm: "21%" hoặc "33.3%"
+function fmtPct(pct) {
+  return `${parseFloat(pct.toFixed(1))}%`;
+}
+
+// Tính mảng phần trăm từ tần số thô
+function computePct(valArr, n, totalN) {
+  const parsedTotal = parseFloat(totalN);
+  const total = parsedTotal > 0 ? parsedTotal : valArr.slice(0, n).reduce((s, v) => s + v, 0);
+  if (total <= 0) return null;
+  return { total, pctArr: valArr.slice(0, n).map(v => v / total * 100) };
+}
+
+// ── Biểu đồ tần số ghép nhóm (cột sát nhau, trục Y = tần số) ──
+
+export function generateHistogram(params) {
+  const {
+    labels = '[0;0.5), [0.5;1), [1;1.5), [1.5;2), [2;2.5)',
+    values = '21, 15, 33, 25, 6',
+    title = '',
+    xLabel = 'Thời gian (giờ)',
+    yLabel = 'Số học sinh',
+    showValues = true,
+    showGrid = true,
+    userYMax = '',
+    userYStep = '',
+  } = params;
+
+  const lblArr = parseLabels(labels);
+  const valArr = parseValues(values);
+  const n = Math.min(lblArr.length, valArr.length);
+  if (n === 0) return emptyChart();
+
+  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const maxVal = Math.max(...valArr.slice(0, n));
+  const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
+  const scale = chartH / yMax;
+
+  const lines = [];
+  drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
+
+  for (let i = 0; i < n; i++) {
+    const val = valArr[i];
+    const bh = fmt(val * scale);
+    // barW = slotW: cột sát nhau, không khoảng trắng
+    const x0 = fmt(i * slotW);
+    const x1 = fmt((i + 1) * slotW);
+    const cx = fmt((i + 0.5) * slotW);
+    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: blue.transparentize(30%), stroke: 0.8pt + blue)`);
+    if (showValues) {
+      lines.push(`  content((${cx}, ${fmt(val * scale + 0.15)}), [${tickLabel(val)}], anchor: "south")`);
+    }
+    lines.push(`  content((${cx}, -0.3), [${lblArr[i]}], anchor: "north")`);
+  }
+
+  drawYAxis(lines, chartH, nTicks, step, scale, yLabel);
+  drawXAxisVertical(lines, chartW, xLabel);
+  drawTitle(lines, chartW, chartH, title);
+  return buildCanvas(lines);
+}
+
+// ── Biểu đồ tần số tương đối dạng cột (cột sát nhau, trục Y = %) ──
+
+export function generateHistogramRelative(params) {
+  const {
+    labels = '[0;0.5), [0.5;1), [1;1.5), [1.5;2), [2;2.5)',
+    values = '21, 15, 33, 25, 6',
+    totalN = '',
+    title = '',
+    xLabel = 'Thời gian (giờ)',
+    yLabel = 'Tỷ lệ',
+    showValues = true,
+    showGrid = true,
+  } = params;
+
+  const lblArr = parseLabels(labels);
+  const valArr = parseValues(values);
+  const n = Math.min(lblArr.length, valArr.length);
+  if (n === 0) return emptyChart();
+
+  const result = computePct(valArr, n, totalN);
+  if (!result) return emptyChart();
+  const { pctArr } = result;
+
+  const maxPct = Math.max(...pctArr);
+  const { yMax, step, nTicks } = niceScalePercent(maxPct);
+  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const scale = chartH / yMax;
+
+  const lines = [];
+  drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
+
+  for (let i = 0; i < n; i++) {
+    const pct = pctArr[i];
+    const bh = fmt(pct * scale);
+    const x0 = fmt(i * slotW);
+    const x1 = fmt((i + 1) * slotW);
+    const cx = fmt((i + 0.5) * slotW);
+    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: blue.transparentize(30%), stroke: 0.8pt + blue)`);
+    if (showValues) {
+      lines.push(`  content((${cx}, ${fmt(pct * scale + 0.15)}), [${fmtPct(pct)}], anchor: "south")`);
+    }
+    lines.push(`  content((${cx}, -0.3), [${lblArr[i]}], anchor: "north")`);
+  }
+
+  drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
+  drawXAxisVertical(lines, chartW, xLabel);
+  drawTitle(lines, chartW, chartH, title);
+  return buildCanvas(lines);
+}
+
+// ── Biểu đồ tần số tương đối dạng đoạn thẳng (line, trục Y = %) ──
+
+export function generateLineChartRelative(params) {
+  const {
+    labels = '0.25, 0.75, 1.25, 1.75, 2.25',
+    values = '21, 15, 33, 25, 6',
+    totalN = '',
+    title = '',
+    xLabel = 'Thời gian (giờ)',
+    yLabel = 'Tỉ lệ',
+    showPoints = true,
+    showValues = true,
+    showGrid = true,
+  } = params;
+
+  const lblArr = parseLabels(labels);
+  const valArr = parseValues(values);
+  const n = Math.min(lblArr.length, valArr.length);
+  if (n === 0) return emptyChart();
+
+  const result = computePct(valArr, n, totalN);
+  if (!result) return emptyChart();
+  const { pctArr } = result;
+
+  const maxPct = Math.max(...pctArr);
+  const { yMax, step, nTicks } = niceScalePercent(maxPct);
+  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const scale = chartH / yMax;
+
+  const lines = [];
+  drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
+
+  const pts = pctArr.map((pct, i) => ({
+    x: fmt((i + 0.5) * slotW),
+    y: fmt(pct * scale),
+    pct,
+  }));
+
+  // Đường nối các điểm
+  for (let i = 0; i < pts.length - 1; i++) {
+    lines.push(`  line((${pts[i].x}, ${pts[i].y}), (${pts[i + 1].x}, ${pts[i + 1].y}), stroke: 1.5pt + blue)`);
+  }
+
+  // Điểm và nhãn phần trăm
+  for (let i = 0; i < pts.length; i++) {
+    if (showPoints) {
+      lines.push(`  circle((${pts[i].x}, ${pts[i].y}), radius: 0.12, fill: blue, stroke: none)`);
+    }
+    if (showValues) {
+      lines.push(`  content((${pts[i].x}, ${fmt(parseFloat(pts[i].y) + 0.22)}), [${fmtPct(pts[i].pct)}], anchor: "south")`);
+    }
+    lines.push(`  content((${pts[i].x}, -0.3), [${lblArr[i]}], anchor: "north")`);
+  }
+
+  drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
+  drawXAxisVertical(lines, chartW, xLabel);
+  drawTitle(lines, chartW, chartH, title);
+  return buildCanvas(lines);
+}

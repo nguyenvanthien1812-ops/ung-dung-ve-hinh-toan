@@ -1396,6 +1396,49 @@ export const FORM_SCHEMAS = {
       { name: 'showPercent', label: 'Hiển thị phần trăm trong phần',              type: 'checkbox', default: true },
       { name: 'showLegend',  label: 'Hiển thị chú thích bên phải',               type: 'checkbox', default: true }
     ]
+  },
+
+  // ==================== BIỂU ĐỒ TẦN SỐ GHÉP NHÓM ====================
+
+  'histogram': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn khoảng (cách nhau bằng dấu phẩy)',         type: 'text', default: '[0;0.5), [0.5;1), [1;1.5), [1.5;2), [2;2.5)' },
+      { name: 'values',     label: 'Tần số / số học sinh (cách nhau bằng dấu phẩy)', type: 'text', default: '21, 15, 33, 25, 6' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                               type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                                   type: 'text', default: 'Thời gian (giờ)' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                                   type: 'text', default: 'Số học sinh' },
+      { name: 'showValues', label: 'Hiển thị số trên cột',                          type: 'checkbox', default: true },
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                           type: 'checkbox', default: true },
+      { name: 'userYMax',   label: 'Giá trị tối đa trục Y (để trống = tự động)',    type: 'text', default: '' },
+      { name: 'userYStep',  label: 'Bước chia trục Y (để trống = tự động)',          type: 'text', default: '' }
+    ]
+  },
+
+  'histogram-relative': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn khoảng (cách nhau bằng dấu phẩy)',            type: 'text', default: '[0;0.5), [0.5;1), [1;1.5), [1.5;2), [2;2.5)' },
+      { name: 'values',     label: 'Tần số / số học sinh (cách nhau bằng dấu phẩy)',    type: 'text', default: '21, 15, 33, 25, 6' },
+      { name: 'totalN',     label: 'Tổng số (để trống = tự tính tổng các giá trị)',     type: 'text', default: '' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                                  type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                                      type: 'text', default: 'Thời gian (giờ)' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                                      type: 'text', default: 'Tỷ lệ' },
+      { name: 'showValues', label: 'Hiển thị phần trăm trên cột',                      type: 'checkbox', default: true },
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                              type: 'checkbox', default: true }
+    ]
+  },
+
+  'line-chart-relative': {
+    fields: [
+      { name: 'labels',     label: 'Nhãn điểm giữa khoảng (cách nhau bằng dấu phẩy)',  type: 'text', default: '0.25, 0.75, 1.25, 1.75, 2.25' },
+      { name: 'values',     label: 'Tần số / số học sinh (cách nhau bằng dấu phẩy)',    type: 'text', default: '21, 15, 33, 25, 6' },
+      { name: 'totalN',     label: 'Tổng số (để trống = tự tính tổng các giá trị)',     type: 'text', default: '' },
+      { name: 'title',      label: 'Tiêu đề biểu đồ',                                  type: 'text', default: '' },
+      { name: 'xLabel',     label: 'Nhãn trục x',                                      type: 'text', default: 'Thời gian (giờ)' },
+      { name: 'yLabel',     label: 'Nhãn trục y',                                      type: 'text', default: 'Tỉ lệ' },
+      { name: 'showPoints', label: 'Hiển thị điểm dữ liệu',                            type: 'checkbox', default: true },
+      { name: 'showValues', label: 'Hiển thị phần trăm tại điểm',                      type: 'checkbox', default: true },
+      { name: 'showGrid',   label: 'Hiển thị lưới ngang',                              type: 'checkbox', default: true }
+    ]
   }
 };
 
