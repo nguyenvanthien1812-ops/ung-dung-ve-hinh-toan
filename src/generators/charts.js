@@ -94,6 +94,17 @@ function drawXAxisVertical(lines, chartW, xLabel) {
   if (xLabel) lines.push(`  content((${fmt(chartW + 0.5)}, 0), [${xLabel}], anchor: "north-west")`);
 }
 
+// Trục X kiểu histogram: tick marks tại mỗi ranh giới cột, ghi giá trị ranh giới
+function drawXAxisHistogram(lines, chartW, slotW, n, bounds, xLabel) {
+  lines.push(`  line((0, 0), (${fmt(chartW + 0.5)}, 0), mark: (end: ">"), stroke: 0.8pt + black)`);
+  for (let i = 0; i <= n; i++) {
+    const bx = fmt(i * slotW);
+    lines.push(`  line((${bx}, -0.1), (${bx}, 0), stroke: 0.6pt + black)`);
+    if (bounds) lines.push(`  content((${bx}, -0.2), [${tickLabel(bounds[i])}], anchor: "north")`);
+  }
+  if (xLabel) lines.push(`  content((${fmt(chartW + 0.5)}, 0), [${xLabel}], anchor: "north-west")`);
+}
+
 function drawXAxisHorizontal(lines, chartW, chartH, nTicks, step, scale, xLabel) {
   for (let i = 0; i <= nTicks; i++) {
     const x = i * step;
@@ -666,6 +677,22 @@ function escapeLabel(label) {
   return label.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
 }
 
+// Parse ranh giới khoảng từ nhãn dạng "[a;b)" → [a, b, c, ...]
+// Trả về null nếu nhãn không theo định dạng khoảng
+function parseIntervalBounds(lblArr) {
+  const re = /^[\[\(]([\-\d.]+)[;,]([\-\d.]+)[\]\)]$/;
+  const bounds = [];
+  for (let i = 0; i < lblArr.length; i++) {
+    const m = lblArr[i].trim().match(re);
+    if (!m) return null;
+    const lo = parseFloat(m[1]), hi = parseFloat(m[2]);
+    if (isNaN(lo) || isNaN(hi)) return null;
+    if (i === 0) bounds.push(lo);
+    bounds.push(hi);
+  }
+  return bounds.length > 0 ? bounds : null;
+}
+
 // Tính mảng phần trăm từ tần số thô
 function computePct(valArr, n, totalN) {
   const parsedTotal = parseFloat(totalN);
@@ -687,6 +714,7 @@ export function generateHistogram(params) {
     showGrid = true,
     userYMax = '',
     userYStep = '',
+    color = 'blue',
   } = params;
 
   const lblArr = parseLabels(labels);
@@ -694,10 +722,12 @@ export function generateHistogram(params) {
   const n = Math.min(lblArr.length, valArr.length);
   if (n === 0) return emptyChart();
 
-  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const bounds = parseIntervalBounds(lblArr);
+  const chartH = 6.0, slotW = 1.8, chartW = n * slotW;
   const maxVal = Math.max(...valArr.slice(0, n));
   const { yMax, step, nTicks } = resolveScale(maxVal, userYMax, userYStep);
   const scale = chartH / yMax;
+  const col = colorToTypst(color || 'blue');
 
   const lines = [];
   drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
@@ -705,19 +735,21 @@ export function generateHistogram(params) {
   for (let i = 0; i < n; i++) {
     const val = valArr[i];
     const bh = fmt(val * scale);
-    // barW = slotW: cột sát nhau, không khoảng trắng
     const x0 = fmt(i * slotW);
     const x1 = fmt((i + 1) * slotW);
     const cx = fmt((i + 0.5) * slotW);
-    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: blue.transparentize(30%), stroke: 0.8pt + blue)`);
+    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: ${col}.transparentize(30%), stroke: 0.8pt + ${col})`);
     if (showValues) {
       lines.push(`  content((${cx}, ${fmt(val * scale + 0.15)}), [${tickLabel(val)}], anchor: "south")`);
     }
-    lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    // Chỉ hiện nhãn khoảng dưới cột khi không parse được ranh giới số
+    if (!bounds) {
+      lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    }
   }
 
   drawYAxis(lines, chartH, nTicks, step, scale, yLabel);
-  drawXAxisVertical(lines, chartW, xLabel);
+  drawXAxisHistogram(lines, chartW, slotW, n, bounds, xLabel);
   drawTitle(lines, chartW, chartH, title);
   return buildCanvas(lines);
 }
@@ -734,6 +766,7 @@ export function generateHistogramRelative(params) {
     yLabel = 'Tỷ lệ',
     showValues = true,
     showGrid = true,
+    color = 'blue',
   } = params;
 
   const lblArr = parseLabels(labels);
@@ -745,10 +778,12 @@ export function generateHistogramRelative(params) {
   if (!result) return emptyChart();
   const { pctArr } = result;
 
+  const bounds = parseIntervalBounds(lblArr);
   const maxPct = Math.max(...pctArr);
   const { yMax, step, nTicks } = niceScalePercent(maxPct);
-  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const chartH = 6.0, slotW = 1.8, chartW = n * slotW;
   const scale = chartH / yMax;
+  const col = colorToTypst(color || 'blue');
 
   const lines = [];
   drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
@@ -759,24 +794,27 @@ export function generateHistogramRelative(params) {
     const x0 = fmt(i * slotW);
     const x1 = fmt((i + 1) * slotW);
     const cx = fmt((i + 0.5) * slotW);
-    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: blue.transparentize(30%), stroke: 0.8pt + blue)`);
+    lines.push(`  rect((${x0}, 0), (${x1}, ${bh}), fill: ${col}.transparentize(30%), stroke: 0.8pt + ${col})`);
     if (showValues) {
       lines.push(`  content((${cx}, ${fmt(pct * scale + 0.15)}), [${fmtPct(pct)}], anchor: "south")`);
     }
-    lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    if (!bounds) {
+      lines.push(`  content((${cx}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    }
   }
 
   drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
-  drawXAxisVertical(lines, chartW, xLabel);
+  drawXAxisHistogram(lines, chartW, slotW, n, bounds, xLabel);
   drawTitle(lines, chartW, chartH, title);
   return buildCanvas(lines);
 }
 
 // ── Biểu đồ tần số tương đối dạng đoạn thẳng (line, trục Y = %) ──
+// labels: nhãn khoảng [a;b) giống histogram — tự động tính điểm giữa
 
 export function generateLineChartRelative(params) {
   const {
-    labels = '0.25, 0.75, 1.25, 1.75, 2.25',
+    labels = '[0;0.5), [0.5;1), [1;1.5), [1.5;2), [2;2.5)',
     values = '21, 15, 33, 25, 6',
     totalN = '',
     title = '',
@@ -785,6 +823,7 @@ export function generateLineChartRelative(params) {
     showPoints = true,
     showValues = true,
     showGrid = true,
+    color = 'blue',
   } = params;
 
   const lblArr = parseLabels(labels);
@@ -796,38 +835,42 @@ export function generateLineChartRelative(params) {
   if (!result) return emptyChart();
   const { pctArr } = result;
 
+  const bounds = parseIntervalBounds(lblArr);
   const maxPct = Math.max(...pctArr);
   const { yMax, step, nTicks } = niceScalePercent(maxPct);
-  const chartH = 6.0, slotW = 1.3, chartW = n * slotW;
+  const chartH = 6.0, slotW = 1.8, chartW = n * slotW;
   const scale = chartH / yMax;
+  const col = colorToTypst(color || 'blue');
 
   const lines = [];
   drawHGrid(lines, chartW, nTicks, step, scale, showGrid);
 
+  // Điểm đặt tại giữa mỗi slot (tương ứng điểm giữa khoảng)
   const pts = pctArr.map((pct, i) => ({
     x: fmt((i + 0.5) * slotW),
     y: fmt(pct * scale),
     pct,
   }));
 
-  // Đường nối các điểm
   for (let i = 0; i < pts.length - 1; i++) {
-    lines.push(`  line((${pts[i].x}, ${pts[i].y}), (${pts[i + 1].x}, ${pts[i + 1].y}), stroke: 1.5pt + blue)`);
+    lines.push(`  line((${pts[i].x}, ${pts[i].y}), (${pts[i + 1].x}, ${pts[i + 1].y}), stroke: 1.5pt + ${col})`);
   }
 
-  // Điểm và nhãn phần trăm
   for (let i = 0; i < pts.length; i++) {
     if (showPoints) {
-      lines.push(`  circle((${pts[i].x}, ${pts[i].y}), radius: 0.12, fill: blue, stroke: none)`);
+      lines.push(`  circle((${pts[i].x}, ${pts[i].y}), radius: 0.12, fill: ${col}, stroke: none)`);
     }
     if (showValues) {
       lines.push(`  content((${pts[i].x}, ${fmt(parseFloat(pts[i].y) + 0.22)}), [${fmtPct(pts[i].pct)}], anchor: "south")`);
     }
-    lines.push(`  content((${pts[i].x}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    // Chỉ hiện nhãn khoảng nếu không có tick marks ranh giới
+    if (!bounds) {
+      lines.push(`  content((${pts[i].x}, -0.3), [${escapeLabel(lblArr[i])}], anchor: "north")`);
+    }
   }
 
   drawYAxisPercent(lines, chartH, nTicks, step, scale, yLabel);
-  drawXAxisVertical(lines, chartW, xLabel);
+  drawXAxisHistogram(lines, chartW, slotW, n, bounds, xLabel);
   drawTitle(lines, chartW, chartH, title);
   return buildCanvas(lines);
 }

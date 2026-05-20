@@ -507,15 +507,15 @@ export const SHAPE_GUIDES = {
   'line-chart-relative': {
     description: 'Biểu đồ tần số tương đối ghép nhóm (đoạn thẳng): dùng đường gấp khúc nối điểm giữa các khoảng, trục Y là %.',
     tips: [
-      'Nhãn là điểm giữa của từng khoảng (ví dụ: khoảng [0;0.5) → điểm giữa 0.25)',
+      'Nhãn khoảng dùng ký hiệu [a;b) — giống hệt biểu đồ cột tần số. Hệ thống tự đặt điểm tại giữa mỗi khoảng.',
       'Nhập dữ liệu gốc (số lượng), hệ thống tự tính %',
       '"Tổng số" để trống = tự tổng; nhập n nếu có cỡ mẫu riêng',
       'Bật "Hiển thị điểm" để vẽ chấm tròn tại mỗi điểm dữ liệu',
       'Bật "Hiển thị giá trị" để hiện % cạnh mỗi điểm',
     ],
     examples: [
-      { label: 'Thời gian tự học — đường tần suất', values: 'điểm giữa: 0.25,0.75,1.25,1.75,2.25 | giá trị: 21,15,33,25,6' },
-      { label: 'Điểm thi (điểm giữa thang 10)', values: 'điểm giữa: 4.5,5.5,6.5,7.5,8.5,9.5 | giá trị: 2,5,12,18,10,3' },
+      { label: 'Thời gian tự học — đường tần suất', values: 'nhãn: [0;0.5),[0.5;1),[1;1.5),[1.5;2),[2;2.5) | giá trị: 21,15,33,25,6' },
+      { label: 'Điểm thi theo thang 10', values: 'nhãn: [4;5),[5;6),[6;7),[7;8),[8;9),[9;10] | giá trị: 2,5,12,18,10,3' },
     ],
   },
 
