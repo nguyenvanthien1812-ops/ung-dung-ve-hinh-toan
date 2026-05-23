@@ -1296,21 +1296,21 @@ export const FORM_SCHEMAS = {
 
   'bar-chart-grouped': {
     fields: [
-      { name: 'labels',       label: 'Nhãn danh mục (cách nhau bằng dấu phẩy)',   type: 'text', default: 'Q1, Q2, Q3, Q4' },
-      { name: 'series1Values',label: 'Chuỗi 1 — giá trị (cách nhau bằng dấu phẩy)', type: 'text', default: '10, 25, 15, 30' },
-      { name: 'series2Values',label: 'Chuỗi 2 — giá trị (để trống nếu không dùng)', type: 'text', default: '8, 20, 18, 25' },
-      { name: 'series3Values',label: 'Chuỗi 3 — giá trị (để trống nếu không dùng)', type: 'text', default: '' },
-      { name: 'series1Label', label: 'Nhãn chuỗi 1',                              type: 'text', default: 'Chuỗi 1' },
-      { name: 'series2Label', label: 'Nhãn chuỗi 2',                              type: 'text', default: 'Chuỗi 2' },
-      { name: 'series3Label', label: 'Nhãn chuỗi 3',                              type: 'text', default: 'Chuỗi 3' },
-      { name: 'title',        label: 'Tiêu đề biểu đồ',                          type: 'text', default: '' },
-      { name: 'xLabel',       label: 'Nhãn trục x',                              type: 'text', default: '' },
-      { name: 'yLabel',       label: 'Nhãn trục y',                              type: 'text', default: '' },
-      { name: 'showValues',   label: 'Hiển thị số trên cột',                     type: 'checkbox', default: false },
-      { name: 'showGrid',     label: 'Hiển thị lưới ngang',                      type: 'checkbox', default: true },
-      { name: 'showLegend',   label: 'Hiển thị chú giải',                        type: 'checkbox', default: true },
-      { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)', type: 'text', default: '' },
-      { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',     type: 'text', default: '' }
+      { name: 'labels',       label: 'Nhãn danh mục — năm, tháng, vùng... (cách nhau bằng dấu phẩy)', type: 'text', default: '2010, 2015, 2021' },
+      { name: 'series1Values',label: 'Chuỗi 1 — giá trị (cách nhau bằng dấu phẩy)',                   type: 'text', default: '2.47, 3.17, 3.93' },
+      { name: 'series2Values',label: 'Chuỗi 2 — giá trị (để trống nếu không dùng)',                   type: 'text', default: '2.73, 3.55, 4.88' },
+      { name: 'series3Values',label: 'Chuỗi 3 — giá trị (để trống nếu không dùng)',                   type: 'text', default: '' },
+      { name: 'series1Label', label: 'Tên chuỗi 1 (hiển thị trong chú giải)',                         type: 'text', default: 'Khai thác' },
+      { name: 'series2Label', label: 'Tên chuỗi 2',                                                   type: 'text', default: 'Nuôi trồng' },
+      { name: 'series3Label', label: 'Tên chuỗi 3',                                                   type: 'text', default: 'Chuỗi 3' },
+      { name: 'title',        label: 'Tiêu đề biểu đồ (để trống nếu không cần)',                      type: 'text', default: '' },
+      { name: 'xLabel',       label: 'Nhãn trục X (ví dụ: Năm)',                                      type: 'text', default: 'Năm' },
+      { name: 'yLabel',       label: 'Nhãn trục Y (ví dụ: Sản lượng (triệu tấn))',                   type: 'text', default: '' },
+      { name: 'showValues',   label: 'Hiển thị số trên mỗi cột',                                      type: 'checkbox', default: true },
+      { name: 'showGrid',     label: 'Hiển thị lưới ngang',                                           type: 'checkbox', default: true },
+      { name: 'showLegend',   label: 'Hiển thị chú giải (tên các chuỗi)',                             type: 'checkbox', default: true },
+      { name: 'userYMax',     label: 'Giá trị tối đa trục Y (để trống = tự động)',                    type: 'text', default: '' },
+      { name: 'userYStep',    label: 'Bước chia trục Y (để trống = tự động)',                         type: 'text', default: '' }
     ]
   },
 

@@ -463,14 +463,19 @@ export const SHAPE_GUIDES = {
   },
 
   'bar-chart-grouped': {
-    description: 'Vẽ biểu đồ cột nhóm để so sánh nhiều chuỗi dữ liệu cùng lúc.',
+    description: 'Biểu đồ cột nhóm: so sánh 2–3 chuỗi dữ liệu cùng một thời điểm (ví dụ: khai thác vs nuôi trồng qua các năm). Mỗi nhóm cột ứng với 1 danh mục trên trục X.',
     tips: [
-      'Nhập giá trị riêng cho từng chuỗi (Chuỗi 1, 2, 3)',
-      'Số lượng giá trị mỗi chuỗi phải bằng số nhãn danh mục',
-      'Chuỗi 3 có thể để trống nếu chỉ so sánh 2 nhóm',
+      'Nhãn danh mục (trục X): có thể là năm (2010, 2015, 2021), tháng, vùng, môn học...',
+      'Mỗi chuỗi là 1 loại dữ liệu — số giá trị phải bằng số nhãn',
+      'Đặt "Tên chuỗi" đúng để chú giải hiển thị đúng (ví dụ: Khai thác, Nuôi trồng)',
+      'Bật "Hiển thị số trên mỗi cột" để ghi số liệu lên đỉnh cột — hay dùng trong đề thi',
+      'Chuỗi 3 để trống nếu chỉ cần so sánh 2 nhóm',
+      'Số liệu thập phân hoàn toàn được (ví dụ: 2.47, 3.55)',
     ],
     examples: [
-      { label: 'Doanh thu 2 năm theo quý', values: 'nhãn: Q1,Q2,Q3,Q4 | chuỗi1: 10,25,15,30 | chuỗi2: 8,20,18,25' },
+      { label: 'Sản lượng thủy sản 2010–2021', values: 'nhãn: 2010,2015,2021 | chuỗi1: 2.47,3.17,3.93 | chuỗi2: 2.73,3.55,4.88 | tên1: Khai thác | tên2: Nuôi trồng | trục Y: Sản lượng (triệu tấn) | trục X: Năm' },
+      { label: 'Điểm 2 lớp qua 3 kỳ thi', values: 'nhãn: Kỳ 1,Kỳ 2,Kỳ 3 | chuỗi1: 7.2,7.8,8.1 | chuỗi2: 6.9,7.5,8.4 | tên1: Lớp 12A | tên2: Lớp 12B' },
+      { label: '3 chuỗi — xuất nhập khẩu + cán cân', values: 'nhãn: 2019,2020,2021,2022 | chuỗi1: 264,282,336,371 | chuỗi2: 253,262,332,361 | chuỗi3: 11,20,4,10 | tên1: Xuất khẩu | tên2: Nhập khẩu | tên3: Cán cân' },
     ],
   },
 
