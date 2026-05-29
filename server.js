@@ -148,30 +148,32 @@ if (IS_PRODUCTION) {
   });
 }
 
-// ── Khởi động server ─────────────────────────────────────────────
+// ── Khởi động server ─────────────────────────────────────────
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port} [${IS_PRODUCTION ? 'production' : 'development'}]`);
   console.log(`🔧 Typst command: ${getTypstCommand()}`);
 
   // ── Keep-Alive: tự ping mỗi 14 phút để không bị Render ngủ đông ──
-  if (IS_PRODUCTION && process.env.RENDER_EXTERNAL_URL) {
-    const pingUrl = `${process.env.RENDER_EXTERNAL_URL}/api/health`;
-    console.log(`⏰ Keep-alive ping every 14 min → ${pingUrl}`);
+  if (IS_PRODUCTION) {
+    // Render tự cung cấp RENDER_EXTERNAL_HOSTNAME, hoặc dùng URL cố định làm fallback
+    const hostname =
+      process.env.RENDER_EXTERNAL_URL ||
+      (process.env.RENDER_EXTERNAL_HOSTNAME
+        ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`
+        : 'https://ung-dung-ve-hinh-toan-2.onrender.com');
 
-    setInterval(async () => {
-      try {
-        const { default: https } = await import('https');
-        const { default: http } = await import('http');
-        const client = pingUrl.startsWith('https') ? https : http;
-        client.get(pingUrl, (res) => {
-          console.log(`[Keep-alive] ping OK — ${new Date().toLocaleTimeString('vi-VN')}`);
+    const pingUrl = `${hostname}/api/health`;
+    console.log(`⏰ Keep-alive ping mỗi 14 phút → ${pingUrl}`);
+
+    setInterval(() => {
+      import('https').then(({ default: https }) => {
+        https.get(pingUrl, (res) => {
+          console.log(`[Keep-alive] ✅ OK — ${new Date().toLocaleTimeString('vi-VN')}`);
           res.resume();
         }).on('error', (err) => {
-          console.warn(`[Keep-alive] ping failed:`, err.message);
+          console.warn(`[Keep-alive] ❌ thất bại:`, err.message);
         });
-      } catch (e) {
-        console.warn('[Keep-alive] error:', e.message);
-      }
-    }, 14 * 60 * 1000); // 14 phút
+      }).catch(() => {});
+    }, 14 * 60 * 1000);
   }
 });
